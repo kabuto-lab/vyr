@@ -307,74 +307,65 @@ const CanvasGrid: React.FC = () => {
     }
 
     // Draw viral weather effects based on virus interactions
-    // Only draw if visual effects are enabled
-    if (gameState.settings.visualEffectQuality !== 'low') {
-      const time = Date.now() * 0.001; // Time for animation
-      const weatherIntensity = 0.3; // Adjust intensity of weather effects
+    const time = Date.now() * 0.001; // Time for animation
+    const weatherIntensity = 0.3; // Adjust intensity of weather effects
 
-      // Adjust visual effects based on quality setting
-      const visualEffectQuality = gameState.settings.visualEffectQuality;
-      let stormParticleCount = 1;
-      let connectionStrength = 0.0001;
-      let energyFlowFrequency = 0.001;
-      if (visualEffectQuality === 'high') {
-        stormParticleCount = 2;
-        connectionStrength = 0.0004;
-        energyFlowFrequency = 0.005;
-      } else if (visualEffectQuality === 'medium') {
-        stormParticleCount = 1;
-        connectionStrength = 0.0002;
-        energyFlowFrequency = 0.002;
-      } else { // low - already handled above
-        stormParticleCount = 0; // No storm particles in low quality
-        connectionStrength = 0.00005;
-        energyFlowFrequency = 0.0005;
-      }
+    // Adjust visual effects based on quality setting
+    const visualEffectQuality = gameState.settings.visualEffectQuality;
+    let stormParticleCount = 1;
+    let connectionStrength = 0.0001;
+    let energyFlowFrequency = 0.001;
+    if (visualEffectQuality === 'high') {
+      stormParticleCount = 2;
+      connectionStrength = 0.0004;
+      energyFlowFrequency = 0.005;
+    } else if (visualEffectQuality === 'medium') {
+      stormParticleCount = 1;
+      connectionStrength = 0.0002;
+      energyFlowFrequency = 0.002;
+    } else { // low
+      stormParticleCount = 0; // No storm particles in low quality
+      connectionStrength = 0.00005;
+      energyFlowFrequency = 0.0005;
+    }
 
-      // Draw viral storms where different viruses meet
-      // Only process visible portion of the grid to improve performance
-      const viewStartRow = Math.max(1, Math.floor(-offsetY / cellHeight));
-      const viewEndRow = Math.min(rows - 1, Math.ceil((displayHeight - offsetY) / cellHeight));
-      const viewStartCol = Math.max(1, Math.floor(-offsetX / cellWidth));
-      const viewEndCol = Math.min(cols - 1, Math.ceil((displayWidth - offsetX) / cellWidth));
+    // Draw viral storms where different viruses meet
+    for (let row = 1; row < rows - 1; row++) {
+      for (let col = 1; col < cols - 1; col++) {
+        const centerOwner = gameState.grid[row][col];
+        if (centerOwner !== null) {
+          // Check adjacent cells for different owners (potential conflict zones)
+          const adjacentOwners = [
+            gameState.grid[row - 1][col], // top
+            gameState.grid[row + 1][col], // bottom
+            gameState.grid[row][col - 1], // left
+            gameState.grid[row][col + 1]  // right
+          ];
 
-      for (let row = viewStartRow; row < viewEndRow; row++) {
-        for (let col = viewStartCol; col < viewEndCol; col++) {
-          const centerOwner = gameState.grid[row][col];
-          if (centerOwner !== null) {
-            // Check adjacent cells for different owners (potential conflict zones)
-            const adjacentOwners = [
-              gameState.grid[row - 1][col], // top
-              gameState.grid[row + 1][col], // bottom
-              gameState.grid[row][col - 1], // left
-              gameState.grid[row][col + 1]  // right
-            ];
+          // If there's a different owner adjacent, create a "storm" effect
+          const hasConflict = adjacentOwners.some(owner => owner !== null && owner !== centerOwner);
 
-            // If there's a different owner adjacent, create a "storm" effect
-            const hasConflict = adjacentOwners.some(owner => owner !== null && owner !== centerOwner);
+          if (hasConflict) {
+            const centerX = offsetX + col * cellWidth + cellWidth / 2;
+            const centerY = offsetY + row * cellHeight + cellHeight / 2;
 
-            if (hasConflict) {
-              const centerX = offsetX + col * cellWidth + cellWidth / 2;
-              const centerY = offsetY + row * cellHeight + cellHeight / 2;
+            // Draw storm particles based on quality setting
+            for (let i = 0; i < stormParticleCount; i++) {
+              const angle = (i / stormParticleCount) * Math.PI * 2 + time;
+              const avgCellSize = (cellWidth + cellHeight) / 2; // Use average for distance calculations
+              const distance = avgCellSize * 0.7 * (0.8 + 0.2 * Math.sin(time * 2 + i));
+              const px = centerX + Math.cos(angle) * distance;
+              const py = centerY + Math.sin(angle) * distance;
 
-              // Draw storm particles based on quality setting
-              for (let i = 0; i < stormParticleCount; i++) {
-                const angle = (i / stormParticleCount) * Math.PI * 2 + time;
-                const avgCellSize = (cellWidth + cellHeight) / 2; // Use average for distance calculations
-                const distance = avgCellSize * 0.7 * (0.8 + 0.2 * Math.sin(time * 2 + i));
-                const px = centerX + Math.cos(angle) * distance;
-                const py = centerY + Math.sin(angle) * distance;
-
-                ctx.beginPath();
-                ctx.arc(px, py, 1.5, 0, 2 * Math.PI);
-                ctx.fillStyle = `rgba(255, 255, 255, ${0.3 * weatherIntensity})`;
-                ctx.fill();
-              }
+              ctx.beginPath();
+              ctx.arc(px, py, 1.5, 0, 2 * Math.PI);
+              ctx.fillStyle = `rgba(255, 255, 255, ${0.3 * weatherIntensity})`;
+              ctx.fill();
             }
           }
         }
       }
-    } // End of weather effects
+    }
 
     // Draw tentacles if in battle state
     if (gameState.gameState === 'battle') {
@@ -405,10 +396,14 @@ const CanvasGrid: React.FC = () => {
         const endX = offsetX + tentacle.to.col * cellWidth + cellWidth / 2;
         const endY = offsetY + tentacle.to.row * cellHeight + cellHeight / 2;
 
-        // Draw the tentacle using a straight line instead of Bezier curve for better performance
+        // Calculate control point for a gentle curve
+        const controlX = startX + (endX - startX) * 0.5 + (Math.random() - 0.5) * cellWidth * 0.5;
+        const controlY = startY + (endY - startY) * 0.5 + (Math.random() - 0.5) * cellHeight * 0.5;
+
+        // Draw the tentacle using a quadratic curve
         ctx.beginPath();
         ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
+        ctx.quadraticCurveTo(controlX, controlY, endX, endY);
 
         // Get the player's color for the tentacle
         const playerColor = gameState.players[tentacle.owner]?.color || '#FFFFFF';
