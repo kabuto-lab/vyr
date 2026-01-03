@@ -1,0 +1,2 @@
+## Qwen Added Memories
+- Working on VYRUS game project. Made several UI changes including: 1) Made Player Status section more compact with 4 players in a single row, 2) Changed speed options from 1x/4x/16x to 8x/16x/64x, 3) Made defense effect white with 50% transparency, 4) Removed "Test Battle" button from left panel. Currently facing JSX structure issues in Game.tsx that prevent successful build. Need to properly position LAB and MENU buttons below the main content area while maintaining correct JSX fragment structure.

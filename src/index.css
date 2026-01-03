@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'PIXY';
+  src: url('../fnt/PIXY.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  background-color: #111827; /* gray-900 */
+  color: white;
+}
+
+canvas {
+  display: block;
+}
+
+.param-name {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+@keyframes droplet-fall {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.animate-droplet-fall {
+  animation: droplet-fall 1s ease-out forwards;
+}
+
+.w-33p {
+  width: 33%;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Ensure proper grid display */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: calc(100vh - 80px); /* Account for Windows taskbar and bottom buttons */
+  width: calc(100vw - 1%);
+  gap: 0;
+  padding: 0;
+  margin: 0 0 2% 0; /* Add 2% bottom margin */
+  position: absolute;
+  top: 0.5%;
+  left: 0.5%;
+  bottom: 60px; /* Additional space for taskbar and bottom buttons */
+}
+
+/* Revert retro styling - back to original */
+
+.center-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+}
+
+.grid-display {
+  flex: 1;
+  background-color: #111827;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* Allow flex item to shrink below content size */
+}
+
+.grid-canvas-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 0; /* Allow flex item to shrink below content size */
+}
+
+.grid-canvas {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #374151;
+  min-width: 0;
+  min-height: 0;
+}

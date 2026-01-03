@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VYRUS v3 — VFX Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      overflow: hidden;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    canvas {
+      border: 1px solid #333;
+      box-shadow: 0 0 12px rgba(0,200,255,0.15);
+      image-rendering: pixelated;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #1e1e1e;
+      padding: 12px;
+      border-radius: 6px;
+      width: 100%;
+      max-width: 640px;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+      gap: 4px;
+    }
+    input[type="range"] {
+      width: 100px;
+    }
+    .legend {
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+      max-width: 640px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h2>VYRUS v3 — Visual Effects Demo</h2>
+    <canvas id="gameCanvas" width="640" height="640"></canvas>
+    <div class="controls">
+      <label>Conflict Density: <input type="range" id="conflict" min="0" max="100" value="30"></label>
+      <label>Same-Owner Clusters: <input type="range" id="cluster" min="0" max="100" value="60"></label>
+      <label>High-Param Cells: <input type="range" id="highparam" min="0" max="20" value="8"></label>
+      <label>Energy Flow: <input type="range" id="energy" min="0" max="100" value="50"></label>
+    </div>
+    <div class="legend">
+      🌪️ White swirls = Viral Weather • 🔗 Lines = Symbiotic • 🟡 Particles = Energy • ⚡ Glows = High Parameters
+    </div>
+  </div>
+
+  <script>
+    // ===== CONFIGURATION =====
+    const GRID_SIZE = 64;           // 64×64 cells
+    const CELL_MAX_SIZE = 32;       // max px (as per spec)
+    const CELL_SPACING = 10;        // px between cell centers
+    const CANVAS_SIZE = 640;
+
+    const ctx = document.getElementById('gameCanvas').getContext('2d');
+    let time = 0;
+
+    // Player colors (for symbiotic & energy)
+    const PLAYER_COLORS = [
+      '#4fc3f7', // Cyan
+      '#ff7043', // Orange
+      '#a5d6a7', // Green
+      '#ce93d8', // Purple
+    ];
+
+    // Seeded RNG (for consistent per-cell shape/phase)
+    function seededRandom(seed) {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    }
+
+    // Cell data generator (for demo)
+    const cells = [];
+    for (let y = 0; y < GRID_SIZE; y++) {
+      for (let x = 0; x < GRID_SIZE; x++) {
+        const idx = y * GRID_SIZE + x;
+        const baseSeed = idx * 173;
+        // Simulate owner & high parameters
+        let owner = Math.floor(seededRandom(baseSeed + 5) * PLAYER_COLORS.length);
+        // Group clusters
+        if (document.getElementById('cluster')?.valueAsNumber > Math.random() * 100) {
+          if (x > 0 && cells[idx - 1]) owner = cells[idx - 1].owner;
+        }
+        // Random high-parameter triggers
+        const highParamCount = document.getElementById('highparam')?.valueAsNumber || 8;
+        const hasHighParam = idx % Math.max(1, Math.floor(GRID_SIZE * GRID_SIZE / highParamCount)) === 0;
+
+        cells.push({
+          x, y,
+          owner,
+          phase: seededRandom(baseSeed + 1) * Math.PI * 2,
+          shapeOffset: seededRandom(baseSeed + 2) * 0.2 - 0.1, // ellipse deviation
+          colorPhase: seededRandom(baseSeed + 3) * Math.PI * 2,
+          hasHighParam,
+        });
+      }
+    }
+
+    // Conflict zone detection (for Viral Weather)
+    function getConflictZones() {
+      const zones = [];
+      for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+        const { x, y } = cell;
+        let conflict = false;
+        // Check 4-neighborhood
+        const neighbors = [
+          { dx: -1, dy: 0 }, { dx: 1, dy: 0 },
+          { dx: 0, dy: -1 }, { dx: 0, dy: 1 }
+        ];
+        for (const n of neighbors) {
+          const nx = x + n.dx, ny = y + n.dy;
+          if (nx < 0 || nx >= GRID_SIZE || ny < 0 || ny >= GRID_SIZE) continue;
+          const nIdx = ny * GRID_SIZE + nx;
+          if (cells[nIdx].owner !== cell.owner) {
+            conflict = true;
+            break;
+          }
+        }
+        if (conflict && Math.random() * 100 < (document.getElementById('conflict')?.valueAsNumber || 30)) {
+          zones.push(cell);
+        }
+      }
+      return zones;
+    }
+
+    // Energy flow simulation (simplified)
+    let energyFlows = [];
+    function updateEnergyFlows() {
+      const rate = document.getElementById('energy')?.valueAsNumber || 50;
+      if (Math.random() * 100 > rate) return;
+      if (energyFlows.length > 64) return; // limit
+
+      const fromCell = cells[Math.floor(Math.random() * cells.length)];
+      const { x, y } = fromCell;
+      const neighbors = [
+        { dx: -1, dy: 0 }, { dx: 1, dy: 0 },
+        { dx: 0, dy: -1 }, { dx: 0, dy: 1 }
+      ].filter(n => {
+        const nx = x + n.dx, ny = y + n.dy;
+        return nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE;
+      });
+      if (neighbors.length === 0) return;
+
+      const toN = neighbors[Math.floor(Math.random() * neighbors.length)];
+      const toIdx = (y + toN.dy) * GRID_SIZE + (x + toN.dx);
+      const toCell = cells[toIdx];
+
+      energyFlows.push({
+        from: fromCell,
+        to: toCell,
+        t: 0, // progress 0→1
+        color: PLAYER_COLORS[fromCell.owner % PLAYER_COLORS.length],
+        id: Date.now() + Math.random()
+      });
+    }
+
+    // ===== RENDERING =====
+    function screenPos(cell) {
+      const cx = (CANVAS_SIZE - GRID_SIZE * CELL_SPACING) / 2;
+      const cy = cx;
+      return {
+        x: cx + cell.x * CELL_SPACING,
+        y: cy + cell.y * CELL_SPACING
+      };
+    }
+
+    function drawCell(cell) {
+      const { x: sx, y: sy } = screenPos(cell);
+      const t = time * 0.001;
+      const breath = 1 + 0.08 * Math.sin(t + cell.phase);
+      const size = CELL_MAX_SIZE * 0.5 * breath;
+      const hueOffset = 10 * Math.sin(t * 0.8 + cell.colorPhase);
+      const baseColor = PLAYER_COLORS[cell.owner % PLAYER_COLORS.length];
+      const r = parseInt(baseColor.slice(1, 3), 16);
+      const g = parseInt(baseColor.slice(3, 5), 16);
+      const b = parseInt(baseColor.slice(5, 7), 16);
+      // Subtle color pulsing
+      const color = `rgb(${Math.min(255, r + hueOffset)}, ${Math.min(255, g + hueOffset * 0.7)}, ${Math.max(50, b - hueOffset * 0.5)})`;
+
+      ctx.beginPath();
+      // Organic ellipse with shape variation
+      const radiusX = size * (1 + cell.shapeOffset * 0.4);
+      const radiusY = size * (1 - cell.shapeOffset * 0.4);
+      ctx.ellipse(sx, sy, radiusX, radiusY, 0, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      // High-param glow
+      if (cell.hasHighParam) {
+        ctx.beginPath();
+        ctx.ellipse(sx, sy, radiusX + 4, radiusY + 4, 0, 0, Math.PI * 2);
+        const glow = `rgba(${r},${g},${b},0.4)`;
+        ctx.strokeStyle = glow;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    function drawViralWeather() {
+      const zones = getConflictZones();
+      const t = time * 0.002;
+      for (const cell of zones) {
+        const { x: sx, y: sy } = screenPos(cell);
+        for (let i = 0; i < 5; i++) {
+          const angle = t + i * Math.PI * 0.4 + cell.phase;
+          const radius = 12 + 8 * Math.sin(t * 1.3 + i);
+          const px = sx + Math.cos(angle) * radius;
+          const py = sy + Math.sin(angle) * radius;
+          ctx.fillStyle = `rgba(255,255,255,${0.3 * (1 + Math.sin(t * 2 + i)) / 2})`;
+          ctx.beginPath();
+          ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    function drawSymbioticConnections() {
+      // Simple: connect same-owner neighbors (optimized: only visible + reduced freq)
+      if (time % 4 !== 0) return; // reduce frequency
+      const t = time * 0.001;
+      for (let i = 0; i < cells.length; i++) {
+        const cell = cells[i];
+        const { x, y } = cell;
+        // Only check right & down to avoid dupes
+        const neighbors = [
+          { dx: 1, dy: 0 },
+          { dx: 0, dy: 1 }
+        ];
+        for (const n of neighbors) {
+          const nx = x + n.dx, ny = y + n.dy;
+          if (nx >= GRID_SIZE || ny >= GRID_SIZE) continue;
+          const nIdx = ny * GRID_SIZE + nx;
+          const neighbor = cells[nIdx];
+          if (neighbor.owner === cell.owner) {
+            const p1 = screenPos(cell);
+            const p2 = screenPos(neighbor);
+            const pulse = 0.7 + 0.3 * Math.sin(t + cell.phase * 0.5);
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = PLAYER_COLORS[cell.owner % PLAYER_COLORS.length];
+            ctx.lineWidth = 1 * pulse;
+            ctx.globalAlpha = 0.4 * pulse;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+      }
+    }
+
+    function drawEnergyFlows() {
+      updateEnergyFlows();
+      // Age & render
+      energyFlows = energyFlows.filter(flow => {
+        flow.t += 0.02;
+        if (flow.t > 1) return false;
+        const p1 = screenPos(flow.from);
+        const p2 = screenPos(flow.to);
+        const x = p1.x + (p2.x - p1.x) * flow.t;
+        const y = p1.y + (p2.y - p1.y) * flow.t;
+        ctx.fillStyle = flow.color;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Faint path (simplified)
+        ctx.strokeStyle = flow.color;
+        ctx.lineWidth = 0.5;
+        ctx.globalAlpha = 0.2;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        return true;
+      });
+    }
+
+    // ===== MAIN LOOP =====
+    function render() {
+      time = Date.now();
+
+      // Clear with subtle dark gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, CANVAS_SIZE);
+      grad.addColorStop(0, '#0d0d12');
+      grad.addColorStop(1, '#14141a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      // Draw layers (as per spec)
+      cells.forEach(drawCell);                  // 1. Organic Cells
+      drawViralWeather();                       // 2. Viral Weather
+      drawSymbioticConnections();               // 3. Symbiotic
+      drawEnergyFlows();                        // 4. Energy Flow
+      // 5. Parameter Effects → glow already drawn in drawCell()
+      // 6. Breathing → built into drawCell()
+      // 7. Optimizations → frequency reduction, culling (could add viewport culling here if needed)
+
+      requestAnimationFrame(render);
+    }
+
+    render();
+
+    // Optional: Pause on focus loss
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) time = Date.now(); // keep time consistent
+    });
+  </script>
+</body>
+</html>

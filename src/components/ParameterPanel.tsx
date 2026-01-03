@@ -1,0 +1,220 @@
+import React from 'react';
+import { Player, VirusParameters } from '../types/game';
+
+interface ParameterPanelProps {
+  player: Player;
+  pointsLeft: number;
+  onParameterChange: (param: keyof VirusParameters, value: number) => void;
+  onPlayerReady: () => void;
+  gameState: string;
+}
+
+const PARAMETER_NAMES = [
+  'aggression', 'mutation', 'speed', 'defense',
+  'reproduction', 'resistance', 'stealth', 'adaptability',
+  'virulence', 'endurance', 'mobility', 'intelligence',
+  'resilience', 'infectivity', 'lethality', 'stability'
+];
+
+const PARAMETER_EMOJIS = [
+  '⚔️', '🧬', '⚡', '🛡️',
+  '🦠', '🧬', '🕵️', '🔄',
+  '☣️', '💪', '🏃', '🧠',
+  '🛡️', '🌐', '💀', '⚖️'
+];
+
+const PARAMETER_LABELS = [
+  'Aggression', 'Mutation', 'Speed', 'Defense',
+  'Reproduction', 'Resistance', 'Stealth', 'Adaptability',
+  'Virulence', 'Endurance', 'Mobility', 'Intelligence',
+  'Resilience', 'Infectivity', 'Lethality', 'Stability'
+];
+
+const ParameterPanel: React.FC<ParameterPanelProps> = ({
+  player,
+  pointsLeft,
+  onParameterChange,
+  onPlayerReady,
+  gameState
+}) => {
+  const handleTubeClick = (paramIndex: number) => {
+    if (gameState !== 'setup' || pointsLeft <= 0) return;
+    const paramName = PARAMETER_NAMES[paramIndex] as keyof VirusParameters;
+    const currentValue = player.virus[paramName];
+    if (currentValue < 16) {
+      onParameterChange(paramName, currentValue + 1);
+    }
+  };
+
+  const handleDecreaseClick = (paramIndex: number) => {
+    if (gameState !== 'setup') return;
+    const paramName = PARAMETER_NAMES[paramIndex] as keyof VirusParameters;
+    const currentValue = player.virus[paramName];
+    if (currentValue > 0) {
+      onParameterChange(paramName, currentValue - 1);
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-8 gap-2 mb-4">
+          {PARAMETER_NAMES.slice(0, 8).map((_, index) => {
+            const paramName = PARAMETER_NAMES[index] as keyof VirusParameters;
+            const value = player.virus[paramName];
+            return (
+              <ParameterTube
+                key={index}
+                paramIndex={index}
+                value={value}
+                emoji={PARAMETER_EMOJIS[index]}
+                label={PARAMETER_LABELS[index]}
+                onIncrease={() => handleTubeClick(index)}
+                onDecrease={() => handleDecreaseClick(index)}
+                gameState={gameState}
+                pointsLeft={pointsLeft}
+              />
+            );
+          })}
+        </div>
+        <div className="grid grid-cols-8 gap-2">
+          {PARAMETER_NAMES.slice(8, 16).map((_, index) => {
+            const realIndex = index + 8;
+            const paramName = PARAMETER_NAMES[realIndex] as keyof VirusParameters;
+            const value = player.virus[paramName];
+            return (
+              <ParameterTube
+                key={realIndex}
+                paramIndex={realIndex}
+                value={value}
+                emoji={PARAMETER_EMOJIS[realIndex]}
+                label={PARAMETER_LABELS[realIndex]}
+                onIncrease={() => handleTubeClick(realIndex)}
+                onDecrease={() => handleDecreaseClick(realIndex)}
+                gameState={gameState}
+                pointsLeft={pointsLeft}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {gameState === 'setup' && (
+        <div className="mt-4">
+          <button
+            onClick={onPlayerReady}
+            className={`w-full py-2 px-4 font-pixy border-2 rounded-lg ${
+              pointsLeft === 0
+                ? 'bg-green-600 border-green-800 text-white hover:bg-green-700'
+                : 'bg-gray-600 border-gray-800 text-gray-400 cursor-not-allowed'
+            }`}
+            disabled={pointsLeft !== 0}
+          >
+            {player.isReady ? 'READY ✓' : 'MARK READY'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+interface ParameterTubeProps {
+  paramIndex: number;
+  value: number;
+  emoji: string;
+  label: string;
+  onIncrease: () => void;
+  onDecrease: () => void;
+  gameState: string;
+  pointsLeft: number;
+}
+
+const ParameterTube: React.FC<ParameterTubeProps> = ({
+  value,
+  emoji,
+  label,
+  onIncrease,
+  onDecrease,
+  gameState,
+  pointsLeft
+}) => {
+  const heightPercentage = Math.min(100, (value / 16) * 100);
+
+  const getLiquidColor = () => {
+    if (emoji === '⚔️') return 'bg-gradient-to-t from-red-600 to-red-400';
+    if (emoji === '🧬') return 'bg-gradient-to-t from-green-600 to-green-400';
+    if (emoji === '⚡') return 'bg-gradient-to-t from-yellow-500 to-yellow-300';
+    if (emoji === '🛡️') return 'bg-gradient-to-t from-blue-600 to-blue-400';
+    if (emoji === '🦠') return 'bg-gradient-to-t from-emerald-500 to-emerald-300';
+    if (emoji === '🕵️') return 'bg-gradient-to-t from-purple-600 to-purple-400';
+    if (emoji === '🔄') return 'bg-gradient-to-t from-indigo-600 to-indigo-400';
+    if (emoji === '☣️') return 'bg-gradient-to-t from-red-500 to-red-300';
+    if (emoji === '💪') return 'bg-gradient-to-t from-orange-500 to-orange-300';
+    if (emoji === '🏃') return 'bg-gradient-to-t from-cyan-500 to-cyan-300';
+    if (emoji === '🧠') return 'bg-gradient-to-t from-violet-500 to-violet-300';
+    if (emoji === '🌐') return 'bg-gradient-to-t from-sky-500 to-sky-300';
+    if (emoji === '💀') return 'bg-gradient-to-t from-gray-600 to-gray-400';
+    if (emoji === '⚖️') return 'bg-gradient-to-t from-stone-500 to-stone-300';
+    if (label === 'Resilience') return 'bg-gradient-to-t from-teal-500 to-teal-300';
+    if (label === 'Resistance') return 'bg-gradient-to-t from-lime-500 to-lime-300';
+    return 'bg-gradient-to-t from-blue-500 to-blue-400';
+  };
+
+  const [showDroplet, setShowDroplet] = React.useState(false);
+
+  const handleIncreaseClick = () => {
+    if (gameState !== 'setup' || pointsLeft <= 0) return;
+    onIncrease();
+    setShowDroplet(true);
+    setTimeout(() => setShowDroplet(false), 1000);
+  };
+
+  return (
+    // ✅ MAIN FIX: onClick on outermost div for +1
+    <div 
+      className="flex flex-col items-center cursor-pointer relative"
+      onClick={handleIncreaseClick}
+    >
+      <div className="flex flex-col items-center w-full">
+        <div className="relative w-10 h-24 bg-gray-700 rounded-b-[0.9rem] border border-gray-600 overflow-hidden flex items-center justify-center">
+          <div
+            className={`absolute bottom-0 w-full ${getLiquidColor()} transition-all duration-300`}
+            style={{ height: `${heightPercentage}%` }}
+          />
+          
+          {/* Emoji: -1 on click */}
+          <div
+            className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent +1 trigger
+              onDecrease();
+            }}
+          >
+            {emoji}
+          </div>
+
+          {/* Droplet animation for +1 only */}
+          {showDroplet && (
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4">
+              <div className="w-3 h-3 bg-blue-400 rounded-full animate-droplet-fall" />
+            </div>
+          )}
+        </div>
+        
+        {/* Label: -1 on click */}
+        <div
+          className="text-xs font-normal mt-1 text-center w-full truncate cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent +1 trigger
+            onDecrease();
+          }}
+        >
+          {label}
+        </div>
+        <div className="text-xs font-bold mt-1">{value}</div>
+      </div>
+    </div>
+  );
+};
+
+export default ParameterPanel;
