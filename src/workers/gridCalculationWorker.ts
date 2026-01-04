@@ -379,11 +379,12 @@ function calculateNextGameState(
                   to: targetCell,
                   player: owner
                 });
-                expansionEvents.push({
-                  from: { row, col },
-                  to: targetCell,
-                  player: owner
-                });
+                // Removed expansion event to reduce visual clutter
+                // expansionEvents.push({
+                //   from: { row, col },
+                //   to: targetCell,
+                //   player: owner
+                // });
               }
             }
           } else {
@@ -499,11 +500,12 @@ function calculateNextGameState(
                       to: targetCell,
                       player: owner
                     });
-                    expansionEvents.push({
-                      from: { row, col },
-                      to: targetCell,
-                      player: owner
-                    });
+                    // Removed expansion event to reduce visual clutter
+                    // expansionEvents.push({
+                    //   from: { row, col },
+                    //   to: targetCell,
+                    //   player: owner
+                    // });
                   }
                 }
               }
@@ -540,12 +542,12 @@ function calculateNextGameState(
                         // Update cell age - new cell born this turn
                         cellAge[cell.row][cell.col] = turn;
 
-                        // Add expansion event
-                        expansionEvents.push({
-                          from: { row, col },
-                          to: cell,
-                          player: owner
-                        });
+                        // Removed expansion event to reduce visual clutter
+                        // expansionEvents.push({
+                        //   from: { row, col },
+                        //   to: cell,
+                        //   player: owner
+                        // });
                       }
                     }
                   }
@@ -570,11 +572,12 @@ function calculateNextGameState(
                     to: targetCell,
                     player: owner
                   });
-                  expansionEvents.push({
-                    from: { row, col },
-                    to: targetCell,
-                    player: owner
-                  });
+                  // Removed expansion event to reduce visual clutter
+                  // expansionEvents.push({
+                  //   from: { row, col },
+                  //   to: targetCell,
+                  //   player: owner
+                  // });
                 }
               }
             }

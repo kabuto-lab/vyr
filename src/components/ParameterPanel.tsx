@@ -189,10 +189,10 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
       onClick={handleIncreaseClick}
     >
       <div className="flex flex-col items-center w-full">
-        {/* Frosted glass test tube container with noise texture */}
-        <div className="relative w-10 h-24 rounded-b-[0.9rem] overflow-hidden flex items-center justify-center frosted-glass">
-          {/* Noise texture overlay for frosted effect */}
-          <div className="noise-texture" />
+        {/* Convex glass test tube container with refraction effect */}
+        <div className="relative w-10 h-24 rounded-b-[0.9rem] overflow-hidden flex items-center justify-center convex-glass">
+          {/* Refraction effect for background */}
+          <div className="refraction-effect" />
 
           {/* Liquid fill with parameter-specific color */}
           <div

@@ -89,31 +89,48 @@ canvas {
   background: #6b7280;
 }
 
-/* Frosted glass effect for parameter tubes */
-.frosted-glass {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Convex glass tube effect for parameter tubes */
+.convex-glass {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.9rem; /* Match the rounded bottom */
   box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.2),
-    0 1px 2px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+    inset 0 2px 8px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow: hidden;
 }
 
-/* Noise texture for frosted effect */
-.noise-texture {
+/* Convex glass highlight effect */
+.convex-glass::before {
+  content: '';
+  position: absolute;
+  top: 5%;
+  left: 15%;
+  width: 30%;
+  height: 40%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* Refraction effect for background */
+.refraction-effect {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px),
-    radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 20px 20px, 30px 30px;
-  background-position: 0 0, 10px 10px;
-  opacity: 0.3;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 40%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  opacity: 0.4;
   pointer-events: none;
+  z-index: 1;
 }
 
 /* Droplet animation for parameter tubes */

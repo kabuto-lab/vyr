@@ -83,16 +83,18 @@ const GameControls: React.FC = () => {
       <div className="space-y-3">
         {gameState.gameState === 'battle' && (
           <>
-            <button
-              onClick={actions.togglePause}
-              className={`w-full py-2 px-4 rounded ${
-                gameState.isPaused
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-yellow-600 hover:bg-yellow-700'
-              }`}
-            >
-              {gameState.isPaused ? 'RESUME' : 'PAUSE'}
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={actions.togglePause}
+                className={`flex-1 py-2 px-4 rounded ${
+                  gameState.isPaused
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-yellow-600 hover:bg-yellow-700'
+                }`}
+              >
+                {gameState.isPaused ? 'RESUME' : 'PAUSE'}
+              </button>
+            </div>
 
             <div className="flex space-x-2">
               <button
@@ -126,6 +128,21 @@ const GameControls: React.FC = () => {
                 256x
               </button>
             </div>
+
+            <div className="flex space-x-2">
+              <button
+                onClick={actions.testBattle}
+                className="flex-1 py-2 px-4 rounded bg-purple-600 hover:bg-purple-700"
+              >
+                TEST
+              </button>
+              <button
+                onClick={actions.resetGame}
+                className="flex-1 py-2 px-4 rounded bg-red-600 hover:bg-red-700"
+              >
+                RESET
+              </button>
+            </div>
           </>
         )}
 
@@ -134,20 +151,36 @@ const GameControls: React.FC = () => {
       {/* Player Status */}
       <div className="mt-6">
         <h3 className="font-semibold mb-2">Player Status</h3>
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-4 gap-2">
           {gameState.players.map(player => (
             <div
               key={player.id}
-              className="p-1 bg-gray-700 rounded flex flex-col items-center"
+              className="bg-gray-800 bg-opacity-50 rounded-xl p-2 border border-gray-600 relative overflow-hidden"
+              style={{
+                borderLeftColor: player.color,
+                borderLeftWidth: '4px',
+                height: '120px' // Set a fixed height for consistent sizing
+              }}
             >
+              {/* Territory count as background that grows from bottom to top */}
               <div
-                className="w-3 h-3 rounded-full mb-1"
-                style={{ backgroundColor: player.color }}
+                className="absolute bottom-0 left-0 right-0"
+                style={{
+                  height: `${Math.min(100, (player.territoryCount / 2500) * 100)}%`,
+                  backgroundColor: player.color,
+                  opacity: 0.3
+                }}
               ></div>
-              <span className="text-[0.6rem]">{player.name}</span>
-              <div className="text-xs mt-0.5">{player.territoryCount}</div>
-              <div className={`text-[0.6rem] ${player.isReady ? 'text-green-400' : 'text-gray-400'}`}>
-                {player.isReady ? 'R' : 'NR'}
+
+              {/* Player indicator with number */}
+              <div className="flex items-center justify-center mb-1 relative z-10">
+                <span className="text-xs font-bold">{player.id + 1}</span>
+              </div>
+
+              <div className="text-[0.6rem] text-center truncate w-full relative z-10">{player.name}</div>
+              <div className="text-xs mt-0.5 font-mono relative z-10">{player.territoryCount}</div>
+              <div className={`text-[0.6rem] mt-1 px-1.5 py-0.5 rounded-full relative z-10 ${player.isReady ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'}`}>
+                {player.isReady ? 'READY' : 'NOT READY'}
               </div>
             </div>
           ))}

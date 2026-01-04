@@ -61,20 +61,22 @@ const Game: React.FC = () => {
           }
 
           // Add visual effects based on events
-          if (attackEvents) {
-            attackEvents.forEach((event: any) => {
-              actions.addAttackEffect(event.from, event.to, event.attacker);
-            });
-          }
+          // Removed attack events to reduce visual clutter
+          // if (attackEvents) {
+          //   attackEvents.forEach((event: any) => {
+          //     actions.addAttackEffect(event.from, event.to, event.attacker);
+          //   });
+          // }
 
-          if (expansionEvents) {
-            expansionEvents.forEach((event: any) => {
-              // Dispatch three separate effects for coordinated animation
-              actions.addExpansionSourceEffect(event.from, event.player);
-              actions.addExpansionPathEffect(event.from, event.to, event.player);
-              actions.addExpansionTargetEffect(event.to, event.player);
-            });
-          }
+          // Removed expansion events to reduce visual clutter
+          // if (expansionEvents) {
+          //   expansionEvents.forEach((event: any) => {
+          //     // Dispatch three separate effects for coordinated animation
+          //     actions.addExpansionSourceEffect(event.from, event.player);
+          //     actions.addExpansionPathEffect(event.from, event.to, event.player);
+          //     actions.addExpansionTargetEffect(event.to, event.player);
+          //   });
+          // }
 
           if (parameterEvents) {
             parameterEvents.forEach((event: any) => {
@@ -213,52 +215,6 @@ const Game: React.FC = () => {
     }
   };
 
-  // Test battle - randomly set all parameters and start battle
-  const testBattle = () => {
-    // For each player, randomly distribute 16 points among all 16 parameters
-    gameState.players.forEach((_player, playerId) => {
-      // Create an array of 16 parameters, each starting at 0
-      const params = Array(16).fill(0);
-
-      // Randomly distribute 16 points
-      let pointsToDistribute = 16;
-      while (pointsToDistribute > 0) {
-        // Pick a random parameter
-        const randomIndex = Math.floor(Math.random() * 16);
-        // Add a point to that parameter (but don't exceed 16 for any single parameter)
-        if (params[randomIndex] < 16) {
-          params[randomIndex]++;
-          pointsToDistribute--;
-        }
-      }
-
-      // Map the random parameters to the actual virus parameter names
-      const paramNames = [
-        'aggression', 'mutation', 'speed', 'defense',
-        'reproduction', 'resistance', 'stealth', 'adaptability',
-        'virulence', 'endurance', 'mobility', 'intelligence',
-        'resilience', 'infectivity', 'lethality', 'stability'
-      ];
-
-      paramNames.forEach((paramName, index) => {
-        actions.setPlayerParameter(playerId, paramName as any, params[index]);
-      });
-
-      // Mark player as ready
-      const updatedPlayer = { ...gameState.players[playerId] };
-      updatedPlayer.isReady = true;
-      updatedPlayer.preferredDirection = null;
-      updatedPlayer.lastMutationTurn = 0;
-      const players = [...gameState.players];
-      players[playerId] = updatedPlayer;
-      actions.setPlayerReady(playerId);
-    });
-
-    // Start the battle after setting all parameters
-    setTimeout(() => {
-      startBattle();
-    }, 100); // Small delay to ensure all parameters are set before starting
-  };
 
   return (
     <>
@@ -281,7 +237,7 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60]`}>
+      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl`}>
         <div className="p-4 border-b border-white border-opacity-20">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-bold font-pixy text-white">Configure:</h2>
@@ -342,57 +298,77 @@ const Game: React.FC = () => {
       </div>
 
       {/* Right Off-canvas menu - Game Controls */}
-      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60]`}>
-        <div className="p-4 border-b border-white border-opacity-20">
-          <h2 className="text-xl font-bold text-white">Game Controls</h2>
+      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl`}>
+        <div className="p-4 border-b border-white border-opacity-20 flex justify-between items-center">
+          <h2 className="text-xl font-bold font-pixy text-white">Controls</h2>
+          <div className="flex space-x-2">
+            <button
+              onClick={actions.testBattle}
+              className="py-1 px-2 rounded bg-purple-600 hover:bg-purple-700 text-xs"
+            >
+              TEST
+            </button>
+            <button
+              onClick={actions.resetGame}
+              className="py-1 px-2 rounded bg-red-600 hover:bg-red-700 text-xs"
+            >
+              RESET
+            </button>
+          </div>
         </div>
-        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-294px)]">
+        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-182px)]">
           <GameControls />
-        </div>
-        <div className="p-4 border-t border-white border-opacity-20 bg-black bg-opacity-30">
-          <div className="flex justify-between mb-2">
-            <span className="text-white">Turn:</span>
-            <span className="font-mono text-white">{gameState.turn}</span>
-          </div>
-          <div className="flex justify-between mb-2">
-            <span className="text-white">Phase:</span>
-            <span className="font-mono text-white">{gameState.phase}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-white">State:</span>
-            <span className="font-mono text-white">{gameState.gameState.toUpperCase()}</span>
-          </div>
-        </div>
-        <div className="p-4 border-t border-white border-opacity-20 space-y-2">
-          <button
-            onClick={actions.resetGame}
-            className="w-full py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
-          >
-            RESET GAME
-          </button>
-          <button
-            onClick={testBattle}
-            className="w-full py-2 px-4 font-pixy border-2 rounded-lg bg-purple-600 bg-opacity-70 border-purple-800 text-white hover:bg-purple-700"
-          >
-            TEST BATTLE
-          </button>
         </div>
       </div>
 
       {/* LAB and MENU buttons below the main content area */}
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-4 z-[70]">
+      <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-4 z-[70]">
         <button
           onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-          className="py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-pixy"
+          className="py-3 px-6 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
+          style={{
+            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
+          }}
         >
-          LAB
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
+          <span className="relative z-10">LAB</span>
         </button>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="py-2 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg font-pixy"
+          className="py-3 px-6 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
+          style={{
+            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
+          }}
         >
-          MENU
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
+          <span className="relative z-10">MENU</span>
         </button>
+      </div>
+
+      {/* Player Territory Indicators at the very bottom of the screen */}
+      <div className="fixed bottom-0 left-0 right-0 flex px-4 space-x-2 z-[65]">
+        {gameState.players.map(player => (
+          <div
+            key={player.id}
+            className="flex-1"
+          >
+            <div className="w-full bg-gray-700 bg-opacity-50 rounded-full h-1.1">
+              <div
+                className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold"
+                style={{
+                  width: `${Math.min(100, (player.territoryCount / 2500) * 100)}%`,
+                  backgroundColor: player.color,
+                  color: 'white',
+                  textShadow: '0 0 2px black'
+                }}
+              >
+                {player.territoryCount > 50 ? player.territoryCount : ''}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );

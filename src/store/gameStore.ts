@@ -95,6 +95,7 @@ interface GameStore {
     addExpansionTargetEffect: (position: { row: number; col: number }, player: number) => void;
     updateSettings: (settings: Partial<GameSettings>) => void;
     calculateFPS: () => void;
+    testBattle: () => void;
   };
 }
 
@@ -132,23 +133,24 @@ export const useGameStore = create<GameStore>((set) => ({
     })),
 
     addAttackEffect: (from: { row: number; col: number }, to: { row: number; col: number }, attacker: number) => set((store) => {
-      const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']; // Player colors
-      const effect = {
-        id: `attack-${Date.now()}-${Math.random()}`,
-        type: 'attack' as const,
-        position: { x: from.col, y: from.row },
-        duration: 300,
-        intensity: 1,
-        color: colors[attacker],
-        from: { row: from.row, col: from.col },
-        to: { row: to.row, col: to.col },
-        player: attacker,
-        startTime: Date.now()
-      };
+      // Removed attack effect to reduce visual clutter
+      // const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']; // Player colors
+      // const effect = {
+      //   id: `attack-${Date.now()}-${Math.random()}`,
+      //   type: 'attack' as const,
+      //   position: { x: from.col, y: from.row },
+      //   duration: 300,
+      //   intensity: 1,
+      //   color: colors[attacker],
+      //   from: { row: from.row, col: from.col },
+      //   to: { row: to.row, col: to.col },
+      //   player: attacker,
+      //   startTime: Date.now()
+      // };
       return {
         gameState: {
           ...store.gameState,
-          visualEffects: [...store.gameState.visualEffects, effect]
+          // visualEffects: [...store.gameState.visualEffects, effect]
         }
       };
     }),
@@ -515,5 +517,82 @@ export const useGameStore = create<GameStore>((set) => ({
         settings: { ...store.gameState.settings, ...settings }
       }
     })),
+
+    testBattle: () => set((store) => {
+      // For each player, randomly distribute 16 points among all 16 parameters
+      const updatedPlayers = store.gameState.players.map((player, playerId) => {
+        // Create an array of 16 parameters, each starting at 0
+        const params = Array(16).fill(0);
+
+        // Randomly distribute 16 points
+        let pointsToDistribute = 16;
+        while (pointsToDistribute > 0) {
+          // Pick a random parameter
+          const randomIndex = Math.floor(Math.random() * 16);
+          // Add a point to that parameter (but don't exceed 16 for any single parameter)
+          if (params[randomIndex] < 16) {
+            params[randomIndex]++;
+            pointsToDistribute--;
+          }
+        }
+
+        // Map the random parameters to the actual virus parameter names
+        const paramNames = [
+          'aggression', 'mutation', 'speed', 'defense',
+          'reproduction', 'resistance', 'stealth', 'adaptability',
+          'virulence', 'endurance', 'mobility', 'intelligence',
+          'resilience', 'infectivity', 'lethality', 'stability'
+        ];
+
+        const newVirus = { ...player.virus };
+        paramNames.forEach((paramName, index) => {
+          newVirus[paramName as keyof VirusParameters] = params[index];
+        });
+
+        // Return updated player with random parameters and marked as ready
+        return {
+          ...player,
+          virus: newVirus,
+          isReady: true,
+          preferredDirection: null,
+          lastMutationTurn: 0
+        };
+      });
+
+      // Create a new grid with starting positions
+      const grid = Array(50).fill(null).map(() => Array(100).fill(null));
+
+      // Place starting colonies in corners
+      const placeStartingColony = (playerId: number, x: number, y: number) => {
+        grid[y][x] = playerId; // Set owner in 2D format
+      };
+
+      // Place starting colonies in 4 corners with padding
+      placeStartingColony(0, 2, 2);      // Top-left
+      placeStartingColony(1, 97, 2);     // Top-right (100-3 for padding)
+      placeStartingColony(2, 2, 47);     // Bottom-left
+      placeStartingColony(3, 97, 47);    // Bottom-right (100-3 for padding)
+
+      // Initialize cell age grid
+      const initialCellAge = Array(50).fill(null).map(() => Array(100).fill(-1));
+      // Set birth turn for starting colonies
+      initialCellAge[2][2] = 0;   // Player 0 starting position
+      initialCellAge[2][97] = 0;  // Player 1 starting position
+      initialCellAge[47][2] = 0;  // Player 2 starting position
+      initialCellAge[47][97] = 0; // Player 3 starting position
+
+      return {
+        gameState: {
+          ...store.gameState,
+          gameState: 'battle',
+          players: updatedPlayers,
+          grid,
+          cellAge: initialCellAge,
+          turn: 0,
+          phase: 0,
+          isPaused: false
+        }
+      };
+    }),
   }
 }));
