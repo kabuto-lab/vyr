@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GameStateProvider } from './components/GameStateProvider';
 import Game from './components/Game';
 import DeviceDetection from './components/DeviceDetection';
+import FullscreenButton from './components/FullscreenButton';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <GameStateProvider>
         <DeviceDetection>
           <div className="h-screen w-screen bg-gray-900 text-white overflow-hidden">
+            <FullscreenButton />
             <Routes>
               <Route path="/" element={
                 <div className="h-full">
