@@ -122,14 +122,25 @@ const CanvasGridOptimized: React.FC = () => {
       ctx.scale(devicePixelRatio, devicePixelRatio);
     }
 
+    // Device detection
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+
     // Calculate cell dimensions based on grid size
-    // Using 100x50 grid (100 columns, 50 rows)
-    const cols = gameState.grid[0]?.length || 100;
-    const rows = gameState.grid.length || 50;
+    // Using 100x50 grid (100 columns, 50 rows) for desktop, smaller for mobile
+    let cols = gameState.grid[0]?.length || 100;
+    let rows = gameState.grid.length || 50;
+
+    // Adjust grid size for mobile devices
+    if (isMobile && !isPortrait) {
+      // For mobile in landscape, use a smaller grid
+      cols = Math.min(cols, 70);
+      rows = Math.min(rows, 35);
+    }
 
     // Calculate cell dimensions to fill the available space
     // Use different sizes for width and height to eliminate empty space
-    const maxCellSize = 32;
+    const maxCellSize = isMobile ? 24 : 32; // Smaller cells on mobile
     const cellWidth = Math.min(maxCellSize, displayWidth / cols);
     const cellHeight = Math.min(maxCellSize, displayHeight / rows);
 
@@ -343,22 +354,22 @@ const CanvasGridOptimized: React.FC = () => {
     const time = Date.now() * 0.001; // Time for animation
     const weatherIntensity = 0.3; // Adjust intensity of weather effects
 
-    // Adjust visual effects based on quality setting
+    // Adjust visual effects based on quality setting and device type
     const visualEffectQuality = gameState.settings.visualEffectQuality;
-    let stormParticleCount = 1;
-    let connectionStrength = 0.0001;
-    let energyFlowFrequency = 0.001;
+    let stormParticleCount = isMobile ? 0 : 1; // No storm particles on mobile
+    let connectionStrength = isMobile ? 0.00005 : 0.0001; // Reduced on mobile
+    let energyFlowFrequency = isMobile ? 0.0005 : 0.001; // Reduced on mobile
 
-    if (visualEffectQuality === 'high') {
+    if (visualEffectQuality === 'high' && !isMobile) {
       stormParticleCount = 2;
       connectionStrength = 0.0004;
       energyFlowFrequency = 0.005;
-    } else if (visualEffectQuality === 'medium') {
+    } else if (visualEffectQuality === 'medium' && !isMobile) {
       stormParticleCount = 1;
       connectionStrength = 0.0002;
       energyFlowFrequency = 0.002;
-    } else { // low
-      stormParticleCount = 0; // No storm particles in low quality
+    } else { // low or mobile
+      stormParticleCount = 0; // No storm particles in low quality or on mobile
       connectionStrength = 0.00005;
       energyFlowFrequency = 0.0005;
     }
@@ -424,8 +435,9 @@ const CanvasGridOptimized: React.FC = () => {
         );
       });
 
-      // Limit the number of tentacles drawn based on quality setting
+      // Limit the number of tentacles drawn based on quality setting and device type
       const tentaclesToDraw = Math.min(visibleTentacles.length,
+        isMobile ? 15 : // Reduced on mobile
         visualEffectQuality === 'high' ? 100 :
           visualEffectQuality === 'medium' ? 50 : 20);
 
@@ -543,12 +555,12 @@ const CanvasGridOptimized: React.FC = () => {
     // Draw visual effects from store only during battle state
     if (gameState.gameState === 'battle') {
       const now = Date.now();
-      // Limit to 15 effects in battle for better performance
-      const MAX_EFFECTS = 15;
-      let maxEffectsToProcess = Math.min(15, 20);
-      if (visualEffectQuality === 'high') maxEffectsToProcess = Math.min(15, 50);
-      else if (visualEffectQuality === 'medium') maxEffectsToProcess = Math.min(15, 30);
-      else maxEffectsToProcess = Math.min(15, 10);
+      // Limit to fewer effects on mobile for better performance
+      const MAX_EFFECTS = isMobile ? 8 : 15; // Reduced on mobile
+      let maxEffectsToProcess = isMobile ? Math.min(8, 12) : Math.min(15, 20); // Reduced on mobile
+      if (visualEffectQuality === 'high' && !isMobile) maxEffectsToProcess = Math.min(15, 50);
+      else if (visualEffectQuality === 'medium' && !isMobile) maxEffectsToProcess = Math.min(15, 30);
+      else maxEffectsToProcess = isMobile ? Math.min(8, 6) : Math.min(15, 10); // Further reduced on mobile
 
       // Count wave effects separately to enforce limits
       let waveEffectsCount = 0;
