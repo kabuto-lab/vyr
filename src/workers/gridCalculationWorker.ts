@@ -226,68 +226,68 @@ function calculateNextGameState(
   }
 
   // Phase 1: Growth - existing cells grow stronger based on parameters
-  // Only add parameter effects for cells that have high parameter values (> 10)
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const owner = newGrid[row][col];
-      if (owner !== null) {
-        const player = players[owner];
-        if (player) {
-          // Precompute parameter values to avoid repeated access
-          const { aggression, defense, speed, stealth, resistance, virulence,
-                  mutation, adaptability, endurance, mobility, intelligence,
-                  resilience, infectivity, lethality, stability } = player.virus;
+  // Removed parameter effects to reduce visual clutter
+  // for (let row = 0; row < rows; row++) {
+  //   for (let col = 0; col < cols; col++) {
+  //     const owner = newGrid[row][col];
+  //     if (owner !== null) {
+  //       const player = players[owner];
+  //       if (player) {
+  //         // Precompute parameter values to avoid repeated access
+  //         const { aggression, defense, speed, stealth, resistance, virulence,
+  //                 mutation, adaptability, endurance, mobility, intelligence,
+  //                 resilience, infectivity, lethality, stability } = player.virus;
 
-          // Add parameter effects based on high parameter values
-          if (aggression > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'aggression', player: owner });
-          }
-          if (defense > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'defense', player: owner });
-          }
-          if (speed > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'speed', player: owner });
-          }
-          if (stealth > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'stealth', player: owner });
-          }
-          if (resistance > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'resistance', player: owner });
-          }
-          if (virulence > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'virulence', player: owner });
-          }
-          if (mutation > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'mutation', player: owner });
-          }
-          if (adaptability > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'adaptability', player: owner });
-          }
-          if (endurance > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'endurance', player: owner });
-          }
-          if (mobility > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'mobility', player: owner });
-          }
-          if (intelligence > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'intelligence', player: owner });
-          }
-          if (resilience > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'resilience', player: owner });
-          }
-          if (infectivity > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'infectivity', player: owner });
-          }
-          if (lethality > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'lethality', player: owner });
-          }
-          if (stability > 10) {
-            parameterEvents.push({ position: { row, col }, type: 'stability', player: owner });
-          }
-        }
-      }
-    }
-  }
+  //         // Add parameter effects based on high parameter values
+  //         if (aggression > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'aggression', player: owner });
+  //         }
+  //         if (defense > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'defense', player: owner });
+  //         }
+  //         if (speed > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'speed', player: owner });
+  //         }
+  //         if (stealth > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'stealth', player: owner });
+  //         }
+  //         if (resistance > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'resistance', player: owner });
+  //         }
+  //         if (virulence > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'virulence', player: owner });
+  //         }
+  //         if (mutation > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'mutation', player: owner });
+  //         }
+  //         if (adaptability > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'adaptability', player: owner });
+  //         }
+  //         if (endurance > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'endurance', player: owner });
+  //         }
+  //         if (mobility > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'mobility', player: owner });
+  //         }
+  //         if (intelligence > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'intelligence', player: owner });
+  //         }
+  //         if (resilience > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'resilience', player: owner });
+  //         }
+  //         if (infectivity > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'infectivity', player: owner });
+  //         }
+  //         if (lethality > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'lethality', player: owner });
+  //         }
+  //         if (stability > 10) {
+  //           parameterEvents.push({ position: { row, col }, type: 'stability', player: owner });
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   // Phase 2: Expansion - cells attempt to spread to adjacent empty cells with parameter-based behavior
   const expansionAttempts: {
@@ -312,49 +312,49 @@ function calculateNextGameState(
           // Check if this player has stability > 10, which overrides other behaviors
           const hasHighStability = stability > 10;
 
-          // Handle mutation effects (chaotic borders) - only every 8th turn
-          if (mutation > 12 && turn % 8 === 0) {
-            // Find all boundary cells of this player
-            const boundaryCells = [];
-            const adjacentCells = getAdjacentCells(grid, row, col);
-            for (const adj of adjacentCells) {
-              if (newGrid[adj.row][adj.col] === null) {
-                boundaryCells.push(adj);
-              }
-            }
+          // Removed mutation effects (chaotic borders) to reduce visual clutter and random behavior
+          // if (mutation > 12 && turn % 8 === 0) {
+          //   // Find all boundary cells of this player
+          //   const boundaryCells = [];
+          //   const adjacentCells = getAdjacentCells(grid, row, col);
+          //   for (const adj of adjacentCells) {
+          //     if (newGrid[adj.row][adj.col] === null) {
+          //       boundaryCells.push(adj);
+          //     }
+          //   }
 
-            // Randomly capture or lose a boundary cell
-            if (boundaryCells.length > 0 && Math.random() < 0.5) { // 50% chance to do something
-              const randomBoundary = boundaryCells[Math.floor(Math.random() * boundaryCells.length)];
+          //   // Randomly capture or lose a boundary cell
+          //   if (boundaryCells.length > 0 && Math.random() < 0.5) { // 50% chance to do something
+          //     const randomBoundary = boundaryCells[Math.floor(Math.random() * boundaryCells.length)];
 
-              if (Math.random() < 0.5) {
-                // Capture the boundary cell
-                if (newGrid[randomBoundary.row][randomBoundary.col] === null) {
-                  newGrid[randomBoundary.row][randomBoundary.col] = owner;
-                }
-              } else {
-                // Lose a random cell that belongs to this player (to create "bays")
-                const ownedCells = [];
-                for (let r = Math.max(0, randomBoundary.row - 2); r < Math.min(rows, randomBoundary.row + 3); r++) {
-                  for (let c = Math.max(0, randomBoundary.col - 2); c < Math.min(cols, randomBoundary.col + 3); c++) {
-                    if (newGrid[r][c] === owner) {
-                      ownedCells.push({row: r, col: c});
-                    }
-                  }
-                }
+          //     if (Math.random() < 0.5) {
+          //       // Capture the boundary cell
+          //       if (newGrid[randomBoundary.row][randomBoundary.col] === null) {
+          //         newGrid[randomBoundary.row][randomBoundary.col] = owner;
+          //       }
+          //     } else {
+          //       // Lose a random cell that belongs to this player (to create "bays")
+          //       const ownedCells = [];
+          //       for (let r = Math.max(0, randomBoundary.row - 2); r < Math.min(rows, randomBoundary.row + 3); r++) {
+          //         for (let c = Math.max(0, randomBoundary.col - 2); c < Math.min(cols, randomBoundary.col + 3); c++) {
+          //           if (newGrid[r][c] === owner) {
+          //             ownedCells.push({row: r, col: c});
+          //           }
+          //         }
+          //       }
 
-                if (ownedCells.length > 0) {
-                  const randomOwned = ownedCells[Math.floor(Math.random() * ownedCells.length)];
-                  // Only lose the cell if it has at least 2 empty neighbors (to create bays)
-                  const neighbors = getAdjacentCells(grid, randomOwned.row, randomOwned.col);
-                  const emptyNeighbors = neighbors.filter(adj => newGrid[adj.row][adj.col] === null);
-                  if (emptyNeighbors.length >= 2) {
-                    newGrid[randomOwned.row][randomOwned.col] = null;
-                  }
-                }
-              }
-            }
-          }
+          //       if (ownedCells.length > 0) {
+          //         const randomOwned = ownedCells[Math.floor(Math.random() * ownedCells.length)];
+          //         // Only lose the cell if it has at least 2 empty neighbors (to create bays)
+          //         const neighbors = getAdjacentCells(grid, randomOwned.row, randomOwned.col);
+          //         const emptyNeighbors = neighbors.filter(adj => newGrid[adj.row][adj.col] === null);
+          //         if (emptyNeighbors.length >= 2) {
+          //           newGrid[randomOwned.row][randomOwned.col] = null;
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
 
           // Combined expansion logic with early returns
           if (hasHighStability) {

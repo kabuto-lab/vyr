@@ -14,7 +14,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { validateParameterAllocation } from '../utils/parameterValidation';
-import CanvasGrid from './CanvasGrid';
+import CanvasGridOptimized from './CanvasGridOptimized';
 import ParameterPanel from './ParameterPanel';
 import GameControls from './GameControls';
 import { VirusParameters } from '../types/game';
@@ -78,11 +78,12 @@ const Game: React.FC = () => {
           //   });
           // }
 
-          if (parameterEvents) {
-            parameterEvents.forEach((event: any) => {
-              actions.addParameterEffect(event.position, event.type, event.player);
-            });
-          }
+          // Removed parameter events to reduce visual clutter
+          // if (parameterEvents) {
+          //   parameterEvents.forEach((event: any) => {
+          //     actions.addParameterEffect(event.position, event.type, event.player);
+          //   });
+          // }
 
           if (e.data.interactionEvents) {
             e.data.interactionEvents.forEach((event: any) => {
@@ -229,7 +230,7 @@ const Game: React.FC = () => {
         <div className="center-panel relative z-0 flex-1">
           <div className="grid-display h-full">
             <div className="grid-canvas-container h-full">
-              <CanvasGrid />
+              <CanvasGridOptimized />
             </div>
           </div>
         </div>
