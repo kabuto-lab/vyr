@@ -355,7 +355,7 @@ const Game: React.FC = () => {
             key={player.id}
             className="flex-1"
           >
-            <div className="w-full bg-gray-700 bg-opacity-50 rounded-full h-1.1">
+            <div className="w-full bg-gray-700 bg-opacity-50 rounded-full h-1">
               <div
                 className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold"
                 style={{
