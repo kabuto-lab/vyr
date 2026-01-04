@@ -1,3 +1,16 @@
+/**
+ * Parameter Panel Component
+ *
+ * Компонент панели параметров
+ *
+ * This component allows players to configure their virus parameters during the setup phase.
+ * It provides visual feedback on parameter allocation, validates constraints (total points),
+ * and handles the ready state for each player.
+ *
+ * Этот компонент позволяет игрокам настраивать параметры своего вируса во время фазы настройки.
+ * Он предоставляет визуальную обратную связь по распределению параметров, проверяет ограничения
+ * (общее количество очков) и обрабатывает состояние готовности для каждого игрока.
+ */
 import React from 'react';
 import { Player, VirusParameters } from '../types/game';
 
@@ -171,20 +184,25 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
 
   return (
     // ✅ MAIN FIX: onClick on outermost div for +1
-    <div 
+    <div
       className="flex flex-col items-center cursor-pointer relative"
       onClick={handleIncreaseClick}
     >
       <div className="flex flex-col items-center w-full">
-        <div className="relative w-10 h-24 bg-gray-700 rounded-b-[0.9rem] border border-gray-600 overflow-hidden flex items-center justify-center">
+        {/* Frosted glass test tube container with noise texture */}
+        <div className="relative w-10 h-24 rounded-b-[0.9rem] overflow-hidden flex items-center justify-center frosted-glass">
+          {/* Noise texture overlay for frosted effect */}
+          <div className="noise-texture" />
+
+          {/* Liquid fill with parameter-specific color */}
           <div
-            className={`absolute bottom-0 w-full ${getLiquidColor()} transition-all duration-300`}
+            className={`absolute bottom-0 w-full ${getLiquidColor()} transition-all duration-300 z-10`}
             style={{ height: `${heightPercentage}%` }}
           />
-          
+
           {/* Emoji: -1 on click */}
           <div
-            className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs"
+            className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs z-20"
             onClick={(e) => {
               e.stopPropagation(); // Prevent +1 trigger
               onDecrease();
@@ -195,12 +213,12 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
 
           {/* Droplet animation for +1 only */}
           {showDroplet && (
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4">
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4 z-20">
               <div className="w-3 h-3 bg-blue-400 rounded-full animate-droplet-fall" />
             </div>
           )}
         </div>
-        
+
         {/* Label: -1 on click */}
         <div
           className="text-xs font-normal mt-1 text-center w-full truncate cursor-pointer"

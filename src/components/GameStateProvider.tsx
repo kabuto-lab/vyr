@@ -1,3 +1,16 @@
+/**
+ * Game State Provider Component
+ *
+ * Компонент провайдера состояния игры
+ *
+ * This component wraps the application with game state context, providing
+ * access to the game store and actions throughout the component tree.
+ * It handles game logic such as victory condition checks and simulation initialization.
+ *
+ * Этот компонент оборачивает приложение контекстом состояния игры, обеспечивая
+ * доступ к хранилищу игры и действиям во всем дереве компонентов.
+ * Он обрабатывает логику игры, такую как проверка условий победы и инициализация симуляции.
+ */
 import React, { useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
 

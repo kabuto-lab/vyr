@@ -1,3 +1,16 @@
+/**
+ * Game Controls Component
+ *
+ * Компонент управления игрой
+ *
+ * This component provides UI controls for managing game state during battle,
+ * including pause/resume functionality, simulation speed adjustment, visual
+ * quality settings, and player status display.
+ *
+ * Этот компонент предоставляет элементы управления для управления состоянием
+ * игры во время битвы, включая функции паузы/возобновления, регулировку скорости
+ * симуляции, настройки качества визуальных эффектов и отображение статуса игроков.
+ */
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
 
@@ -117,7 +130,7 @@ const GameControls: React.FC = () => {
         )}
 
       </div>
-      
+
       {/* Player Status */}
       <div className="mt-6">
         <h3 className="font-semibold mb-2">Player Status</h3>

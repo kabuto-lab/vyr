@@ -1,3 +1,17 @@
+/**
+ * Grid Calculation Web Worker
+ *
+ * Веб-воркер для расчета сетки
+ *
+ * This Web Worker performs computationally intensive tasks for calculating the next game state,
+ * including virus expansion, combat resolution, parameter-based behaviors, and tentacle movement.
+ * It runs in a separate thread to prevent blocking the main UI thread during complex calculations.
+ *
+ * Этот веб-воркер выполняет вычислительно сложные задачи для расчета следующего состояния игры,
+ * включая расширение вирусов, разрешение боевых действий, поведение на основе параметров и
+ * движение щупалец. Он работает в отдельном потоке, чтобы не блокировать основной поток UI
+ * во время сложных вычислений.
+ */
 import { Player, GameSettings } from '../types/game';
 
 interface GridCalculationMessage {
@@ -28,6 +42,16 @@ interface GridCalculationResult {
   expansionEvents: { from: { row: number; col: number }; to: { row: number; col: number }; player: number }[];
   parameterEvents: { position: { row: number; col: number }; type: string; player: number }[];
   interactionEvents: { position: { row: number; col: number }; type: 'attack' | 'defense' | 'capture'; player: number }[];
+  waveEffects: {
+    id: string;
+    type: 'wave';
+    position: { x: number; y: number };
+    duration: number;
+    intensity: number;
+    color: string;
+    player: number;
+    startTime: number;
+  }[];
   tentacles: Tentacle[];
   cellAge: number[][];
 }
@@ -93,6 +117,16 @@ function calculateNextGameState(
   const expansionEvents: { from: { row: number; col: number }; to: { row: number; col: number }; player: number }[] = [];
   const parameterEvents: { position: { row: number; col: number }; type: string; player: number }[] = [];
   const interactionEvents: { position: { row: number; col: number }; type: 'attack' | 'defense' | 'capture'; player: number }[] = [];
+  const waveEffects: {
+    id: string;
+    type: 'wave';
+    position: { x: number; y: number };
+    duration: number;
+    intensity: number;
+    color: string;
+    player: number;
+    startTime: number;
+  }[] = [];
   const tentacles: Tentacle[] = [];
 
   // Phase 0: Update existing tentacles
@@ -148,12 +182,38 @@ function calculateNextGameState(
           player: updatedTentacle.owner
         });
 
+        // Add wave effect for capture event
+        const playerColor = players[updatedTentacle.owner]?.color || '#FFFFFF';
+        waveEffects.push({
+          id: `wave-capture-${Date.now()}-${Math.random()}`,
+          type: 'wave' as const,
+          position: { x: updatedTentacle.to.col, y: updatedTentacle.to.row },
+          duration: 1800, // 3x longer duration (1800ms = 3 * 600ms)
+          intensity: 1,
+          color: playerColor,
+          player: updatedTentacle.owner,
+          startTime: Date.now()
+        });
+
         // Add interaction event for the defender's cell being attacked
         if (defenderOwner !== null) {
           interactionEvents.push({
             position: updatedTentacle.to,
             type: 'attack',
             player: defenderOwner
+          });
+
+          // Add wave effect for attack event
+          const defenderColor = players[defenderOwner]?.color || '#FFFFFF';
+          waveEffects.push({
+            id: `wave-attack-${Date.now()}-${Math.random()}`,
+            type: 'wave' as const,
+            position: { x: updatedTentacle.to.col, y: updatedTentacle.to.row },
+            duration: 1800, // 3x longer duration (1800ms = 3 * 600ms)
+            intensity: 1,
+            color: defenderColor,
+            player: defenderOwner,
+            startTime: Date.now()
           });
         }
       } else {
@@ -604,6 +664,7 @@ function calculateNextGameState(
     expansionEvents,
     parameterEvents,
     interactionEvents,
+    waveEffects, // Add wave effects to the result
     tentacles,
     cellAge
   };

@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYRUS Battle System Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #111827;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #3B82F6;
+        }
+        .process {
+            background-color: #1f2937;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3B82F6;
+        }
+        .details {
+            margin: 10px 0 10px 20px;
+        }
+        .highlight {
+            background-color: #374151;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .code-ref {
+            background-color: #1a202c;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 5px 0;
+            border-left: 2px solid #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VYRUS Battle System Analysis</h1>
+        <p>This document details the processes that cause FPS drops during virus cell collisions in the VYRUS game.</p>
+
+        <div class="process">
+            <h2>1. Visual Effects Overload During Combat</h2>
+            <div class="details">
+                <p>When virus cells collide, multiple visual effects are triggered simultaneously:</p>
+                
+                <div class="highlight">
+                    <strong>Attack Effects:</strong>
+                    <ul>
+                        <li>Number of elements: Up to 15 attack effects processed per frame (limited by visualEffectQuality)</li>
+                        <li>Computations per effect: Line drawing from source to target with progress animation</li>
+                        <li>Processes: Calculate start/end positions, draw expanding line, render impact animation</li>
+                        <li>Canvas operations: beginPath(), moveTo(), lineTo(), stroke() for each effect</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/components/CanvasGrid.tsx, lines 570-590<br>
+                        <code>
+                            if (effect.type === 'attack' && effect.from && effect.to) {<br>
+                              const startX = offsetX + effect.from.col * cellWidth + cellWidth / 2;<br>
+                              const startY = offsetY + effect.from.row * cellHeight + cellHeight / 2;<br>
+                              const endX = offsetX + effect.to.col * cellWidth + cellWidth / 2;<br>
+                              const endY = offsetY + effect.to.row * cellHeight + cellHeight / 2;<br>
+                              <br>
+                              ctx.beginPath();<br>
+                              ctx.moveTo(startX, startY);<br>
+                              ctx.lineTo(startX + (endX - startX) * progress, startY + (endY - startY) * progress);<br>
+                              ctx.strokeStyle = effect.color;<br>
+                              ctx.lineWidth = 2;<br>
+                              ctx.stroke();<br>
+                              <br>
+                              if (progress > 0.8) {<br>
+                                const impactProgress = (progress - 0.8) / 0.2;<br>
+                                ctx.beginPath();<br>
+                                ctx.arc(endX, endY, 3 + 5 * impactProgress, 0, 2 * Math.PI);<br>
+                                ctx.fillStyle = effect.color;<br>
+                                ctx.globalAlpha = 1 - impactProgress;<br>
+                                ctx.fill();<br>
+                                ctx.globalAlpha = 1;<br>
+                              }<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Position conversion from grid coordinates to canvas coordinates, progress-based line extension, impact animation with pulsing radius and opacity.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Expansion Effects:</strong>
+                    <ul>
+                        <li>Number of elements: 3 effects per expansion (source, path, target)</li>
+                        <li>Computations per effect: Position calculation, animation progress, parameter-based styling</li>
+                        <li>Processes: Pulsation animation for source, path animation, target formation</li>
+                        <li>Canvas operations: arc(), stroke(), fill() for each component</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/components/CanvasGrid.tsx, lines 591-670<br>
+                        <code>
+                            else if (effect.type === 'expansionSource') {<br>
+                              const sourceX = offsetX + effect.position.x * cellWidth + cellWidth / 2;<br>
+                              const sourceY = offsetY + effect.position.y * cellHeight + cellHeight / 2;<br>
+                              const playerParams = gameState.players[effect.player || 0].virus;<br>
+                              const pulseProgress = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;<br>
+                              const baseRadius = cellWidth * 0.4;<br>
+                              const pulseRadius = baseRadius * (0.5 + 0.8 * pulseProgress);<br>
+                              <br>
+                              ctx.beginPath();<br>
+                              ctx.arc(sourceX, sourceY, pulseRadius, 0, 2 * Math.PI);<br>
+                              <br>
+                              const rgbColor = hexToRgb(effect.color);<br>
+                              if (rgbColor) {<br>
+                                if (playerParams.aggression > 10) {<br>
+                                  ctx.strokeStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 1.0)`;<br>
+                                  ctx.lineWidth = 5;<br>
+                                } else {<br>
+                                  ctx.strokeStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.9)`;<br>
+                                  ctx.lineWidth = 4;<br>
+                                }<br>
+                                ctx.stroke();<br>
+                              }<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Pulsation using sine wave, radius adjustment based on aggression parameter, color conversion from hex to RGB with alpha channel.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Parameter-Specific Effects:</strong>
+                    <ul>
+                        <li>Number of elements: Up to 16 different parameter effects (aggression, defense, speed, etc.)</li>
+                        <li>Computations per effect: Based on parameter values > 10, with unique animations</li>
+                        <li>Processes: Gradient creation, radial animations, particle effects</li>
+                        <li>Canvas operations: createRadialGradient(), arc(), fill(), stroke() for each effect type</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/components/CanvasGrid.tsx, lines 750-1010<br>
+                        <code>
+                            switch (effect.type) {<br>
+                              case 'aggression':<br>
+                                ctx.beginPath();<br>
+                                ctx.arc(x, y, 5 + 10 * progress, 0, 2 * Math.PI);<br>
+                                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 15);<br>
+                                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.8)');<br>
+                                gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');<br>
+                                ctx.fillStyle = gradient;<br>
+                                ctx.fill();<br>
+                                break;<br>
+                              case 'defense':<br>
+                                const pulseProgress = Math.sin(progress * Math.PI * 0.5);<br>
+                                const defenseRadius = 8 + 3 * pulseProgress;<br>
+                                ctx.beginPath();<br>
+                                ctx.arc(x, y, defenseRadius, 0, 2 * Math.PI);<br>
+                                const playerColor = gameState.players[effect.player || 0]?.color || '#FFFFFF';<br>
+                                const rgbColor = hexToRgb(playerColor);<br>
+                                if (rgbColor) {<br>
+                                  ctx.strokeStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, 0.5)`;<br>
+                                } else {<br>
+                                  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';<br>
+                                }<br>
+                                ctx.lineWidth = 2;<br>
+                                ctx.stroke();<br>
+                                break;<br>
+                              // ... other cases for each parameter
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Each parameter effect has unique calculations - aggression uses radial gradients, defense uses pulsation, speed uses size progression, etc. Each effect calculates its own animation progress and visual properties.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Interaction Effects:</strong>
+                    <ul>
+                        <li>Number of elements: Attack, defense, and capture events based on cell interactions</li>
+                        <li>Computations per effect: Position-based rendering with player color</li>
+                        <li>Processes: Animation timing, opacity changes, size variations</li>
+                        <li>Canvas operations: arc(), fill(), stroke() for each interaction type</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/store/gameStore.ts, lines 105-115<br>
+                        <code>
+                            addInteractionEffect: (position: { row: number; col: number }, type: 'attack' | 'defense' | 'capture', player: number) => set((store) => {<br>
+                              // Get the player's color from the store<br>
+                              const playerColor = store.gameState.players[player]?.color || '#FFFFFF';<br>
+                              <br>
+                              const effect = {<br>
+                                id: `interaction-${type}-${Date.now()}-${Math.random()}`,<br>
+                                type: type as any,<br>
+                                position: { x: position.col, y: position.row },<br>
+                                duration: 600, // 600ms duration - not indefinite<br>
+                                intensity: 1,<br>
+                                color: playerColor, // Use the player's virus color<br>
+                                player,<br>
+                                startTime: Date.now()<br>
+                              };<br>
+                              return {<br>
+                                gameState: {<br>
+                                  ...store.gameState,<br>
+                                  visualEffects: [...store.gameState.visualEffects, effect]<br>
+                                }<br>
+                              };<br>
+                            }),
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Position conversion, duration timing, color retrieval from player data, effect creation with unique ID.</p>
+                </div>
+                
+                <p><strong>Total Impact:</strong> With multiple collisions happening simultaneously, the canvas renderer must process potentially hundreds of visual elements per frame, especially at higher quality settings. The system limits effects to 15 per frame but can still cause significant performance impact when many effects are active.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>2. Tentacle System Overload</h2>
+            <div class="details">
+                <p>During collisions, the game creates "tentacles" representing invasion attempts between virus cells:</p>
+                
+                <div class="highlight">
+                    <strong>New Tentacle Creation:</strong>
+                    <ul>
+                        <li>Number of elements: Up to 30 new tentacles per turn (MAX_NEW_TENTACLES_PER_TURN)</li>
+                        <li>Computations per tentacle: Path calculation from source to target, progress initialization</li>
+                        <li>Processes: Check for existing tentacles, validate source/target ownership</li>
+                        <li>Memory allocation: New tentacle objects with position, owner, and progress data</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 460-490<br>
+                        <code>
+                            // Check if a tentacle already exists for this from->to pair<br>
+                            if (!existingTentacleMap.has(tentacleKey) && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {<br>
+                              const newTentacle: Tentacle = {<br>
+                                id: `tentacle-${Date.now()}-${Math.random()}`,<br>
+                                from: { row, col },<br>
+                                to: targetCell,<br>
+                                owner: owner,<br>
+                                progress: 0.05, // Start with a small progress<br>
+                                type: 'invasion'<br>
+                              };<br>
+                              <br>
+                              tentacles.push(newTentacle);<br>
+                              newTentacleCount++;<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Unique ID generation, position validation, progress initialization, tentacle count tracking.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Existing Tentacle Animation:</strong>
+                    <ul>
+                        <li>Number of elements: All previously created tentacles continue animating</li>
+                        <li>Computations per tentacle: Progress update based on attacker/defender parameters</li>
+                        <li>Processes: Calculate progress increase, check for completion, update position</li>
+                        <li>Canvas operations: quadraticCurveTo(), stroke() for each tentacle</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 70-140<br>
+                        <code>
+                            // Calculate progress based on parameters<br>
+                            let progressIncrease = 0;<br>
+                            if (attacker) {<br>
+                              // Attacker's parameters that help invasion<br>
+                              const mobilityFactor = attacker.virus.mobility / 16;<br>
+                              const infectivityFactor = attacker.virus.infectivity / 16;<br>
+                              const aggressionFactor = attacker.virus.aggression / 16;<br>
+                              <br>
+                              progressIncrease = (mobilityFactor + infectivityFactor + aggressionFactor) / 3;<br>
+                              <br>
+                              // If there's a defender, reduce progress based on their defense<br>
+                              if (defender) {<br>
+                                const resistanceFactor = defender.virus.resistance / 16;<br>
+                                const defenseFactor = defender.virus.defense / 16;<br>
+                                <br>
+                                // Reduce progress based on defender's parameters<br>
+                                progressIncrease *= (1 - (resistanceFactor + defenseFactor) / 2);<br>
+                              }<br>
+                            }<br>
+                            <br>
+                            // Ensure progress doesn't go negative<br>
+                            progressIncrease = Math.max(0, progressIncrease);<br>
+                            <br>
+                            // Create updated tentacle with new progress<br>
+                            const updatedTentacle = {<br>
+                              ...tentacle,<br>
+                              progress: Math.min(1.0, tentacle.progress + progressIncrease * 0.1) // Slow progress rate<br>
+                            };
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Parameter normalization (dividing by 16), progress calculation based on attacker parameters, defense reduction based on defender parameters, progress clamping between 0 and 1.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Path Calculations:</strong>
+                    <ul>
+                        <li>Computations: Control point calculation for curved tentacles</li>
+                        <li>Processes: Randomized control points for organic appearance</li>
+                        <li>Canvas operations: moveTo(), quadraticCurveTo(), stroke() with dynamic styling</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/components/CanvasGrid.tsx, lines 410-435<br>
+                        <code>
+                            // Calculate control point for a gentle curve<br>
+                            const controlX = startX + (endX - startX) * 0.5 + (Math.random() - 0.5) * cellWidth * 0.5;<br>
+                            const controlY = startY + (endY - startY) * 0.5 + (Math.random() - 0.5) * cellHeight * 0.5;<br>
+                            <br>
+                            // Draw the tentacle using a quadratic curve<br>
+                            ctx.beginPath();<br>
+                            ctx.moveTo(startX, startY);<br>
+                            ctx.quadraticCurveTo(controlX, controlY, endX, endY);<br>
+                            <br>
+                            // Get the player's color for the tentacle<br>
+                            const playerColor = gameState.players[tentacle.owner]?.color || '#FFFFFF';<br>
+                            const rgbColor = hexToRgb(playerColor);<br>
+                            <br>
+                            if (rgbColor) {<br>
+                              // Set transparency based on progress<br>
+                              const alpha = Math.min(1, 0.3 + tentacle.progress * 0.7);<br>
+                              ctx.strokeStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${alpha})`;<br>
+                            } else {<br>
+                              ctx.strokeStyle = `rgba(255, 255, 255, 0.5)`;<br>
+                            }<br>
+                            <br>
+                            // Set line width based on progress<br>
+                            ctx.lineWidth = 1 + 3 * tentacle.progress; // From 1px to 4px<br>
+                            ctx.stroke();
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Quadratic curve control point with random offset, transparency calculation based on progress, line width adjustment based on progress.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Animation Tracking:</strong>
+                    <ul>
+                        <li>Number of elements: Each tentacle tracks its progress (0.0 to 1.0)</li>
+                        <li>Computations: Progress updates based on parameter values</li>
+                        <li>Processes: Parameter-based speed adjustments, completion detection</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 120-140<br>
+                        <code>
+                            // Create updated tentacle with new progress<br>
+                            const updatedTentacle = {<br>
+                              ...tentacle,<br>
+                              progress: Math.min(1.0, tentacle.progress + progressIncrease * 0.1) // Slow progress rate<br>
+                            };<br>
+                            <br>
+                            // If progress is complete, capture the cell<br>
+                            if (updatedTentacle.progress >= 1.0) {<br>
+                              newGrid[updatedTentacle.to.row][updatedTentacle.to.col] = updatedTentacle.owner;<br>
+                              <br>
+                              // Update cell age - new cell born this turn<br>
+                              cellAge[updatedTentacle.to.row][updatedTentacle.to.col] = turn;<br>
+                              <br>
+                              // Add interaction events for the capture<br>
+                              interactionEvents.push({<br>
+                                position: updatedTentacle.to,<br>
+                                type: 'capture',<br>
+                                player: updatedTentacle.owner<br>
+                              });<br>
+                              <br>
+                              // Add interaction event for the defender's cell being attacked<br>
+                              if (defenderOwner !== null) {<br>
+                                interactionEvents.push({<br>
+                                  position: updatedTentacle.to,<br>
+                                  type: 'attack',<br>
+                                  player: defenderOwner<br>
+                                });<br>
+                              }<br>
+                            } else {<br>
+                              // Only keep tentacles that haven't completed their invasion<br>
+                              tentacles.push(updatedTentacle);<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Progress increment with clamping, completion detection, cell capture logic, interaction event creation.</p>
+                </div>
+                
+                <p><strong>Total Impact:</strong> The tentacle system can create a large number of animated elements that require continuous processing. Each tentacle requires path calculations, animation updates, and rendering operations. When many collisions occur simultaneously, the system can quickly reach the tentacle limit, causing performance degradation.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>3. Grid Calculation Complexity During Battle Phases</h2>
+            <div class="details">
+                <p>The Web Worker calculates the next game state with multiple phases:</p>
+                
+                <div class="highlight">
+                    <strong>Phase 0: Tentacle Updates</strong>
+                    <ul>
+                        <li>Number of elements: All existing tentacles</li>
+                        <li>Computations per tentacle: Progress calculation based on attacker/defender parameters</li>
+                        <li>Processes: Parameter evaluation (mobility, infectivity, aggression, resistance, defense)</li>
+                        <li>Operations: Progress update, capture detection, interaction event creation</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 60-145<br>
+                        <code>
+                            // Phase 0: Update existing tentacles<br>
+                            for (const tentacle of existingTentacles) {<br>
+                              // Check if the source cell still exists and belongs to the same owner<br>
+                              const sourceOwner = newGrid[tentacle.from.row][tentacle.from.col];<br>
+                              if (sourceOwner === tentacle.owner) {<br>
+                                // Calculate progress based on attacker and defender parameters<br>
+                                const attacker = players[tentacle.owner];<br>
+                                const defenderOwner = newGrid[tentacle.to.row][tentacle.to.col];<br>
+                                const defender = defenderOwner !== null ? players[defenderOwner] : null;<br>
+                                <br>
+                                // Calculate progress based on parameters<br>
+                                let progressIncrease = 0;<br>
+                                if (attacker) {<br>
+                                  // Attacker's parameters that help invasion<br>
+                                  const mobilityFactor = attacker.virus.mobility / 16;<br>
+                                  const infectivityFactor = attacker.virus.infectivity / 16;<br>
+                                  const aggressionFactor = attacker.virus.aggression / 16;<br>
+                                  <br>
+                                  progressIncrease = (mobilityFactor + infectivityFactor + aggressionFactor) / 3;<br>
+                                  <br>
+                                  // If there's a defender, reduce progress based on their defense<br>
+                                  if (defender) {<br>
+                                    const resistanceFactor = defender.virus.resistance / 16;<br>
+                                    const defenseFactor = defender.virus.defense / 16;<br>
+                                    <br>
+                                    // Reduce progress based on defender's parameters<br>
+                                    progressIncrease *= (1 - (resistanceFactor + defenseFactor) / 2);<br>
+                                  }<br>
+                                }<br>
+                                <br>
+                                // Ensure progress doesn't go negative<br>
+                                progressIncrease = Math.max(0, progressIncrease);<br>
+                                <br>
+                                // Create updated tentacle with new progress<br>
+                                const updatedTentacle = {<br>
+                                  ...tentacle,<br>
+                                  progress: Math.min(1.0, tentacle.progress + progressIncrease * 0.1) // Slow progress rate<br>
+                                };<br>
+                                <br>
+                                // If progress is complete, capture the cell<br>
+                                if (updatedTentacle.progress >= 1.0) {<br>
+                                  newGrid[updatedTentacle.to.row][updatedTentacle.to.col] = updatedTentacle.owner;<br>
+                                  <br>
+                                  // Update cell age - new cell born this turn<br>
+                                  cellAge[updatedTentacle.to.row][updatedTentacle.to.col] = turn;<br>
+                                  <br>
+                                  // Add interaction events for the capture<br>
+                                  interactionEvents.push({<br>
+                                    position: updatedTentacle.to,<br>
+                                    type: 'capture',<br>
+                                    player: updatedTentacle.owner<br>
+                                  });<br>
+                                  <br>
+                                  // Add interaction event for the defender's cell being attacked<br>
+                                  if (defenderOwner !== null) {<br>
+                                    interactionEvents.push({<br>
+                                      position: updatedTentacle.to,<br>
+                                      type: 'attack',<br>
+                                      player: defenderOwner<br>
+                                    });<br>
+                                  }<br>
+                                } else {<br>
+                                  // Only keep tentacles that haven't completed their invasion<br>
+                                  tentacles.push(updatedTentacle);<br>
+                                }<br>
+                              }<br>
+                              // If the source cell no longer belongs to the tentacle owner, the tentacle disappears<br>
+                              // (it's not added to the tents array)<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> For each tentacle: parameter normalization (dividing by 16), progress calculation using weighted average of 3 attacker parameters, defense reduction using weighted average of 2 defender parameters, progress clamping and increment.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Phase 1: Growth Calculations</strong>
+                    <ul>
+                        <li>Number of elements: All occupied grid cells (potentially thousands)</li>
+                        <li>Computations per cell: Parameter evaluation for effects (>10 threshold)</li>
+                        <li>Processes: Check 16 different parameters for each cell</li>
+                        <li>Operations: Add parameter events to the events array</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 150-220<br>
+                        <code>
+                            // Phase 1: Growth - existing cells grow stronger based on parameters<br>
+                            // Only add parameter effects for cells that have high parameter values (> 10)<br>
+                            for (let row = 0; row < rows; row++) {<br>
+                              for (let col = 0; col < cols; col++) {<br>
+                                const owner = newGrid[row][col];<br>
+                                if (owner !== null) {<br>
+                                  const player = players[owner];<br>
+                                  if (player) {<br>
+                                    // Precompute parameter values to avoid repeated access<br>
+                                    const { aggression, defense, speed, stealth, resistance, virulence,<br>
+                                            mutation, adaptability, endurance, mobility, intelligence,<br>
+                                            resilience, infectivity, lethality, stability } = player.virus;<br>
+                                    <br>
+                                    // Add parameter effects based on high parameter values<br>
+                                    if (aggression > 10) {<br>
+                                      parameterEvents.push({ position: { row, col }, type: 'aggression', player: owner });<br>
+                                    }<br>
+                                    if (defense > 10) {<br>
+                                      parameterEvents.push({ position: { row, col }, type: 'defense', player: owner });<br>
+                                    }<br>
+                                    if (speed > 10) {<br>
+                                      parameterEvents.push({ position: { row, col }, type: 'speed', player: owner });<br>
+                                    }<br>
+                                    // ... checks for all 16 parameters<br>
+                                  }<br>
+                                }<br>
+                              }<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> For each occupied cell: 16 parameter comparisons against threshold of 10, potential addition of parameter events to the events array.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Phase 2: Expansion Calculations</strong>
+                    <ul>
+                        <li>Number of elements: All occupied grid cells</li>
+                        <li>Computations per cell: Adjacent cell evaluation, parameter-based behavior</li>
+                        <li>Processes: 
+                            <ul>
+                                <li>High stability behavior (immediate expansion)</li>
+                                <li>Stealth expansion (distant cells)</li>
+                                <li>Mobility-based directional growth</li>
+                                <li>Aggression-based explosive growth</li>
+                                <li>Standard expansion</li>
+                            </ul>
+                        </li>
+                        <li>Operations: Adjacent cell caching, random selection, expansion attempt recording</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 225-450<br>
+                        <code>
+                            // Phase 2: Expansion - cells attempt to spread to adjacent empty cells with parameter-based behavior<br>
+                            const expansionAttempts: {<br>
+                              from: { row: number; col: number };<br>
+                              to: { row: number; col: number };<br>
+                              player: number;<br>
+                            }[] = [];<br>
+                            <br>
+                            // Limit for new tentacles per turn<br>
+                            const MAX_NEW_TENTACLES_PER_TURN = 30;<br>
+                            let newTentacleCount = 0;<br>
+                            <br>
+                            for (let row = 0; row < rows; row++) {<br>
+                              for (let col = 0; col < cols; col++) {<br>
+                                const owner = newGrid[row][col];<br>
+                                if (owner !== null) {<br>
+                                  const player = players[owner];<br>
+                                  if (player) {<br>
+                                    // Precompute parameter values to avoid repeated access<br>
+                                    const { stability, mutation, stealth, mobility, aggression, reproduction, infectivity } = player.virus;<br>
+                                    <br>
+                                    // Check if this player has stability > 10, which overrides other behaviors<br>
+                                    const hasHighStability = stability > 10;<br>
+                                    <br>
+                                    // Handle mutation effects (chaotic borders) - only every 8th turn<br>
+                                    if (mutation > 12 && turn % 8 === 0) {<br>
+                                      // Find all boundary cells of this player<br>
+                                      const boundaryCells = [];<br>
+                                      const adjacentCells = getAdjacentCells(grid, row, col);<br>
+                                      for (const adj of adjacentCells) {<br>
+                                        if (newGrid[adj.row][adj.col] === null) {<br>
+                                          boundaryCells.push(adj);<br>
+                                        }<br>
+                                      }<br>
+                                      <br>
+                                      // Randomly capture or lose a boundary cell<br>
+                                      if (boundaryCells.length > 0 && Math.random() < 0.5) { // 50% chance to do something<br>
+                                        const randomBoundary = boundaryCells[Math.floor(Math.random() * boundaryCells.length)];<br>
+                                        <br>
+                                        if (Math.random() < 0.5) {<br>
+                                          // Capture the boundary cell<br>
+                                          if (newGrid[randomBoundary.row][randomBoundary.col] === null) {<br>
+                                            newGrid[randomBoundary.row][randomBoundary.col] = owner;<br>
+                                          }<br>
+                                        } else {<br>
+                                          // Lose a random cell that belongs to this player (to create "bays")<br>
+                                          const ownedCells = [];<br>
+                                          for (let r = Math.max(0, randomBoundary.row - 2); r < Math.min(rows, randomBoundary.row + 3); r++) {<br>
+                                            for (let c = Math.max(0, randomBoundary.col - 2); c < Math.min(cols, randomBoundary.col + 3); c++) {<br>
+                                              if (newGrid[r][c] === owner) {<br>
+                                                ownedCells.push({row: r, col: c});<br>
+                                              }<br>
+                                            }<br>
+                                          }<br>
+                                          <br>
+                                          if (ownedCells.length > 0) {<br>
+                                            const randomOwned = ownedCells[Math.floor(Math.random() * ownedCells.length)];<br>
+                                            // Only lose the cell if it has at least 2 empty neighbors (to create bays)<br>
+                                            const neighbors = getAdjacentCells(grid, randomOwned.row, randomOwned.col);<br>
+                                            const emptyNeighbors = neighbors.filter(adj => newGrid[adj.row][adj.col] === null);<br>
+                                            if (emptyNeighbors.length >= 2) {<br>
+                                              newGrid[randomOwned.row][randomOwned.col] = null;<br>
+                                            }<br>
+                                          }<br>
+                                        }<br>
+                                      }<br>
+                                    }<br>
+                                    <br>
+                                    // Combined expansion logic with early returns<br>
+                                    if (hasHighStability) {<br>
+                                      // Only expand to immediate adjacent empty cells<br>
+                                      const adjacentCells = getAdjacentCells(grid, row, col);<br>
+                                      const emptyCells = adjacentCells.filter(adj => newGrid[adj.row][adj.col] === null);<br>
+                                      <br>
+                                      if (emptyCells.length > 0) {<br>
+                                        // Select a random empty cell to expand to<br>
+                                        const targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];<br>
+                                        <br>
+                                        // Calculate expansion success chance based on reproduction and infectivity (mobility ignored for stability)<br>
+                                        const reproductionFactor = reproduction / 16;<br>
+                                        const infectivityFactor = infectivity / 16;<br>
+                                        <br>
+                                        // Combined expansion chance<br>
+                                        const expansionChance = (reproductionFactor + infectivityFactor) / 2;<br>
+                                        <br>
+                                        if (Math.random() < expansionChance) {<br>
+                                          expansionAttempts.push({<br>
+                                            from: { row, col },<br>
+                                            to: targetCell,<br>
+                                            player: owner<br>
+                                          });<br>
+                                          expansionEvents.push({<br>
+                                            from: { row, col },<br>
+                                            to: targetCell,<br>
+                                            player: owner<br>
+                                          });<br>
+                                        }<br>
+                                      }<br>
+                                    } else {<br>
+                                      // Handle all expansion types in a single pass with early returns<br>
+                                      const adjacentCells = getAdjacentCells(grid, row, col);<br>
+                                      const emptyCells = adjacentCells.filter(adj => newGrid[adj.row][adj.col] === null);<br>
+                                      <br>
+                                      if (emptyCells.length > 0) {<br>
+                                        // Handle stealth expansion (skip immediate neighbors, look for distant cells)<br>
+                                        if (stealth > 10 && Math.random() < 0.3) { // 30% chance to try stealth expansion<br>
+                                          // Look for empty cells 2-3 steps away<br>
+                                          const distantEmptyCells = [];<br>
+                                          for (let dr = -3; dr <= 3; dr++) {<br>
+                                            for (let dc = -3; dc <= 3; dc++) {<br>
+                                              // Only consider cells that are 2-3 steps away<br>
+                                              if (Math.abs(dr) + Math.abs(dc) >= 2 && Math.abs(dr) + Math.abs(dc) <= 3) {<br>
+                                                const newRow = row + dr;<br>
+                                                const newCol = col + dc;<br>
+                                                <br>
+                                                // Check if within bounds<br>
+                                                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {<br>
+                                                  // Check if cell is empty<br>
+                                                  if (newGrid[newRow][newCol] === null) {<br>
+                                                    // Check if there's a path to this cell (simplified: check if at least one intermediate cell is owned)<br>
+                                                    const pathCells = [];<br>
+                                                    const steps = Math.max(Math.abs(dr), Math.abs(dc));<br>
+                                                    for (let step = 1; step <= steps; step++) {<br>
+                                                      const pathRow = row + Math.round(dr * step / steps);<br>
+                                                      const pathCol = col + Math.round(dc * step / steps);<br>
+                                                      <br>
+                                                      if (pathRow >= 0 && pathRow < rows && pathCol >= 0 && pathCol < cols) {<br>
+                                                        pathCells.push({row: pathRow, col: pathCol});<br>
+                                                      }<br>
+                                                    }<br>
+                                                    <br>
+                                                    // If at least one path cell is owned by this player, consider it a valid target<br>
+                                                    const hasValidPath = pathCells.some(pathCell =><br>
+                                                      newGrid[pathCell.row][pathCell.col] === owner<br>
+                                                    );<br>
+                                                    <br>
+                                                    if (hasValidPath) {<br>
+                                                      distantEmptyCells.push({row: newRow, col: newCol});<br>
+                                                    }<br>
+                                                  }<br>
+                                                }<br>
+                                              }<br>
+                                            }<br>
+                                          }<br>
+                                          <br>
+                                          if (distantEmptyCells.length > 0) {<br>
+                                            const targetCell = distantEmptyCells[Math.floor(Math.random() * distantEmptyCells.length)];<br>
+                                            <br>
+                                            // Calculate expansion success chance based on stealth and infectivity<br>
+                                            const stealthFactor = stealth / 16;<br>
+                                            const infectivityFactor = infectivity / 16;<br>
+                                            <br>
+                                            const expansionChance = (stealthFactor + infectivityFactor) / 2;<br>
+                                            <br>
+                                            if (Math.random() < expansionChance) {<br>
+                                              expansionAttempts.push({<br>
+                                                from: { row, col },<br>
+                                                to: targetCell,<br>
+                                                player: owner<br>
+                                              });<br>
+                                              expansionEvents.push({<br>
+                                                from: { row, col },<br>
+                                                to: targetCell,<br>
+                                                player: owner<br>
+                                              });<br>
+                                            }<br>
+                                          }<br>
+                                        }<br>
+                                        // Handle mobility-based directional growth<br>
+                                        else if (mobility > 10) {<br>
+                                          // If no preferred direction is set, choose one randomly<br>
+                                          if (!player.preferredDirection) {<br>
+                                            const directions: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];<br>
+                                            player.preferredDirection = directions[Math.floor(Math.random() * directions.length)];<br>
+                                          }<br>
+                                          <br>
+                                          // Get adjacent cells with preference for the preferred direction<br>
+                                          const emptyCells = adjacentCells.filter(adj => newGrid[adj.row][adj.col] === null);<br>
+                                          <br>
+                                          if (emptyCells.length > 0) {<br>
+                                            // Calculate expansion success chance based on reproduction, mobility and infectivity<br>
+                                            const reproductionFactor = reproduction / 16;<br>
+                                            const mobilityFactor = mobility / 16;<br>
+                                            const infectivityFactor = infectivity / 16;<br>
+                                            <br>
+                                            // Combined expansion chance<br>
+                                            const expansionChance = (reproductionFactor + mobilityFactor + infectivityFactor) / 3;<br>
+                                            <br>
+                                            if (Math.random() < expansionChance) {<br>
+                                              // Prefer cells in the preferred direction<br>
+                                              let targetCell;<br>
+                                              if (player.preferredDirection) {<br>
+                                                const preferredCells = emptyCells.filter(adj =><br>
+                                                  adj.row === row + player.preferredDirection![0] &&<br>
+                                                  adj.col === col + player.preferredDirection![1]<br>
+                                                );<br>
+                                                <br>
+                                                if (preferredCells.length > 0 && Math.random() < 0.7) { // 70% chance to follow preferred direction<br>
+                                                  targetCell = preferredCells[Math.floor(Math.random() * preferredCells.length)];<br>
+                                                } else {<br>
+                                                  targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];<br>
+                                                }<br>
+                                              } else {<br>
+                                                targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];<br>
+                                              }<br>
+                                              <br>
+                                              expansionAttempts.push({<br>
+                                                from: { row, col },<br>
+                                                to: targetCell,<br>
+                                                player: owner<br>
+                                              });<br>
+                                              expansionEvents.push({<br>
+                                                from: { row, col },<br>
+                                                to: targetCell,<br>
+                                                player: owner<br>
+                                              });<br>
+                                            }<br>
+                                          }<br>
+                                        }<br>
+                                        // Handle aggression-based explosive growth<br>
+                                        else if (aggression > 12 && Math.random() < 0.2) { // 20% chance for explosive growth<br>
+                                          // Try to capture 2-3 adjacent empty cells in one direction<br>
+                                          if (emptyCells.length >= 2) {<br>
+                                            // Pick a random direction<br>
+                                            const directions: { [key: string]: { row: number; col: number }[] } = {};<br>
+                                            for (const cell of emptyCells) {<br>
+                                              const dr = cell.row - row;<br>
+                                              const dc = cell.col - col;<br>
+                                              const dirKey = `${dr},${dc}`;<br>
+                                              <br>
+                                              if (!directions[dirKey]) {<br>
+                                                directions[dirKey] = [];<br>
+                                              }<br>
+                                              directions[dirKey].push(cell);<br>
+                                            }<br>
+                                            <br>
+                                            const dirKeys = Object.keys(directions);<br>
+                                            if (dirKeys.length > 0) {<br>
+                                              const randomDirKey = dirKeys[Math.floor(Math.random() * dirKeys.length)];<br>
+                                              const cellsInDirection = directions[randomDirKey];<br>
+                                              <br>
+                                              // Try to capture up to 3 cells in this direction<br>
+                                              const maxCellsToCapture = Math.min(3, cellsInDirection.length);<br>
+                                              const cellsToCapture = cellsInDirection.slice(0, maxCellsToCapture);<br>
+                                              <br>
+                                              for (const cell of cellsToCapture) {<br>
+                                                if (newGrid[cell.row][cell.col] === null && Math.random() < 0.7) { // 70% success rate<br>
+                                                  newGrid[cell.row][cell.col] = owner;<br>
+                                                  <br>
+                                                  // Update cell age - new cell born this turn<br>
+                                                  cellAge[cell.row][cell.col] = turn;<br>
+                                                  <br>
+                                                  // Add expansion event<br>
+                                                  expansionEvents.push({<br>
+                                                    from: { row, col },<br>
+                                                    to: cell,<br>
+                                                    player: owner<br>
+                                                  });<br>
+                                                }<br>
+                                              }<br>
+                                            }<br>
+                                          }<br>
+                                        }<br>
+                                        // Standard expansion for other viruses<br>
+                                        else {<br>
+                                          // Calculate expansion success chance based on reproduction and mobility parameters<br>
+                                          const reproductionFactor = reproduction / 16;<br>
+                                          const mobilityFactor = mobility / 16;<br>
+                                          const infectivityFactor = infectivity / 16;<br>
+                                          <br>
+                                          // Combined expansion chance<br>
+                                          const expansionChance = (reproductionFactor + mobilityFactor + infectivityFactor) / 3;<br>
+                                          <br>
+                                          if (Math.random() < expansionChance) {<br>
+                                            // Select a random empty cell to expand to<br>
+                                            const targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];<br>
+                                            <br>
+                                            expansionAttempts.push({<br>
+                                              from: { row, col },<br>
+                                              to: targetCell,<br>
+                                              player: owner<br>
+                                            });<br>
+                                            expansionEvents.push({<br>
+                                              from: { row, col },<br>
+                                              to: targetCell,<br>
+                                              player: owner<br>
+                                            });<br>
+                                          }<br>
+                                        }<br>
+                                      }<br>
+                                    }<br>
+                                  }<br>
+                                }<br>
+                              }<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> For each occupied cell: adjacent cell calculations using getAdjacentCells function, parameter-based behavior selection, probability calculations for different expansion types, random target selection, success probability calculations based on normalized parameters.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Phase 3: Combat Calculations</strong>
+                    <ul>
+                        <li>Number of elements: All occupied grid cells with adjacent opponents</li>
+                        <li>Computations per cell: Opponent detection, tentacle creation validation</li>
+                        <li>Processes: Check for existing tentacles, validate new tentacle creation</li>
+                        <li>Operations: Tentacle creation with progress tracking</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 455-505<br>
+                        <code>
+                            // Phase 3: Combat - cells battle with adjacent opponent cells using tentacles<br>
+                            // Use a Map for faster lookup of existing tentacles<br>
+                            const existingTentacleMap = new Map<string, Tentacle>();<br>
+                            for (const tentacle of existingTentacles) {<br>
+                              const key = `${tentacle.from.row},${tentacle.from.col},${tentacle.to.row},${tentacle.to.col},${tentacle.owner}`;<br>
+                              existingTentacleMap.set(key, tentacle);<br>
+                            }<br>
+                            <br>
+                            for (let row = 0; row < rows; row++) {<br>
+                              for (let col = 0; col < cols; col++) {<br>
+                                const owner = newGrid[row][col];<br>
+                                if (owner !== null) {<br>
+                                  const player = players[owner];<br>
+                                  if (player) {<br>
+                                    // Get adjacent opponent cells<br>
+                                    const adjacentCells = getAdjacentCells(grid, row, col);<br>
+                                    const opponentCells = adjacentCells.filter(adj => {<br>
+                                      const cellOwner = newGrid[adj.row][adj.col];<br>
+                                      return cellOwner !== null && cellOwner !== owner;<br>
+                                    });<br>
+                                    <br>
+                                    // Attempt to attack opponent cells<br>
+                                    if (opponentCells.length > 0 && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {<br>
+                                      // Select a random opponent cell to attack<br>
+                                      const targetCell = opponentCells[Math.floor(Math.random() * opponentCells.length)];<br>
+                                      const defender = newGrid[targetCell.row][targetCell.col]!;<br>
+                                      <br>
+                                      // Create a key for this potential tentacle<br>
+                                      const tentacleKey = `${row},${col},${targetCell.row},${targetCell.col},${owner}`;<br>
+                                      <br>
+                                      // Check if a tentacle already exists for this from->to pair<br>
+                                      if (!existingTentacleMap.has(tentacleKey) && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {<br>
+                                        const newTentacle: Tentacle = {<br>
+                                          id: `tentacle-${Date.now()}-${Math.random()}`,<br>
+                                          from: { row, col },<br>
+                                          to: targetCell,<br>
+                                          owner: owner,<br>
+                                          progress: 0.05, // Start with a small progress<br>
+                                          type: 'invasion'<br>
+                                        };<br>
+                                        <br>
+                                        tentacles.push(newTentacle);<br>
+                                        newTentacleCount++;<br>
+                                      }<br>
+                                    }<br>
+                                  }<br>
+                                }<br>
+                              }<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> For each occupied cell: adjacent cell evaluation to find opponents, tentacle key generation for duplicate checking, random opponent selection, tentacle creation with progress initialization.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>Territory Counting</strong>
+                    <ul>
+                        <li>Number of elements: All grid cells</li>
+                        <li>Computations: Count cells per player</li>
+                        <li>Operations: Iterate through entire grid, increment counters</li>
+                    </ul>
+                    
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts, lines 507-515<br>
+                        <code>
+                            // Count territories for each player<br>
+                            const territoryCounts = [0, 0, 0, 0];<br>
+                            for (let row = 0; row < rows; row++) {<br>
+                              for (let col = 0; col < cols; col++) {<br>
+                                const owner = newGrid[row][col];<br>
+                                if (owner !== null && owner >= 0 && owner < 4) {<br>
+                                  territoryCounts[owner]++;<br>
+                                }<br>
+                              }<br>
+                            }
+                        </code>
+                    </div>
+                    
+                    <p><strong>Calculations:</strong> Simple iteration through the entire grid (100x50 = 5000 cells), incrementing territory counters for each player.</p>
+                </div>
+                
+                <p><strong>Total Impact:</strong> The grid calculation involves processing every cell in the 100x50 grid (5000 cells) multiple times across different phases. With multiple collisions, the number of calculations increases significantly as more cells become involved in combat, expansion, and tentacle creation. The Web Worker helps by offloading these calculations from the main thread, but complex battle scenarios can still cause delays in state updates.</p>
+            </div>
+        </div>
+        
+        <div class="process">
+            <h2>Performance Optimization Recommendations</h2>
+            <div class="details">
+                <ul>
+                    <li>Implement more aggressive culling of visual effects during high-intensity battles</li>
+                    <li>Reduce tentacle creation rate during dense combat situations</li>
+                    <li>Optimize adjacent cell calculations with better caching strategies</li>
+                    <li>Implement level-of-detail system for visual effects based on battle intensity</li>
+                    <li>Add performance scaling options to reduce computational load</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

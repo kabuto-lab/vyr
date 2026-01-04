@@ -94,6 +94,7 @@ interface GameStore {
     addExpansionPathEffect: (from: { row: number; col: number }, to: { row: number; col: number }, player: number) => void;
     addExpansionTargetEffect: (position: { row: number; col: number }, player: number) => void;
     updateSettings: (settings: Partial<GameSettings>) => void;
+    calculateFPS: () => void;
   };
 }
 
@@ -347,6 +348,7 @@ export const useGameStore = create<GameStore>((set) => ({
       // Get the player's color from the store
       const playerColor = store.gameState.players[player]?.color || '#FFFFFF';
 
+      // Create the original interaction effect
       const effect = {
         id: `interaction-${type}-${Date.now()}-${Math.random()}`,
         type: type as any,
@@ -357,10 +359,31 @@ export const useGameStore = create<GameStore>((set) => ({
         player,
         startTime: Date.now()
       };
+
+      // Create a wave effect for capture and attack events
+      let waveEffect = null;
+      if (type === 'capture' || type === 'attack') {
+        waveEffect = {
+          id: `wave-${type}-${Date.now()}-${Math.random()}`,
+          type: 'wave' as const,
+          position: { x: position.col, y: position.row },
+          duration: 1800, // 3x longer duration for the wave effect
+          intensity: 1,
+          color: playerColor, // Use the player's virus color
+          player,
+          startTime: Date.now()
+        };
+      }
+
+      const newEffects = [...store.gameState.visualEffects, effect];
+      if (waveEffect) {
+        newEffects.push(waveEffect);
+      }
+
       return {
         gameState: {
           ...store.gameState,
-          visualEffects: [...store.gameState.visualEffects, effect]
+          visualEffects: newEffects
         }
       };
     }),

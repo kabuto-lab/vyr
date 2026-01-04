@@ -1,3 +1,16 @@
+/**
+ * Main Game Component
+ *
+ * Основной компонент игры
+ *
+ * This is the main game component that manages the overall game state, controls
+ * the simulation loop, handles Web Worker communication for grid calculations,
+ * and orchestrates the different game phases (setup, battle, game over).
+ *
+ * Это основной компонент игры, который управляет общим состоянием игры, контролирует
+ * цикл симуляции, обрабатывает связь с веб-воркером для расчетов сетки и координирует
+ * различные фазы игры (настройка, битва, конец игры).
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { validateParameterAllocation } from '../utils/parameterValidation';
@@ -72,6 +85,23 @@ const Game: React.FC = () => {
           if (e.data.interactionEvents) {
             e.data.interactionEvents.forEach((event: any) => {
               actions.addInteractionEffect(event.position, event.type, event.player);
+            });
+          }
+
+          // Handle wave effects from the worker
+          if (e.data.waveEffects) {
+            e.data.waveEffects.forEach((waveEffect: any) => {
+              // Add the wave effect to the store
+              actions.addVisualEffect({
+                id: waveEffect.id,
+                type: waveEffect.type,
+                position: { x: waveEffect.position.x, y: waveEffect.position.y },
+                duration: waveEffect.duration,
+                intensity: waveEffect.intensity,
+                color: waveEffect.color,
+                player: waveEffect.player,
+                startTime: waveEffect.startTime
+              });
             });
           }
         }
@@ -251,10 +281,10 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-33p bg-gray-800 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60]`}>
-        <div className="p-4 border-b border-gray-700">
+      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60]`}>
+        <div className="p-4 border-b border-white border-opacity-20">
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-bold font-pixy">Configure:</h2>
+            <h2 className="text-xl font-bold font-pixy text-white">Configure:</h2>
             {/* Player Selection Tabs */}
             <div className="flex">
               {gameState.players.map((player, idx) => (
@@ -264,7 +294,7 @@ const Game: React.FC = () => {
                   className={`px-3 py-2 text-xl font-bold font-pixy relative ${
                     selectedPlayer === idx
                       ? 'border-t-2 border-white text-white'
-                      : 'text-gray-400 hover:text-white'
+                      : 'text-gray-300 hover:text-white'
                   }`}
                   style={{
                     borderColor: selectedPlayer === idx ? player.color : 'transparent',
@@ -300,8 +330,8 @@ const Game: React.FC = () => {
                 disabled={!gameState.players.every(p => p.isReady)}
                 className={`w-full py-2 px-4 font-pixy border-2 rounded-lg ${
                   gameState.players.every(p => p.isReady)
-                    ? 'bg-green-600 border-green-800 text-white hover:bg-green-700'
-                    : 'bg-gray-600 border-gray-800 text-gray-400 cursor-not-allowed'
+                    ? 'bg-green-600 bg-opacity-70 border-green-800 text-white hover:bg-green-700'
+                    : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
                 }`}
               >
                 START BATTLE
@@ -312,37 +342,37 @@ const Game: React.FC = () => {
       </div>
 
       {/* Right Off-canvas menu - Game Controls */}
-      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-33p bg-gray-800 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60]`}>
-        <div className="p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Game Controls</h2>
+      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60]`}>
+        <div className="p-4 border-b border-white border-opacity-20">
+          <h2 className="text-xl font-bold text-white">Game Controls</h2>
         </div>
         <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-294px)]">
           <GameControls />
         </div>
-        <div className="p-4 border-t border-gray-700 bg-gray-900">
+        <div className="p-4 border-t border-white border-opacity-20 bg-black bg-opacity-30">
           <div className="flex justify-between mb-2">
-            <span>Turn:</span>
-            <span className="font-mono">{gameState.turn}</span>
+            <span className="text-white">Turn:</span>
+            <span className="font-mono text-white">{gameState.turn}</span>
           </div>
           <div className="flex justify-between mb-2">
-            <span>Phase:</span>
-            <span className="font-mono">{gameState.phase}</span>
+            <span className="text-white">Phase:</span>
+            <span className="font-mono text-white">{gameState.phase}</span>
           </div>
           <div className="flex justify-between">
-            <span>State:</span>
-            <span className="font-mono">{gameState.gameState.toUpperCase()}</span>
+            <span className="text-white">State:</span>
+            <span className="font-mono text-white">{gameState.gameState.toUpperCase()}</span>
           </div>
         </div>
-        <div className="p-4 border-t border-gray-700 space-y-2">
+        <div className="p-4 border-t border-white border-opacity-20 space-y-2">
           <button
             onClick={actions.resetGame}
-            className="w-full py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 border-red-800 text-white hover:bg-red-700"
+            className="w-full py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
           >
             RESET GAME
           </button>
           <button
             onClick={testBattle}
-            className="w-full py-2 px-4 font-pixy border-2 rounded-lg bg-purple-600 border-purple-800 text-white hover:bg-purple-700"
+            className="w-full py-2 px-4 font-pixy border-2 rounded-lg bg-purple-600 bg-opacity-70 border-purple-800 text-white hover:bg-purple-700"
           >
             TEST BATTLE
           </button>
