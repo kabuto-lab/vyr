@@ -238,7 +238,7 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl`}>
+      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-[66%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl`}>
         <div className="p-4 border-b border-white border-opacity-20">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-bold font-pixy text-white">Configure:</h2>
@@ -299,7 +299,7 @@ const Game: React.FC = () => {
       </div>
 
       {/* Right Off-canvas menu - Game Controls */}
-      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-33p bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl`}>
+      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-[66%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl`}>
         <div className="p-4 border-b border-white border-opacity-20 flex justify-between items-center">
           <h2 className="text-xl font-bold font-pixy text-white">Controls</h2>
           <div className="flex space-x-2">
@@ -322,11 +322,11 @@ const Game: React.FC = () => {
         </div>
       </div>
 
-      {/* LAB and MENU buttons below the main content area */}
-      <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-4 z-[70]">
+      {/* LAB and MENU buttons at the very bottom of the screen */}
+      <div className="fixed bottom-1 left-1/2 transform -translate-x-1/2 flex space-x-4 z-[70]">
         <button
           onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-          className="py-3 px-6 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
+          className="py-2 px-5 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
           style={{
             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
           }}
@@ -337,7 +337,7 @@ const Game: React.FC = () => {
         </button>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="py-3 px-6 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
+          className="py-2 px-5 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
           style={{
             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
           }}
