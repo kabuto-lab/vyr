@@ -179,6 +179,37 @@ const Game: React.FC = () => {
     }
   };
 
+  // Randomize player parameters
+  const randomizePlayerParameters = () => {
+    if (gameState.gameState !== 'setup') return;
+
+    // Create a copy of the current player's virus parameters
+    const currentParams = { ...gameState.players[selectedPlayer].virus };
+
+    // Reset all parameters to 0
+    Object.keys(currentParams).forEach(param => {
+      currentParams[param as keyof typeof currentParams] = 0;
+    });
+
+    // Distribute 16 points randomly among the parameters
+    let pointsLeft = 16;
+    while (pointsLeft > 0) {
+      const paramKeys = Object.keys(currentParams) as (keyof typeof currentParams)[];
+      const randomParam = paramKeys[Math.floor(Math.random() * paramKeys.length)];
+
+      // Only add a point if it doesn't exceed the maximum (16) and we have points left
+      if (currentParams[randomParam] < 16) {
+        currentParams[randomParam]++;
+        pointsLeft--;
+      }
+    }
+
+    // Update each parameter individually
+    Object.entries(currentParams).forEach(([param, value]) => {
+      handleParameterChange(param as keyof typeof currentParams, value);
+    });
+  };
+
   // Start battle
   const startBattle = () => {
     if (gameState.players.every(player => player.isReady)) {
@@ -226,7 +257,7 @@ const Game: React.FC = () => {
         FPS: {gameState.performance.fps.toFixed(2)}
       </div>
 
-      <div className={`grid-container-adjusted ${leftMenuOpen && menuOpen ? 'ml-[4%] mr-[50%] md:ml-[25%] md:mr-[25%]' : leftMenuOpen ? 'ml-[92%] md:ml-[50%]' : menuOpen ? 'mr-[50%]' : ''}`}>
+      <div className={`grid-container-adjusted ${leftMenuOpen ? 'ml-[92%] md:ml-[50%]' : ''}`}>
 
         {/* Center - Game Grid */}
         <div className="center-panel relative z-0 flex-1">
@@ -241,143 +272,129 @@ const Game: React.FC = () => {
 
       {/* Left Off-canvas menu - Virus Configuration */}
       <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-[92%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
-        <div className="p-4 border-b border-white border-opacity-20">
-          <div className="flex justify-between items-center mb-2">
-            {/* Player Selection Tabs - floating left */}
-            <div className="flex flex-wrap">
-              {gameState.players.map((player, idx) => (
-                <button
-                  key={player.id}
-                  onClick={() => setSelectedPlayer(idx)}
-                  className={`px-2 py-1 text-sm font-bold font-pixy relative ${
-                    selectedPlayer === idx
-                      ? 'border-t-2 border-white text-white'
-                      : 'text-gray-300 hover:text-white'
-                  }`}
-                  style={{
-                    borderColor: selectedPlayer === idx ? player.color : 'transparent',
-                    color: selectedPlayer === idx ? player.color : undefined
-                  }}
-                >
-                  {t('virus')} {idx + 1}
-                  {selectedPlayer === idx && (
-                    <span className={`absolute -bottom-4 left-0 right-0 text-center text-xs ${
-                      pointsLeft === 0 ? 'text-green-400' : 'text-yellow-400'
-                    }`}>
-                      {pointsLeft}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
+        <div className="p-4 border-b border-white border-opacity-20 overflow-x-auto">
+          {/* Row 1: Player tabs */}
+          <div className="flex flex-nowrap space-x-2 mb-4">
+            {gameState.players.map((player, idx) => (
+              <button
+                key={player.id}
+                onClick={() => setSelectedPlayer(idx)}
+                className={`px-3 py-2 text-sm font-bold font-pixy whitespace-nowrap relative ${
+                  selectedPlayer === idx
+                    ? 'border-t-2 border-white text-white'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+                style={{
+                  borderColor: selectedPlayer === idx ? player.color : 'transparent',
+                  color: selectedPlayer === idx ? player.color : undefined
+                }}
+              >
+                {t('virus')} {idx + 1}
+                {selectedPlayer === idx && (
+                  <span className={`absolute -bottom-4 left-0 right-0 text-center text-xs ${
+                    pointsLeft === 0 ? 'text-green-400' : 'text-yellow-400'
+                  }`}>
+                    {pointsLeft}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
-          {/* Test and Reset buttons */}
-          <div className="flex space-x-2 mb-2">
+
+          {/* Row 2: Parameter configuration panel */}
+          <div className="mb-4">
+            <ParameterPanel
+              player={gameState.players[selectedPlayer]}
+              pointsLeft={pointsLeft}
+              onParameterChange={handleParameterChange}
+              onPlayerReady={handlePlayerReady}
+              gameState={gameState.gameState}
+            />
+          </div>
+
+          {/* Row 3: Action buttons */}
+          <div className="grid grid-cols-2 gap-2 mb-4">
             <button
-              onClick={actions.testBattle}
-              className="py-1 px-2 rounded bg-purple-600 hover:bg-purple-700 text-xs"
+              onClick={handlePlayerReady}
+              className={`py-2 px-4 font-pixy border-2 rounded-lg ${
+                validateParameterAllocation(gameState.players[selectedPlayer].virus).isValid
+                  ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white hover:bg-blue-700'
+                  : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
+              }`}
             >
-              {t('test')}
+              {gameState.players[selectedPlayer].isReady ? t('ready') : t('markReady')}
+            </button>
+            <button
+              onClick={randomizePlayerParameters}
+              className="py-2 px-4 font-pixy border-2 rounded-lg bg-purple-600 bg-opacity-70 border-purple-800 text-white hover:bg-purple-700"
+            >
+              {t('randomize')}
+            </button>
+            <button
+              onClick={startBattle}
+              disabled={!gameState.players.every(p => p.isReady)}
+              className={`col-span-2 py-2 px-4 font-pixy border-2 rounded-lg ${
+                gameState.players.every(p => p.isReady)
+                  ? 'bg-green-600 bg-opacity-70 border-green-800 text-white hover:bg-green-700'
+                  : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              {t('startBattle')}
             </button>
             <button
               onClick={actions.resetGame}
-              className="py-1 px-2 rounded bg-red-600 hover:bg-red-700 text-xs"
+              className="col-span-2 py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
             >
               {t('reset')}
             </button>
           </div>
-          {/* Speed buttons */}
-          <div className="flex space-x-2 mb-2">
+
+          {/* Row 4: Control buttons */}
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={actions.togglePause}
+              className={`py-2 px-4 font-pixy border-2 rounded-lg ${
+                gameState.isPaused
+                  ? 'bg-green-600 bg-opacity-70 border-green-800 text-white hover:bg-green-700'
+                  : 'bg-yellow-600 bg-opacity-70 border-yellow-800 text-white hover:bg-yellow-700'
+              }`}
+            >
+              {gameState.isPaused ? t('resume') : t('pause')}
+            </button>
             <button
               onClick={() => actions.setSimulationSpeed(16)}
-              className={`py-1 px-2 rounded ${
+              className={`py-2 px-4 font-pixy border-2 rounded-lg ${
                 gameState.simulationSpeed === 16
-                  ? 'bg-blue-600'
-                  : 'bg-gray-600 hover:bg-gray-500'
+                  ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white'
+                  : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'
               }`}
             >
               16x
             </button>
             <button
               onClick={() => actions.setSimulationSpeed(64)}
-              className={`py-1 px-2 rounded ${
+              className={`py-2 px-4 font-pixy border-2 rounded-lg ${
                 gameState.simulationSpeed === 64
-                  ? 'bg-blue-600'
-                  : 'bg-gray-600 hover:bg-gray-500'
+                  ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white'
+                  : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'
               }`}
             >
               64x
             </button>
-          </div>
-        </div>
-        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-182px)] left-sidebar">
-          <ParameterPanel
-            player={gameState.players[selectedPlayer]}
-            pointsLeft={pointsLeft}
-            onParameterChange={handleParameterChange}
-            onPlayerReady={handlePlayerReady}
-            gameState={gameState.gameState}
-          />
-
-          {gameState.gameState === 'setup' && (
-            <div className="mt-4 flex space-x-2"> {/* Buttons in one row */}
-              <button
-                onClick={handlePlayerReady}
-                className={`flex-1 py-2 px-4 font-pixy border-2 rounded-lg ${
-                  validateParameterAllocation(gameState.players[selectedPlayer].virus).isValid
-                    ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white hover:bg-blue-700'
-                    : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                {gameState.players[selectedPlayer].isReady ? t('ready') : t('markReady')}
-              </button>
-              <button
-                onClick={startBattle}
-                disabled={!gameState.players.every(p => p.isReady)}
-                className={`flex-1 py-2 px-4 font-pixy border-2 rounded-lg ${
-                  gameState.players.every(p => p.isReady)
-                    ? 'bg-green-600 bg-opacity-70 border-green-800 text-white hover:bg-green-700'
-                    : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                {t('startBattle')}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Right Off-canvas menu - Game Controls */}
-      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl right-sidebar`}>
-        <div className="p-4 border-b border-white border-opacity-20 flex justify-between items-center">
-          <h2 className="text-xl font-bold font-pixy text-white">{t('controls')}</h2>
-          <div className="flex space-x-2">
-            <button
-              onClick={actions.testBattle}
-              className="py-1 px-2 rounded bg-purple-600 hover:bg-purple-700 text-xs"
-            >
-              {t('test')}
-            </button>
             <button
               onClick={actions.resetGame}
-              className="py-1 px-2 rounded bg-red-600 hover:bg-red-700 text-xs"
+              className="col-span-3 py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700 mt-2"
             >
               {t('reset')}
             </button>
           </div>
         </div>
-        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-182px)] right-sidebar">
-          <GameControls />
-        </div>
       </div>
 
-      {/* LAB button at the top right corner */}
+      {/* LAB button at the top-right corner */}
       <button
-        onClick={() => {
-          setLeftMenuOpen(!leftMenuOpen);
-          if (!leftMenuOpen && menuOpen) setMenuOpen(false); // Close right menu if opening left menu
-        }}
-        className="fixed top-4 right-4 py-2 px-5 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden z-[70]"
+        onClick={() => setLeftMenuOpen(!leftMenuOpen)}
+        className="fixed top-4 right-4 z-[70] py-2 px-5 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
         style={{
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
         }}
@@ -386,24 +403,6 @@ const Game: React.FC = () => {
         <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
         <span className="relative z-10">{t('lab')}</span>
       </button>
-
-      {/* MENU button at the bottom center */}
-      <div className="fixed bottom-1 left-1/2 transform -translate-x-1/2 flex space-x-4 z-[70]">
-        <button
-          onClick={() => {
-            setMenuOpen(!menuOpen);
-            if (!menuOpen && leftMenuOpen) setLeftMenuOpen(false); // Close left menu if opening right menu
-          }}
-          className="py-2 px-5 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
-          style={{
-            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-          <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
-          <span className="relative z-10">{t('menu')}</span>
-        </button>
-      </div>
 
       {/* Player Territory Indicators at the very bottom of the screen */}
       <div className="fixed bottom-0 left-0 right-0 flex px-4 space-x-2 z-[65]">
