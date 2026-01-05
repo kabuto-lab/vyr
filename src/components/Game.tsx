@@ -341,12 +341,6 @@ const Game: React.FC = () => {
             >
               {t('startBattle')}
             </button>
-            <button
-              onClick={actions.resetGame}
-              className="col-span-2 py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
-            >
-              {t('reset')}
-            </button>
           </div>
 
           {/* Row 4: Control buttons */}
@@ -381,20 +375,14 @@ const Game: React.FC = () => {
             >
               64x
             </button>
-            <button
-              onClick={actions.resetGame}
-              className="col-span-3 py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700 mt-2"
-            >
-              {t('reset')}
-            </button>
           </div>
         </div>
       </div>
 
-      {/* LAB button at the top-right corner */}
+      {/* LAB button at the bottom left corner - circular */}
       <button
         onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-        className="fixed top-4 right-4 z-[70] py-2 px-5 bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-xl font-pixy text-lg transition-all duration-200 relative overflow-hidden"
+        className="fixed bottom-4 left-4 z-[70] w-14 h-14 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-base transition-all duration-200 relative overflow-hidden"
         style={{
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
         }}
