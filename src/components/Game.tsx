@@ -224,7 +224,7 @@ const Game: React.FC = () => {
         FPS: {gameState.performance.fps.toFixed(2)}
       </div>
 
-      <div className="grid-container">
+      <div className={`grid-container-adjusted ${leftMenuOpen && menuOpen ? 'ml-[25%] mr-[25%]' : leftMenuOpen ? 'ml-[50%]' : menuOpen ? 'mr-[50%]' : ''}`}>
 
         {/* Center - Game Grid */}
         <div className="center-panel relative z-0 flex-1">
@@ -238,7 +238,7 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-[66%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl`}>
+      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl`}>
         <div className="p-4 border-b border-white border-opacity-20">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-bold font-pixy text-white">Configure:</h2>
@@ -271,7 +271,7 @@ const Game: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-182px)]">
+        <div className="p-4 overflow-y-scroll flex-grow flex flex-col h-[calc(97.5vh-182px)]">
           <ParameterPanel
             player={gameState.players[selectedPlayer]}
             pointsLeft={pointsLeft}
@@ -299,7 +299,7 @@ const Game: React.FC = () => {
       </div>
 
       {/* Right Off-canvas menu - Game Controls */}
-      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-[66%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl`}>
+      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl`}>
         <div className="p-4 border-b border-white border-opacity-20 flex justify-between items-center">
           <h2 className="text-xl font-bold font-pixy text-white">Controls</h2>
           <div className="flex space-x-2">
@@ -317,7 +317,7 @@ const Game: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-182px)]">
+        <div className="p-4 overflow-y-scroll flex-grow flex flex-col h-[calc(97.5vh-182px)]">
           <GameControls />
         </div>
       </div>
