@@ -13,6 +13,7 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useLanguageStore } from '../store/languageStore';
 import { validateParameterAllocation } from '../utils/parameterValidation';
 import CanvasGridOptimized from './CanvasGridOptimized';
 import ParameterPanel from './ParameterPanel';
@@ -21,6 +22,7 @@ import { VirusParameters } from '../types/game';
 
 const Game: React.FC = () => {
   const { gameState, actions } = useGameStore();
+  const { t } = useLanguageStore();
   const [selectedPlayer, setSelectedPlayer] = useState(0);
   const [pointsLeft, setPointsLeft] = useState(16);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -220,9 +222,13 @@ const Game: React.FC = () => {
   return (
     <>
       {/* FPS Counter */}
-      <div className="absolute top-4 left-4 z-[100] bg-black bg-opacity-50 text-white px-2 py-1 rounded font-mono text-sm">
-        FPS: {gameState.performance.fps.toFixed(2)}
-      </div>
+      {/* FPS Counter - hidden in fullscreen mobile mode */}
+      {!(gameState.gameState === 'battle' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) &&
+         (window.innerHeight === screen.height && window.innerWidth === screen.width)) && (
+        <div className="absolute top-4 left-4 z-[100] bg-black bg-opacity-50 text-white px-2 py-1 rounded font-mono text-sm">
+          FPS: {gameState.performance.fps.toFixed(2)}
+        </div>
+      )}
 
       <div className={`grid-container-adjusted ${leftMenuOpen && menuOpen ? 'ml-[25%] mr-[25%]' : leftMenuOpen ? 'ml-[50%]' : menuOpen ? 'mr-[50%]' : ''}`}>
 
@@ -238,10 +244,10 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl`}>
+      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
         <div className="p-4 border-b border-white border-opacity-20">
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-bold font-pixy text-white">Configure:</h2>
+            <h2 className="text-xl font-bold font-pixy text-white">{t('configure')}</h2>
             {/* Player Selection Tabs */}
             <div className="flex">
               {gameState.players.map((player, idx) => (
@@ -258,7 +264,7 @@ const Game: React.FC = () => {
                     color: selectedPlayer === idx ? player.color : undefined
                   }}
                 >
-                  VIRUS {idx + 1}
+                  {t('virus')} {idx + 1}
                   {selectedPlayer === idx && (
                     <span className={`absolute -bottom-4 left-0 right-0 text-center text-sm ${
                       pointsLeft === 0 ? 'text-green-400' : 'text-yellow-400'
@@ -271,7 +277,7 @@ const Game: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="p-4 overflow-y-scroll flex-grow flex flex-col h-[calc(97.5vh-182px)]">
+        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-182px)] left-sidebar">
           <ParameterPanel
             player={gameState.players[selectedPlayer]}
             pointsLeft={pointsLeft}
@@ -291,7 +297,7 @@ const Game: React.FC = () => {
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
                 }`}
               >
-                START BATTLE
+                {t('startBattle')}
               </button>
             </div>
           )}
@@ -299,25 +305,25 @@ const Game: React.FC = () => {
       </div>
 
       {/* Right Off-canvas menu - Game Controls */}
-      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl`}>
+      <div className={`fixed top-[0.5%] right-0 h-[calc(97.5vh-70px)] w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} z-[60] rounded-bl-3xl right-sidebar`}>
         <div className="p-4 border-b border-white border-opacity-20 flex justify-between items-center">
-          <h2 className="text-xl font-bold font-pixy text-white">Controls</h2>
+          <h2 className="text-xl font-bold font-pixy text-white">{t('controls')}</h2>
           <div className="flex space-x-2">
             <button
               onClick={actions.testBattle}
               className="py-1 px-2 rounded bg-purple-600 hover:bg-purple-700 text-xs"
             >
-              TEST
+              {t('test')}
             </button>
             <button
               onClick={actions.resetGame}
               className="py-1 px-2 rounded bg-red-600 hover:bg-red-700 text-xs"
             >
-              RESET
+              {t('reset')}
             </button>
           </div>
         </div>
-        <div className="p-4 overflow-y-scroll flex-grow flex flex-col h-[calc(97.5vh-182px)]">
+        <div className="p-4 overflow-y-auto flex-grow flex flex-col h-[calc(97.5vh-182px)] right-sidebar">
           <GameControls />
         </div>
       </div>
@@ -333,7 +339,7 @@ const Game: React.FC = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
           <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
-          <span className="relative z-10">LAB</span>
+          <span className="relative z-10">{t('lab')}</span>
         </button>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -344,7 +350,7 @@ const Game: React.FC = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
           <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
-          <span className="relative z-10">MENU</span>
+          <span className="relative z-10">{t('menu')}</span>
         </button>
       </div>
 

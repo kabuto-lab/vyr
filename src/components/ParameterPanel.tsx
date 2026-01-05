@@ -13,6 +13,7 @@
  */
 import React from 'react';
 import { Player, VirusParameters } from '../types/game';
+import { useLanguageStore } from '../store/languageStore';
 
 interface ParameterPanelProps {
   player: Player;
@@ -36,13 +37,6 @@ const PARAMETER_EMOJIS = [
   '🛡️', '🌐', '💀', '⚖️'
 ];
 
-const PARAMETER_LABELS = [
-  'Aggression', 'Mutation', 'Speed', 'Defense',
-  'Reproduction', 'Resistance', 'Stealth', 'Adaptability',
-  'Virulence', 'Endurance', 'Mobility', 'Intelligence',
-  'Resilience', 'Infectivity', 'Lethality', 'Stability'
-];
-
 const ParameterPanel: React.FC<ParameterPanelProps> = ({
   player,
   pointsLeft,
@@ -50,6 +44,8 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
   onPlayerReady,
   gameState
 }) => {
+  const { t } = useLanguageStore();
+
   const handleTubeClick = (paramIndex: number) => {
     if (gameState !== 'setup' || pointsLeft <= 0) return;
     const paramName = PARAMETER_NAMES[paramIndex] as keyof VirusParameters;
@@ -81,7 +77,7 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
                 paramIndex={index}
                 value={value}
                 emoji={PARAMETER_EMOJIS[index]}
-                label={PARAMETER_LABELS[index]}
+                label={t(paramName)}
                 onIncrease={() => handleTubeClick(index)}
                 onDecrease={() => handleDecreaseClick(index)}
                 gameState={gameState}
@@ -101,7 +97,7 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
                 paramIndex={realIndex}
                 value={value}
                 emoji={PARAMETER_EMOJIS[realIndex]}
-                label={PARAMETER_LABELS[realIndex]}
+                label={t(paramName)}
                 onIncrease={() => handleTubeClick(realIndex)}
                 onDecrease={() => handleDecreaseClick(realIndex)}
                 gameState={gameState}
@@ -123,7 +119,7 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
             }`}
             disabled={pointsLeft !== 0}
           >
-            {player.isReady ? 'READY ✓' : 'MARK READY'}
+            {player.isReady ? t('ready') : t('markReady')}
           </button>
         </div>
       )}

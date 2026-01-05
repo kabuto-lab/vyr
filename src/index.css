@@ -89,6 +89,26 @@ canvas {
   background: #6b7280;
 }
 
+/* Hide scrollbar for parameter panel */
+.left-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.left-sidebar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for controls panel */
+.right-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.right-sidebar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* Convex glass tube effect for parameter tubes */
 .convex-glass {
   position: relative;

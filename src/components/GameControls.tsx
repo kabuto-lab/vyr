@@ -13,39 +13,41 @@
  */
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useLanguageStore } from '../store/languageStore';
 
 const GameControls: React.FC = () => {
   const { gameState, actions } = useGameStore();
+  const { t } = useLanguageStore();
 
   return (
     <div>
 
       {/* Game State Display */}
       <div className="mb-4 p-3 bg-gray-700 rounded">
-        <h3 className="font-semibold mb-2">Game State</h3>
+        <h3 className="font-semibold mb-2">{t('gameState')}</h3>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span>Current State:</span>
-            <span className="font-mono">{gameState.gameState.toUpperCase()}</span>
+            <span>{t('currentState')}</span>
+            <span className="font-mono">{t(`gameState${gameState.gameState.charAt(0).toUpperCase() + gameState.gameState.slice(1)}`)}</span>
           </div>
           <div className="flex justify-between">
-            <span>Turn:</span>
+            <span>{t('turn')}</span>
             <span className="font-mono">{gameState.turn}</span>
           </div>
           <div className="flex justify-between">
-            <span>Phase:</span>
+            <span>{t('phase')}</span>
             <span className="font-mono">{gameState.phase}</span>
           </div>
           <div className="flex justify-between">
-            <span>Speed:</span>
+            <span>{t('speedLabel')}</span>
             <span className="font-mono">{gameState.simulationSpeed}x</span>
           </div>
           <div className="flex justify-between">
-            <span>Grid Size:</span>
+            <span>{t('gridSize')}</span>
             <span className="font-mono">{gameState.grid.length}x{gameState.grid[0]?.length || 0}</span>
           </div>
           <div className="flex justify-between">
-            <span>FPS:</span>
+            <span>{t('fps')}</span>
             <span className="font-mono">{gameState.performance.fps}</span>
           </div>
         </div>
@@ -53,10 +55,10 @@ const GameControls: React.FC = () => {
 
       {/* Visual Effects Quality */}
       <div className="mb-4 p-3 bg-gray-700 rounded">
-        <h3 className="font-semibold mb-2">Visual Settings</h3>
+        <h3 className="font-semibold mb-2">{t('effectQuality')}</h3>
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span>Effect Quality:</span>
+            <span>{t('effectQuality')}</span>
             <div className="flex space-x-1">
               {(['low', 'medium', 'high'] as const).map(quality => (
                 <button
@@ -71,7 +73,7 @@ const GameControls: React.FC = () => {
                       : 'bg-gray-600 hover:bg-gray-500'
                   }`}
                 >
-                  {quality.charAt(0).toUpperCase() + quality.slice(1)}
+                  {t(quality)}
                 </button>
               ))}
             </div>
@@ -92,7 +94,7 @@ const GameControls: React.FC = () => {
                     : 'bg-yellow-600 hover:bg-yellow-700'
                 }`}
               >
-                {gameState.isPaused ? 'RESUME' : 'PAUSE'}
+                {gameState.isPaused ? t('resume') : t('pause')}
               </button>
             </div>
 
@@ -104,8 +106,12 @@ const GameControls: React.FC = () => {
                     ? 'bg-blue-600'
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
+                style={{
+                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined,
+                  fontSize: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '16px' : undefined
+                }}
               >
-                16x
+                {t('16x')}
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(64)}
@@ -114,8 +120,12 @@ const GameControls: React.FC = () => {
                     ? 'bg-blue-600'
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
+                style={{
+                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined,
+                  fontSize: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '16px' : undefined
+                }}
               >
-                64x
+                {t('64x')}
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(256)}
@@ -124,8 +134,12 @@ const GameControls: React.FC = () => {
                     ? 'bg-blue-600'
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
+                style={{
+                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined,
+                  fontSize: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '16px' : undefined
+                }}
               >
-                256x
+                {t('256x')}
               </button>
             </div>
 
@@ -133,14 +147,20 @@ const GameControls: React.FC = () => {
               <button
                 onClick={actions.testBattle}
                 className="flex-1 py-2 px-4 rounded bg-purple-600 hover:bg-purple-700"
+                style={{
+                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined
+                }}
               >
-                TEST
+                {t('test')}
               </button>
               <button
                 onClick={actions.resetGame}
                 className="flex-1 py-2 px-4 rounded bg-red-600 hover:bg-red-700"
+                style={{
+                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined
+                }}
               >
-                RESET
+                {t('reset')}
               </button>
             </div>
           </>
@@ -150,7 +170,7 @@ const GameControls: React.FC = () => {
 
       {/* Player Status */}
       <div className="mt-6">
-        <h3 className="font-semibold mb-2">Player Status</h3>
+        <h3 className="font-semibold mb-2">{t('playerStatus')}</h3>
         <div className="grid grid-cols-4 gap-2">
           {gameState.players.map(player => (
             <div
@@ -180,7 +200,7 @@ const GameControls: React.FC = () => {
               <div className="text-[0.6rem] text-center truncate w-full relative z-10">{player.name}</div>
               <div className="text-xs mt-0.5 font-mono relative z-10">{player.territoryCount}</div>
               <div className={`text-[0.6rem] mt-1 px-1.5 py-0.5 rounded-full relative z-10 ${player.isReady ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'}`}>
-                {player.isReady ? 'READY' : 'NOT READY'}
+                {player.isReady ? t('ready') : t('notReady')}
               </div>
             </div>
           ))}

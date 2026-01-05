@@ -13,6 +13,7 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useLanguageStore } from '../store/languageStore';
 
 const CanvasGridOptimized: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
