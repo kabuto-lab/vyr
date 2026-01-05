@@ -253,9 +253,6 @@ const Game: React.FC = () => {
   return (
     <div className="relative w-full h-full">
       {/* FPS Counter */}
-      <div className="absolute top-4 left-4 z-[100] bg-black bg-opacity-50 text-white px-2 py-1 rounded font-mono text-sm">
-        FPS: {gameState.performance.fps.toFixed(2)}
-      </div>
 
       <div className={`grid-container-adjusted ${leftMenuOpen ? 'ml-[92%] md:ml-[50%]' : ''}`}>
 
@@ -379,10 +376,10 @@ const Game: React.FC = () => {
         </div>
       </div>
 
-      {/* LAB button at the bottom left corner - circular */}
+      {/* LAB button at the bottom-left corner */}
       <button
         onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-        className="fixed bottom-4 left-4 z-[70] w-14 h-14 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-base transition-all duration-200 relative overflow-hidden"
+        className="fixed bottom-1 left-1 z-[70] w-14 h-14 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-base transition-all duration-200 relative overflow-hidden"
         style={{
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
         }}
