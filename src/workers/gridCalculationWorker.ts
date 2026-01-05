@@ -61,7 +61,8 @@ const adjacentCellsCache = new Map<string, { row: number; col: number }[]>();
 
 // Helper function to get adjacent cells
 function getAdjacentCells(grid: (number | null)[][], row: number, col: number): { row: number; col: number }[] {
-  const gridId = `${grid.length}x${grid[0]?.length || 0}`;
+  // Fixed grid size: 70x35
+  const gridId = '35x70';
   const key = `${gridId}-${row}-${col}`;
 
   if (adjacentCellsCache.has(key)) {
@@ -78,7 +79,8 @@ function getAdjacentCells(grid: (number | null)[][], row: number, col: number): 
     const newRow = row + dr;
     const newCol = col + dc;
 
-    if (newRow >= 0 && newRow < grid.length && newCol >= 0 && newCol < grid[0].length) {
+    // Fixed grid dimensions: 35 rows, 70 columns
+    if (newRow >= 0 && newRow < 35 && newCol >= 0 && newCol < 70) {
       adjacent.push({ row: newRow, col: newCol });
     }
   }
@@ -99,8 +101,9 @@ function calculateNextGameState(
 ): GridCalculationResult {
   // Create a copy of the grid for this turn
   const newGrid = grid.map(row => [...row]);
-  const rows = grid.length;
-  const cols = grid[0]?.length || 0;
+  // Fixed grid dimensions: 35 rows, 70 columns
+  const rows = 35;
+  const cols = 70;
 
   // Initialize or copy cell age grid
   let cellAge: number[][] = [];
@@ -300,8 +303,8 @@ function calculateNextGameState(
   const MAX_NEW_TENTACLES_PER_TURN = 30;
   let newTentacleCount = 0;
 
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
+  for (let row = 0; row < 35; row++) {
+    for (let col = 0; col < 70; col++) {
       const owner = newGrid[row][col];
       if (owner !== null) {
         const player = players[owner];
@@ -335,8 +338,8 @@ function calculateNextGameState(
           //     } else {
           //       // Lose a random cell that belongs to this player (to create "bays")
           //       const ownedCells = [];
-          //       for (let r = Math.max(0, randomBoundary.row - 2); r < Math.min(rows, randomBoundary.row + 3); r++) {
-          //         for (let c = Math.max(0, randomBoundary.col - 2); c < Math.min(cols, randomBoundary.col + 3); c++) {
+          //       for (let r = Math.max(0, randomBoundary.row - 2); r < Math.min(35, randomBoundary.row + 3); r++) {  // Fixed: use 35 instead of rows
+          //         for (let c = Math.max(0, randomBoundary.col - 2); c < Math.min(70, randomBoundary.col + 3); c++) {  // Fixed: use 70 instead of cols
           //           if (newGrid[r][c] === owner) {
           //             ownedCells.push({row: r, col: c});
           //           }
@@ -405,7 +408,7 @@ function calculateNextGameState(
                       const newCol = col + dc;
 
                       // Check if within bounds
-                      if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                      if (newRow >= 0 && newRow < 35 && newCol >= 0 && newCol < 70) {
                         // Check if cell is empty
                         if (newGrid[newRow][newCol] === null) {
                           // Check if there's a path to this cell (simplified: check if at least one intermediate cell is owned)
@@ -415,7 +418,7 @@ function calculateNextGameState(
                             const pathRow = row + Math.round(dr * step / steps);
                             const pathCol = col + Math.round(dc * step / steps);
 
-                            if (pathRow >= 0 && pathRow < rows && pathCol >= 0 && pathCol < cols) {
+                            if (pathRow >= 0 && pathRow < 35 && pathCol >= 0 && pathCol < 70) {
                               pathCells.push({row: pathRow, col: pathCol});
                             }
                           }
@@ -605,8 +608,8 @@ function calculateNextGameState(
     existingTentacleMap.set(key, tentacle);
   }
 
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
+  for (let row = 0; row < 35; row++) {
+    for (let col = 0; col < 70; col++) {
       const owner = newGrid[row][col];
       if (owner !== null) {
         const player = players[owner];
@@ -649,8 +652,8 @@ function calculateNextGameState(
 
   // Count territories for each player
   const territoryCounts = [0, 0, 0, 0];
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
+  for (let row = 0; row < 35; row++) {
+    for (let col = 0; col < 70; col++) {
       const owner = newGrid[row][col];
       if (owner !== null && owner >= 0 && owner < 4) {
         territoryCounts[owner]++;

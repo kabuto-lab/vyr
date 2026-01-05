@@ -43,17 +43,17 @@ const initialSettings: GameSettings = {
   maxEffects: 1000,
   enableVisualEffects: true,
   enableSound: true,
-  gridSize: { rows: 53, cols: 127 },
+  gridSize: { rows: 35, cols: 70 },
   visualEffectQuality: 'medium', // 'low', 'medium', 'high'
 };
 
 const initialGameState: GameState = {
   gameState: 'setup',
-  grid: Array(50).fill(null).map(() => Array(100).fill(null)), // 100x50 grid (50 rows, 100 columns)
+  grid: Array(35).fill(null).map(() => Array(70).fill(null)), // 70x35 grid (35 rows, 70 columns)
   players: initialPlayers,
   visualEffects: [],
   tentacles: [],
-  cellAge: Array(50).fill(null).map(() => Array(100).fill(-1)), // Initialize with -1 (empty cells)
+  cellAge: Array(35).fill(null).map(() => Array(70).fill(-1)), // Initialize with -1 (empty cells)
   performance: {
     fps: 0,
     memoryUsage: 0,
@@ -560,7 +560,7 @@ export const useGameStore = create<GameStore>((set) => ({
       });
 
       // Create a new grid with starting positions
-      const grid = Array(50).fill(null).map(() => Array(100).fill(null));
+      const grid = Array(35).fill(null).map(() => Array(70).fill(null));
 
       // Place starting colonies in corners
       const placeStartingColony = (playerId: number, x: number, y: number) => {
@@ -569,17 +569,17 @@ export const useGameStore = create<GameStore>((set) => ({
 
       // Place starting colonies in 4 corners with padding
       placeStartingColony(0, 2, 2);      // Top-left
-      placeStartingColony(1, 97, 2);     // Top-right (100-3 for padding)
-      placeStartingColony(2, 2, 47);     // Bottom-left
-      placeStartingColony(3, 97, 47);    // Bottom-right (100-3 for padding)
+      placeStartingColony(1, 67, 2);     // Top-right (70-3 for padding)
+      placeStartingColony(2, 2, 32);     // Bottom-left (35-3 for padding)
+      placeStartingColony(3, 67, 32);    // Bottom-right (70-3, 35-3 for padding)
 
       // Initialize cell age grid
-      const initialCellAge = Array(50).fill(null).map(() => Array(100).fill(-1));
+      const initialCellAge = Array(35).fill(null).map(() => Array(70).fill(-1));
       // Set birth turn for starting colonies
       initialCellAge[2][2] = 0;   // Player 0 starting position
-      initialCellAge[2][97] = 0;  // Player 1 starting position
-      initialCellAge[47][2] = 0;  // Player 2 starting position
-      initialCellAge[47][97] = 0; // Player 3 starting position
+      initialCellAge[2][67] = 0;  // Player 1 starting position
+      initialCellAge[32][2] = 0;  // Player 2 starting position
+      initialCellAge[32][67] = 0; // Player 3 starting position
 
       return {
         gameState: {

@@ -44,7 +44,7 @@ const GameControls: React.FC = () => {
           </div>
           <div className="flex justify-between">
             <span>{t('gridSize')}</span>
-            <span className="font-mono">{gameState.grid.length}x{gameState.grid[0]?.length || 0}</span>
+            <span className="font-mono">35x70</span>
           </div>
           <div className="flex justify-between">
             <span>{t('fps')}</span>
@@ -168,7 +168,7 @@ const GameControls: React.FC = () => {
               <div
                 className="absolute bottom-0 left-0 right-0"
                 style={{
-                  height: `${Math.min(100, (player.territoryCount / 2500) * 100)}%`,
+                  height: `${Math.min(100, (player.territoryCount / 2450) * 100)}%`,
                   backgroundColor: player.color,
                   opacity: 0.3
                 }}

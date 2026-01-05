@@ -34,7 +34,7 @@ export const GameStateProvider: React.FC<GameStateProviderProps> = ({ children }
   useEffect(() => {
     if (gameState.gameState === 'battle') {
       // Check if any player has >75% of the grid
-      const totalCells = gameState.grid.length * (gameState.grid[0]?.length || 0); // 50x100 = 5000 cells
+      const totalCells = 35 * 70; // 70x35 = 2450 cells
       const playerWithMostTerritory = gameState.players.reduce((max, player) =>
         player.territoryCount > max.territoryCount ? player : max
       );
@@ -43,8 +43,8 @@ export const GameStateProvider: React.FC<GameStateProviderProps> = ({ children }
         // Add victory visual effects before setting game state to gameOver
         // Create a wave of the winning player's color across the grid
         const winningPlayer = playerWithMostTerritory;
-        const rows = gameState.grid.length;
-        const cols = gameState.grid[0]?.length || 0;
+        const rows = 35;
+        const cols = 70;
 
         // Add victory celebration effects at the winning player's starting position
         // (This is an approximation - in a real game, we'd track the actual starting position)

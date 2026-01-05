@@ -134,11 +134,11 @@ const CanvasGrid: React.FC = () => {
     ctx.clearRect(0, 0, canvas.width / devicePixelRatio, canvas.height / devicePixelRatio);
 
     // Вычисляем размеры ячеек на основе размера сетки
-    // Используем сетку 100x50 (100 столбцов, 50 строк)
+    // Используем сетку 70x35 (70 столбцов, 35 строк)
     // Calculate cell dimensions based on grid size
-    // Using 100x50 grid (100 columns, 50 rows)
-    const cols = gameState.grid[0]?.length || 100;
-    const rows = gameState.grid.length || 50;
+    // Using 70x35 grid (70 columns, 35 rows)
+    const cols = 70;
+    const rows = 35;
 
     // Вычисляем размеры ячеек для заполнения доступного пространства
     // Используем разные размеры для ширины и высоты, чтобы устранить пустое пространство

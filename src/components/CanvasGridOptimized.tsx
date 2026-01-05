@@ -20,11 +20,6 @@ const CanvasGridOptimized: React.FC = () => {
   const prevGridRef = useRef<(number | null)[][]>([]);
   const prevTurnRef = useRef<number>(-1);
 
-  // === DETECT EMULATOR ===
-  const isEmulator = /LDPlayer|MEmu|BlueStacks/i.test(navigator.userAgent);
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-
   // Helper function to convert hex color to RGB
   const colorCache = new Map<string, { r: number; g: number; b: number }>();
   const hexToRgb = (hex: string): { r: number; g: number; b: number } | null => {
@@ -92,15 +87,11 @@ const CanvasGridOptimized: React.FC = () => {
       ctx.scale(devicePixelRatio, devicePixelRatio);
     }
 
-    // === GRID SIZE ADJUSTMENT ===
-    let cols = gameState.grid[0]?.length || 100;
-    let rows = gameState.grid.length || 50;
-    if (isMobile && !isPortrait) {
-      cols = Math.min(cols, 70);
-      rows = Math.min(rows, 35);
-    }
+    // Fixed grid size: 70x35
+    const cols = 70;
+    const rows = 35;
 
-    const maxCellSize = isMobile ? 24 : 32;
+    const maxCellSize = 28; // Consistent size across devices
     const cellWidth = Math.min(maxCellSize, displayWidth / cols);
     const cellHeight = Math.min(maxCellSize, displayHeight / rows);
 
@@ -138,37 +129,6 @@ const CanvasGridOptimized: React.FC = () => {
       prevTurnRef.current = gameState.turn;
     }
 
-    // === EMULATOR & SAFETY FALLBACK ===
-    if (isEmulator || gameState.simulationSpeed >= 64) {
-      // Always redraw full grid on emulator or high speed
-      cellsToDraw = [];
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          cellsToDraw.push({ row, col });
-        }
-      }
-    } else if (cellsToDraw.length === 0 && gameState.turn > 0) {
-      // Fallback: if nothing changed but turn > 0, check if any cell exists
-      let hasAnyCell = false;
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          if (gameState.grid[row]?.[col] !== null) {
-            hasAnyCell = true;
-            break;
-          }
-        }
-        if (hasAnyCell) break;
-      }
-      if (hasAnyCell) {
-        // Force full redraw to prevent blank canvas
-        for (let row = 0; row < rows; row++) {
-          for (let col = 0; col < cols; col++) {
-            cellsToDraw.push({ row, col });
-          }
-        }
-      }
-    }
-
     // === RENDER CELLS ===
     for (const { row, col } of cellsToDraw) {
       const owner = gameState.grid[row]?.[col] ?? null;
@@ -195,9 +155,9 @@ const CanvasGridOptimized: React.FC = () => {
         const sizeVariation = 1 + (randomSeed(row + 200, col + 200) - 0.5) * sizeRandomness;
 
         // Disable breathing/pulse on emulator for stability
-        const breathingFactor = isEmulator ? 1 : 1 + 0.05 * Math.sin(timeFactor + randomSeed(row * 100, col * 100) * 100);
+        const breathingFactor = 1 + 0.05 * Math.sin(timeFactor + randomSeed(row * 100, col * 100) * 100);
         const timeRowFactor2 = timeFactor * 2 + randomSeed(row * 200, col * 200) * 100;
-        const pulseFactor = isEmulator ? 1 : 0.9 + 0.1 * Math.sin(timeRowFactor2 + randomSeed(row * 200, col * 200) * 100);
+        const pulseFactor = 0.9 + 0.1 * Math.sin(timeRowFactor2 + randomSeed(row * 200, col * 200) * 100);
 
         let width = (cellWidth * 0.4) * sizeVariation * breathingFactor;
         let height = (cellHeight * 0.4) * sizeVariation * breathingFactor;
@@ -225,8 +185,8 @@ const CanvasGridOptimized: React.FC = () => {
         }
         ctx.fill();
 
-        // Parameter effects (only if not on emulator or essential)
-        if (virusParams && !isEmulator) {
+        // Parameter effects
+        if (virusParams) {
           const playerColor = hexToRgb(color);
           if (playerColor) {
             const { stability, mutation, intelligence, lethality } = virusParams;
@@ -285,17 +245,17 @@ const CanvasGridOptimized: React.FC = () => {
       }
     }
 
-    // === VISUAL EFFECTS (reduced on emulator) ===
+    // === VISUAL EFFECTS ===
     const visualEffectQuality = gameState.settings.visualEffectQuality;
-    let stormParticleCount = isEmulator || isMobile ? 0 : 1;
-    let connectionStrength = isEmulator || isMobile ? 0 : 0.0001;
-    let energyFlowFrequency = isEmulator || isMobile ? 0 : 0.001;
+    let stormParticleCount = 1;
+    let connectionStrength = 0.0001;
+    let energyFlowFrequency = 0.001;
 
-    if (visualEffectQuality === 'high' && !isMobile && !isEmulator) {
+    if (visualEffectQuality === 'high') {
       stormParticleCount = 2;
       connectionStrength = 0.0004;
       energyFlowFrequency = 0.005;
-    } else if (visualEffectQuality === 'medium' && !isMobile && !isEmulator) {
+    } else if (visualEffectQuality === 'medium') {
       stormParticleCount = 1;
       connectionStrength = 0.0002;
       energyFlowFrequency = 0.002;
@@ -320,7 +280,7 @@ const CanvasGridOptimized: React.FC = () => {
 
       const tentaclesToDraw = Math.min(
         visibleTentacles.length,
-        isEmulator ? 10 : isMobile ? 15 : visualEffectQuality === 'high' ? 100 : visualEffectQuality === 'medium' ? 50 : 20
+        visualEffectQuality === 'high' ? 100 : visualEffectQuality === 'medium' ? 50 : 20
       );
 
       for (let i = 0; i < tentaclesToDraw; i++) {

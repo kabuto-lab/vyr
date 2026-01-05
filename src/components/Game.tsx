@@ -191,8 +191,8 @@ const Game: React.FC = () => {
 
       actions.setGameState('battle');
 
-      // Initialize grid with starting positions (100x50)
-      const grid = Array(50).fill(null).map(() => Array(100).fill(null));
+      // Initialize grid with starting positions (70x35)
+      const grid = Array(35).fill(null).map(() => Array(70).fill(null));
 
       // Place starting colonies in corners
       const placeStartingColony = (playerId: number, x: number, y: number) => {
@@ -201,17 +201,17 @@ const Game: React.FC = () => {
 
       // Place starting colonies in 4 corners with padding
       placeStartingColony(0, 2, 2);      // Top-left
-      placeStartingColony(1, 97, 2);     // Top-right (100-3 for padding)
-      placeStartingColony(2, 2, 47);     // Bottom-left
-      placeStartingColony(3, 97, 47);    // Bottom-right (100-3 for padding)
+      placeStartingColony(1, 67, 2);     // Top-right (70-3 for padding)
+      placeStartingColony(2, 2, 32);     // Bottom-left (35-3 for padding)
+      placeStartingColony(3, 67, 32);    // Bottom-right (70-3, 35-3 for padding)
 
       // Initialize cell age grid when starting battle
-      const initialCellAge = Array(50).fill(null).map(() => Array(100).fill(-1));
+      const initialCellAge = Array(35).fill(null).map(() => Array(70).fill(-1));
       // Set birth turn for starting colonies
       initialCellAge[2][2] = 0;   // Player 0 starting position
-      initialCellAge[2][97] = 0;  // Player 1 starting position
-      initialCellAge[47][2] = 0;  // Player 2 starting position
-      initialCellAge[47][97] = 0; // Player 3 starting position
+      initialCellAge[2][67] = 0;  // Player 1 starting position
+      initialCellAge[32][2] = 0;  // Player 2 starting position
+      initialCellAge[32][67] = 0; // Player 3 starting position
 
       actions.updateGrid(grid, initialCellAge);
       actions.updatePlayers(updatedPlayers);
@@ -361,7 +361,7 @@ const Game: React.FC = () => {
               <div
                 className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold"
                 style={{
-                  width: `${Math.min(100, (player.territoryCount / 2500) * 100)}%`,
+                  width: `${Math.min(100, (player.territoryCount / 2450) * 100)}%`,
                   backgroundColor: player.color,
                   color: 'white',
                   textShadow: '0 0 2px black'

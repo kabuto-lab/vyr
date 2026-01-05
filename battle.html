@@ -47,10 +47,33 @@
 <body>
     <div class="container">
         <h1>VYRUS Battle System Analysis</h1>
-        <p>This document details the processes that cause FPS drops during virus cell collisions in the VYRUS game.</p>
+        <p>This document details how battles, interactions, and gameplay work in the VYRUS game, including the processes that cause FPS drops during virus cell collisions.</p>
 
         <div class="process">
-            <h2>1. Visual Effects Overload During Combat</h2>
+            <h2>1. Battle System Overview</h2>
+            <div class="details">
+                <p>The VYRUS battle system is a turn-based simulation where 4 players control viruses with 16 different parameters. Each turn is divided into 7 phases:</p>
+
+                <div class="highlight">
+                    <strong>Turn Phases:</strong>
+                    <ul>
+                        <li><strong>Phase 0: Tentacle Updates</strong> - Existing tentacles progress toward their targets based on attacker/defender parameters</li>
+                        <li><strong>Phase 1: Growth</strong> - Existing cells grow stronger based on parameter values</li>
+                        <li><strong>Phase 2: Expansion</strong> - Cells attempt to spread to adjacent empty cells with parameter-based behavior</li>
+                        <li><strong>Phase 3: Combat</strong> - Cells battle with adjacent opponent cells using tentacles</li>
+                        <li><strong>Phase 4: Stealth & Detection</strong> - Stealthy viruses may avoid detection by opponents</li>
+                        <li><strong>Phase 5: Environmental Adaptation</strong> - Viruses adapt to environmental conditions</li>
+                        <li><strong>Phase 6: Mutation & Stability</strong> - Viruses may mutate or maintain stability</li>
+                        <li><strong>Phase 7: Recovery & Persistence</strong> - Viruses recover and maintain their presence</li>
+                    </ul>
+                </div>
+
+                <p>Each phase involves complex calculations that determine how the viruses interact with each other and the environment based on their 16 parameters.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>2. Visual Effects Overload During Combat</h2>
             <div class="details">
                 <p>When virus cells collide, multiple visual effects are triggered simultaneously:</p>
                 
@@ -225,7 +248,7 @@
         </div>
 
         <div class="process">
-            <h2>2. Tentacle System Overload</h2>
+            <h2>4. Tentacle System Overload</h2>
             <div class="details">
                 <p>During collisions, the game creates "tentacles" representing invasion attempts between virus cells:</p>
                 
@@ -402,7 +425,7 @@
         </div>
 
         <div class="process">
-            <h2>3. Grid Calculation Complexity During Battle Phases</h2>
+            <h2>5. Grid Calculation Complexity During Battle Phases</h2>
             <div class="details">
                 <p>The Web Worker calculates the next game state with multiple phases:</p>
                 
@@ -956,9 +979,331 @@
                 <p><strong>Total Impact:</strong> The grid calculation involves processing every cell in the 100x50 grid (5000 cells) multiple times across different phases. With multiple collisions, the number of calculations increases significantly as more cells become involved in combat, expansion, and tentacle creation. The Web Worker helps by offloading these calculations from the main thread, but complex battle scenarios can still cause delays in state updates.</p>
             </div>
         </div>
+
+        <div class="process">
+            <h2>6. Phase 4: Stealth & Detection Mechanics</h2>
+            <div class="details">
+                <p>This phase handles stealthy viruses attempting to avoid detection by opponents:</p>
+
+                <div class="highlight">
+                    <strong>Stealth Mechanics:</strong>
+                    <ul>
+                        <li>Viruses with high stealth values (>10) can remain hidden from adjacent opponents</li>
+                        <li>Stealthy viruses have reduced visibility for enemy tentacle targeting</li>
+                        <li>High stealth viruses can expand to distant locations without immediate retaliation</li>
+                        <li>Stealth effectiveness is calculated as stealth/16, with values above 0.6 providing significant detection avoidance</li>
+                    </ul>
+
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts<br>
+                        <code>
+                            // In expansion logic, stealthy viruses can expand to distant cells<br>
+                            if (stealth > 10 && Math.random() < 0.3) { // 30% chance to try stealth expansion<br>
+                              // Look for empty cells 2-3 steps away<br>
+                              const distantEmptyCells = [];<br>
+                              for (let dr = -3; dr <= 3; dr++) {<br>
+                                for (let dc = -3; dc <= 3; dc++) {<br>
+                                  // Only consider cells that are 2-3 steps away<br>
+                                  if (Math.abs(dr) + Math.abs(dc) >= 2 && Math.abs(dr) + Math.abs(dc) <= 3) {<br>
+                                    const newRow = row + dr;<br>
+                                    const newCol = col + dc;<br>
+                                    <br>
+                                    // Check if within bounds<br>
+                                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {<br>
+                                      // Check if cell is empty<br>
+                                      if (newGrid[newRow][newCol] === null) {<br>
+                                        // Check if there's a path to this cell (simplified: check if at least one intermediate cell is owned)<br>
+                                        const pathCells = [];<br>
+                                        const steps = Math.max(Math.abs(dr), Math.abs(dc));<br>
+                                        for (let step = 1; step <= steps; step++) {<br>
+                                          const pathRow = row + Math.round(dr * step / steps);<br>
+                                          const pathCol = col + Math.round(dc * step / steps);<br>
+                                          <br>
+                                          if (pathRow >= 0 && pathRow < rows && pathCol >= 0 && pathCol < cols) {<br>
+                                            pathCells.push({row: pathRow, col: pathCol});<br>
+                                          }<br>
+                                        }<br>
+                                        <br>
+                                        // If at least one path cell is owned by this player, consider it a valid target<br>
+                                        const hasValidPath = pathCells.some(pathCell =><br>
+                                          newGrid[pathCell.row][pathCell.col] === owner<br>
+                                        );<br>
+                                        <br>
+                                        if (hasValidPath) {<br>
+                                          distantEmptyCells.push({row: newRow, col: newCol});<br>
+                                        }<br>
+                                      }<br>
+                                    }<br>
+                                  }<br>
+                                }<br>
+                              }<br>
+                        </code>
+                    </div>
+                </div>
+
+                <p>Stealth mechanics allow viruses to expand without triggering immediate combat responses from adjacent opponents, creating opportunities for surprise attacks and strategic positioning.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>7. Phase 5: Environmental Adaptation</h2>
+            <div class="details">
+                <p>This phase handles how viruses adapt to environmental conditions and changing battlefield dynamics:</p>
+
+                <div class="highlight">
+                    <strong>Adaptation Mechanics:</strong>
+                    <ul>
+                        <li>Viruses with high adaptability adjust their behavior based on surrounding conditions</li>
+                        <li>Environmental factors include neighboring virus types, available expansion space, and opponent strategies</li>
+                        <li>Adaptability affects parameter effectiveness in different situations</li>
+                        <li>High adaptability viruses can modify their expansion patterns based on environmental feedback</li>
+                    </ul>
+
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts<br>
+                        <code>
+                            // Adaptability affects how parameters are weighted in different situations<br>
+                            const adaptabilityFactor = adaptability / 16;<br>
+                            <br>
+                            // Adjust parameter effectiveness based on environmental conditions<br>
+                            const adjustedAggression = aggression * (0.8 + 0.4 * adaptabilityFactor);<br>
+                            const adjustedDefense = defense * (0.8 + 0.4 * adaptabilityFactor);<br>
+                            const adjustedReproduction = reproduction * (0.8 + 0.4 * adaptabilityFactor);<br>
+                            <br>
+                            // Use adjusted parameters for this turn's calculations<br>
+                            const expansionChance = (adjustedReproduction + mobility + infectivity) / 3;<br>
+                        </code>
+                    </div>
+                </div>
+
+                <p>Environmental adaptation allows viruses to optimize their behavior based on the current battlefield conditions, making them more resilient to changing strategies.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>8. Phase 6: Mutation & Stability</h2>
+            <div class="details">
+                <p>This phase handles viral mutations and stability effects that can change virus behavior:</p>
+
+                <div class="highlight">
+                    <strong>Mutation Mechanics:</strong>
+                    <ul>
+                        <li>Viruses with high mutation values (>12) can undergo chaotic border changes every 8 turns</li>
+                        <li>Mutation can cause random capture or loss of boundary cells</li>
+                        <li>High stability viruses (>10) follow predictable patterns and resist mutations</li>
+                        <li>Mutation effects create unpredictable expansion patterns that can surprise opponents</li>
+                    </ul>
+
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts<br>
+                        <code>
+                            // Handle mutation effects (chaotic borders) - only every 8th turn<br>
+                            if (mutation > 12 && turn % 8 === 0) {<br>
+                              // Find all boundary cells of this player<br>
+                              const boundaryCells = [];<br>
+                              const adjacentCells = getAdjacentCells(grid, row, col);<br>
+                              for (const adj of adjacentCells) {<br>
+                                if (newGrid[adj.row][adj.col] === null) {<br>
+                                  boundaryCells.push(adj);<br>
+                                }<br>
+                              }<br>
+                              <br>
+                              // Randomly capture or lose a boundary cell<br>
+                              if (boundaryCells.length > 0 && Math.random() < 0.5) { // 50% chance to do something<br>
+                                const randomBoundary = boundaryCells[Math.floor(Math.random() * boundaryCells.length)];<br>
+                                <br>
+                                if (Math.random() < 0.5) {<br>
+                                  // Capture the boundary cell<br>
+                                  if (newGrid[randomBoundary.row][randomBoundary.col] === null) {<br>
+                                    newGrid[randomBoundary.row][randomBoundary.col] = owner;<br>
+                                  }<br>
+                                } else {<br>
+                                  // Lose a random cell that belongs to this player (to create "bays")<br>
+                                  const ownedCells = [];<br>
+                                  for (let r = Math.max(0, randomBoundary.row - 2); r < Math.min(rows, randomBoundary.row + 3); r++) {<br>
+                                    for (let c = Math.max(0, randomBoundary.col - 2); c < Math.min(cols, randomBoundary.col + 3); c++) {<br>
+                                      if (newGrid[r][c] === owner) {<br>
+                                        ownedCells.push({row: r, col: c});<br>
+                                      }<br>
+                                    }<br>
+                                  }<br>
+                                  <br>
+                                  if (ownedCells.length > 0) {<br>
+                                    const randomOwned = ownedCells[Math.floor(Math.random() * ownedCells.length)];<br>
+                                    // Only lose the cell if it has at least 2 empty neighbors (to create bays)<br>
+                                    const neighbors = getAdjacentCells(grid, randomOwned.row, randomOwned.col);<br>
+                                    const emptyNeighbors = neighbors.filter(adj => newGrid[adj.row][adj.col] === null);<br>
+                                    if (emptyNeighbors.length >= 2) {<br>
+                                      newGrid[randomOwned.row][randomOwned.col] = null;<br>
+                                    }<br>
+                                  }<br>
+                                }<br>
+                              }<br>
+                            }<br>
+                            <br>
+                            // Check if this player has stability > 10, which overrides other behaviors<br>
+                            const hasHighStability = stability > 10;<br>
+                            <br>
+                            if (hasHighStability) {<br>
+                              // Only expand to immediate adjacent empty cells<br>
+                              const adjacentCells = getAdjacentCells(grid, row, col);<br>
+                              const emptyCells = adjacentCells.filter(adj => newGrid[adj.row][adj.col] === null);<br>
+                              <br>
+                              if (emptyCells.length > 0) {<br>
+                                // Select a random empty cell to expand to<br>
+                                const targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];<br>
+                                <br>
+                                // Calculate expansion success chance based on reproduction and infectivity (mobility ignored for stability)<br>
+                                const reproductionFactor = reproduction / 16;<br>
+                                const infectivityFactor = infectivity / 16;<br>
+                                <br>
+                                // Combined expansion chance<br>
+                                const expansionChance = (reproductionFactor + infectivityFactor) / 2;<br>
+                                <br>
+                                if (Math.random() < expansionChance) {<br>
+                                  expansionAttempts.push({<br>
+                                    from: { row, col },<br>
+                                    to: targetCell,<br>
+                                    player: owner<br>
+                                  });<br>
+                                }<br>
+                              }<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+
+                <p>Mutation and stability create a dynamic where unpredictable viruses can surprise opponents, while stable viruses follow consistent, reliable patterns.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>9. Phase 7: Recovery & Persistence</h2>
+            <div class="details">
+                <p>This phase handles how viruses recover from attacks and maintain their presence on the battlefield:</p>
+
+                <div class="highlight">
+                    <strong>Recovery Mechanics:</strong>
+                    <ul>
+                        <li>Viruses with high endurance and resilience recover from damage more effectively</li>
+                        <li>Recovery affects how quickly a virus can bounce back after being attacked</li>
+                        <li>Persistence determines how long a virus can maintain its territory under pressure</li>
+                        <li>High endurance viruses can survive longer in hostile environments</li>
+                    </ul>
+
+                    <div class="code-ref">
+                        <strong>Code Reference:</strong> src/workers/gridCalculationWorker.ts<br>
+                        <code>
+                            // Recovery and persistence calculations<br>
+                            const enduranceFactor = endurance / 16;<br>
+                            const resilienceFactor = resilience / 16;<br>
+                            <br>
+                            // Calculate recovery rate based on endurance and resilience<br>
+                            const recoveryRate = (enduranceFactor + resilienceFactor) / 2;<br>
+                            <br>
+                            // Apply recovery effects to damaged cells<br>
+                            if (recoveryRate > 0.5) {<br>
+                              // Enhanced recovery for high endurance/resilience viruses<br>
+                              // This could include reinforcing borders, healing damage, or strengthening defenses<br>
+                              const reinforcementChance = recoveryRate * 0.1; // 10% base reinforcement chance<br>
+                              if (Math.random() < reinforcementChance) {<br>
+                                // Reinforce adjacent empty cells to prevent opponent expansion<br>
+                                const adjacentCells = getAdjacentCells(grid, row, col);<br>
+                                const emptyCells = adjacentCells.filter(adj => newGrid[adj.row][adj.col] === null);<br>
+                                <br>
+                                if (emptyCells.length > 0 && Math.random() < 0.3) { // 30% chance to reinforce<br>
+                                  const targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];<br>
+                                  // Add reinforcement effect (visual or behavioral)<br>
+                                }<br>
+                              }<br>
+                            }<br>
+                            <br>
+                            // Cell age affects persistence - older cells may be more resilient<br>
+                            const cellAge = turn - (cellAgeGrid[row][col] >= 0 ? cellAgeGrid[row][col] : turn);<br>
+                            const ageFactor = Math.min(1.0, cellAge / 50); // Cells become more resilient up to turn 50<br>
+                            <br>
+                            // Apply age-based persistence effects<br>
+                            if (ageFactor > 0.7) {<br>
+                              // Older, established cells have better resistance to attacks<br>
+                              // This could make tentacles targeting these cells progress more slowly<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+
+                <p>Recovery and persistence mechanics ensure that established virus territories are harder to eliminate, rewarding long-term strategic play.</p>
+            </div>
+        </div>
         
         <div class="process">
-            <h2>Performance Optimization Recommendations</h2>
+            <h2>10. Gameplay Mechanics and Parameter Interactions</h2>
+            <div class="details">
+                <p>The VYRUS game features 16 distinct virus parameters that interact in complex ways to determine gameplay:</p>
+
+                <div class="highlight">
+                    <strong>Core Parameters and Their Effects:</strong>
+                    <ul>
+                        <li><strong>Aggression (0-16)</strong>: Determines attack strength and expansion rate. Higher values increase combat effectiveness and expansion speed, but may make the virus more vulnerable to defense mechanisms.</li>
+                        <li><strong>Mutation (0-16)</strong>: Affects the virus's ability to adapt and change behavior. High mutation rates can lead to unpredictable behavior and chaotic borders.</li>
+                        <li><strong>Speed (0-16)</strong>: Influences how quickly the virus can move and react. Affects tentacle movement speed and response time to threats.</li>
+                        <li><strong>Defense (0-16)</strong>: Reduces damage from attacks and increases survival rate. Higher defense values make the virus more resilient to opponent attacks.</li>
+                        <li><strong>Reproduction (0-16)</strong>: Controls expansion rate and growth. Determines how quickly the virus can spread to adjacent empty cells.</li>
+                        <li><strong>Resistance (0-16)</strong>: Reduces the effectiveness of opponent attacks. Higher resistance values make the virus less susceptible to enemy tentacles.</li>
+                        <li><strong>Stealth (0-16)</strong>: Allows the virus to avoid detection. High stealth enables long-range expansion without immediate retaliation.</li>
+                        <li><strong>Adaptability (0-16)</strong>: Affects how well the virus adapts to environmental changes. Improves performance in changing conditions.</li>
+                        <li><strong>Virulence (0-16)</strong>: Determines the damage dealt to opponents. Higher virulence increases the effectiveness of attacks.</li>
+                        <li><strong>Endurance (0-16)</strong>: Affects the virus's longevity and persistence. Higher endurance means the virus survives longer in hostile environments.</li>
+                        <li><strong>Mobility (0-16)</strong>: Influences directional growth and movement. High mobility viruses prefer to expand in specific directions.</li>
+                        <li><strong>Intelligence (0-16)</strong>: Affects strategic decision-making. Influences the virus's ability to make optimal moves.</li>
+                        <li><strong>Resilience (0-16)</strong>: Determines recovery rate from damage. Higher resilience allows faster recovery after attacks.</li>
+                        <li><strong>Infectivity (0-16)</strong>: Controls how effectively the virus spreads. Affects the success rate of expansion attempts.</li>
+                        <li><strong>Lethality (0-16)</strong>: Determines the final damage potential. High lethality viruses can eliminate opponents more effectively.</li>
+                        <li><strong>Stability (0-16)</strong>: Affects overall consistency. High stability viruses follow predictable patterns and resist mutations.</li>
+                    </ul>
+                </div>
+
+                <p>These parameters interact in complex ways during gameplay. For example, a virus with high aggression but low defense might expand quickly but be vulnerable to counterattacks. A virus with high stealth and infectivity might spread undetected initially but could be vulnerable if discovered.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>11. Interaction Mechanics and Combat System</h2>
+            <div class="details">
+                <p>Interactions in VYRUS occur through multiple systems that determine how viruses compete for territory:</p>
+
+                <div class="highlight">
+                    <strong>Combat System:</strong>
+                    <ul>
+                        <li><strong>Tentacle Battles</strong>: When viruses encounter each other, they engage in combat using "tentacles" - visual representations of invasion attempts. The progress of each tentacle is determined by comparing attacker and defender parameters.</li>
+                        <li><strong>Parameter-Based Combat</strong>: Combat effectiveness is calculated using normalized values (0-1) of relevant parameters. For example, an attacker's progress is determined by (mobility + infectivity + aggression) / 3, while defense is calculated as (resistance + defense) / 2.</li>
+                        <li><strong>Dynamic Resolution</strong>: Combat is resolved dynamically each turn, with tentacles advancing based on the relative strengths of the viruses involved.</li>
+                    </ul>
+                </div>
+
+                <div class="highlight">
+                    <strong>Expansion Mechanics:</strong>
+                    <ul>
+                        <li><strong>Behavioral Patterns</strong>: Different parameter combinations result in distinct behavioral patterns. High stability viruses expand only to adjacent cells, while high stealth viruses can expand to distant cells.</li>
+                        <li><strong>Directional Growth</strong>: Viruses with high mobility develop preferred expansion directions, creating directional growth patterns.</li>
+                        <li><strong>Explosive Growth</strong>: Viruses with high aggression (>12) may exhibit explosive growth, capturing multiple adjacent cells in a single turn.</li>
+                    </ul>
+                </div>
+
+                <div class="highlight">
+                    <strong>Environmental Interactions:</strong>
+                    <ul>
+                        <li><strong>Adaptation</strong>: Viruses adapt to environmental conditions based on their adaptability and resistance parameters.</li>
+                        <li><strong>Mutation Effects</strong>: High mutation values can cause chaotic border changes every 8 turns, creating unpredictable expansion patterns.</li>
+                        <li><strong>Cell Age Tracking</strong>: Each cell tracks its age (turn of birth), which can affect certain parameter interactions.</li>
+                    </ul>
+                </div>
+
+                <p>These interaction mechanics create a complex ecosystem where different virus strategies compete. Players must carefully balance their parameter allocations to create effective strategies against opponents with different parameter distributions.</p>
+            </div>
+        </div>
+
+        <div class="process">
+            <h2>12. Performance Optimization Recommendations</h2>
             <div class="details">
                 <ul>
                     <li>Implement more aggressive culling of visual effects during high-intensity battles</li>
