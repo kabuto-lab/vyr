@@ -100,6 +100,26 @@ const GameControls: React.FC = () => {
 
             <div className="flex space-x-2">
               <button
+                onClick={() => actions.setSimulationSpeed(16)}
+                className={`flex-1 py-1 px-2 rounded ${
+                  gameState.simulationSpeed === 16
+                    ? 'bg-blue-600'
+                    : 'bg-gray-600 hover:bg-gray-500'
+                }`}
+              >
+                16x
+              </button>
+              <button
+                onClick={() => actions.setSimulationSpeed(64)}
+                className={`flex-1 py-1 px-2 rounded ${
+                  gameState.simulationSpeed === 64
+                    ? 'bg-blue-600'
+                    : 'bg-gray-600 hover:bg-gray-500'
+                }`}
+              >
+                64x
+              </button>
+              <button
                 onClick={() => actions.setSimulationSpeed(256)}
                 className={`flex-1 py-1 px-2 rounded ${
                   gameState.simulationSpeed === 256
@@ -108,6 +128,21 @@ const GameControls: React.FC = () => {
                 }`}
               >
                 256x
+              </button>
+            </div>
+
+            <div className="flex space-x-2">
+              <button
+                onClick={actions.testBattle}
+                className="flex-1 py-2 px-4 rounded bg-purple-600 hover:bg-purple-700"
+              >
+                {t('test')}
+              </button>
+              <button
+                onClick={actions.resetGame}
+                className="flex-1 py-2 px-4 rounded bg-red-600 hover:bg-red-700"
+              >
+                {t('reset')}
               </button>
             </div>
           </>
