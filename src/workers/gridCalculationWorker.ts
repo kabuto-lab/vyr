@@ -605,12 +605,6 @@ function calculateNextGameState(
     existingTentacleMap.set(key, tentacle);
   }
 
-  // Determine max tentacles based on device type (mobile vs desktop)
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const maxTentaclesForThisTurn = isMobile ?
-    (settings.maxTentaclesMobile || 10) :
-    MAX_NEW_TENTACLES_PER_TURN;
-
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const owner = newGrid[row][col];
@@ -625,7 +619,7 @@ function calculateNextGameState(
           });
 
           // Attempt to attack opponent cells
-          if (opponentCells.length > 0 && newTentacleCount < maxTentaclesForThisTurn) {
+          if (opponentCells.length > 0 && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {
             // Select a random opponent cell to attack
             const targetCell = opponentCells[Math.floor(Math.random() * opponentCells.length)];
             const defender = newGrid[targetCell.row][targetCell.col]!;
@@ -634,7 +628,7 @@ function calculateNextGameState(
             const tentacleKey = `${row},${col},${targetCell.row},${targetCell.col},${owner}`;
 
             // Check if a tentacle already exists for this from->to pair
-            if (!existingTentacleMap.has(tentacleKey) && newTentacleCount < maxTentaclesForThisTurn) {
+            if (!existingTentacleMap.has(tentacleKey) && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {
               const newTentacle: Tentacle = {
                 id: `tentacle-${Date.now()}-${Math.random()}`,
                 from: { row, col },

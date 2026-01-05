@@ -106,12 +106,8 @@ const GameControls: React.FC = () => {
                     ? 'bg-blue-600'
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
-                style={{
-                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined,
-                  fontSize: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '16px' : undefined
-                }}
               >
-                {t('16x')}
+                16x
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(64)}
@@ -120,12 +116,8 @@ const GameControls: React.FC = () => {
                     ? 'bg-blue-600'
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
-                style={{
-                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined,
-                  fontSize: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '16px' : undefined
-                }}
               >
-                {t('64x')}
+                64x
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(256)}
@@ -134,12 +126,8 @@ const GameControls: React.FC = () => {
                     ? 'bg-blue-600'
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
-                style={{
-                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined,
-                  fontSize: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '16px' : undefined
-                }}
               >
-                {t('256x')}
+                256x
               </button>
             </div>
 
@@ -147,18 +135,12 @@ const GameControls: React.FC = () => {
               <button
                 onClick={actions.testBattle}
                 className="flex-1 py-2 px-4 rounded bg-purple-600 hover:bg-purple-700"
-                style={{
-                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined
-                }}
               >
                 {t('test')}
               </button>
               <button
                 onClick={actions.resetGame}
                 className="flex-1 py-2 px-4 rounded bg-red-600 hover:bg-red-700"
-                style={{
-                  minHeight: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? '48px' : undefined
-                }}
               >
                 {t('reset')}
               </button>

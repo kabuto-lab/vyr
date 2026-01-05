@@ -30,11 +30,6 @@ const translations: Record<Language, Record<string, string>> = {
     gameStateSetup: 'Setup',
     gameStateBattle: 'Battle',
     gameStateGameOver: 'Game Over',
-
-    // Speed options
-    '16x': '16x',
-    '64x': '64x',
-    '256x': '256x',
     
     // Parameter names
     aggression: 'Aggression',
@@ -81,11 +76,6 @@ const translations: Record<Language, Record<string, string>> = {
     territoryCount: 'Territory Count',
     lab: 'LAB',
     menu: 'MENU',
-
-    // Speed options
-    '16x': '16x',
-    '64x': '64x',
-    '256x': '256x',
     
     // Game instructions
     gameInstructions: 'Distribute 16 points among 16 virus parameters',
@@ -104,11 +94,6 @@ const translations: Record<Language, Record<string, string>> = {
     gameStateSetup: 'Настройка',
     gameStateBattle: 'Битва',
     gameStateGameOver: 'Игра окончена',
-
-    // Speed options
-    '16x': '16x',
-    '64x': '64x',
-    '256x': '256x',
     
     // Parameter names
     aggression: 'Агрессия',
@@ -155,11 +140,6 @@ const translations: Record<Language, Record<string, string>> = {
     territoryCount: 'Количество территории',
     lab: 'ЛАБ',
     menu: 'МЕНЮ',
-
-    // Speed options
-    '16x': '16x',
-    '64x': '64x',
-    '256x': '256x',
     
     // Game instructions
     gameInstructions: 'Распределите 16 очков между 16 параметрами вируса',

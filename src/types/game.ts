@@ -86,10 +86,6 @@ export interface GameSettings {
   enableVisualEffects: boolean;
   enableSound: boolean;
   gridSize: { rows: number; cols: number };
-  visualEffectQuality: 'low' | 'medium' | 'high';
-  mobileGridCols?: number;
-  mobileGridRows?: number;
-  maxTentaclesMobile?: number;
 }
 
 export interface Cell {

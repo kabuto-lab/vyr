@@ -15,9 +15,6 @@ interface DeviceContextProps {
   dpr: number;
   width: number;
   height: number;
-  mobileGridCols: number;
-  mobileGridRows: number;
-  maxTentaclesMobile: number;
 }
 
 const DeviceDetection: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -28,9 +25,6 @@ const DeviceDetection: React.FC<{ children: React.ReactNode }> = ({ children }) 
     dpr: 1,
     width: window.innerWidth,
     height: window.innerHeight,
-    mobileGridCols: 100,  // Default desktop grid
-    mobileGridRows: 50,   // Default desktop grid
-    maxTentaclesMobile: 30, // Default desktop tentacles
   });
 
   useEffect(() => {
@@ -38,22 +32,15 @@ const DeviceDetection: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-
-    // Set mobile-specific grid dimensions and tentacle limits
-    const mobileGridCols = isMobile ? 70 : 100;
-    const mobileGridRows = isMobile ? 35 : 50;
-    const maxTentaclesMobile = isMobile ? 10 : 30; // Reduced tentacles on mobile
+    const dpr = isMobile ? (window.devicePixelRatio || 1) : 1;
 
     setDeviceState({
       isMobile,
       isPortrait,
       isSafari,
-      dpr: isMobile ? (window.devicePixelRatio || 1) : 1,
+      dpr,
       width: window.innerWidth,
       height: window.innerHeight,
-      mobileGridCols,
-      mobileGridRows,
-      maxTentaclesMobile,
     });
 
     // Handle orientation changes

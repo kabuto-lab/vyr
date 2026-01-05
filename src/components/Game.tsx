@@ -222,13 +222,9 @@ const Game: React.FC = () => {
   return (
     <>
       {/* FPS Counter */}
-      {/* FPS Counter - hidden in fullscreen mobile mode */}
-      {!(gameState.gameState === 'battle' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) &&
-         (window.innerHeight === screen.height && window.innerWidth === screen.width)) && (
-        <div className="absolute top-4 left-4 z-[100] bg-black bg-opacity-50 text-white px-2 py-1 rounded font-mono text-sm">
-          FPS: {gameState.performance.fps.toFixed(2)}
-        </div>
-      )}
+      <div className="absolute top-4 left-4 z-[100] bg-black bg-opacity-50 text-white px-2 py-1 rounded font-mono text-sm">
+        FPS: {gameState.performance.fps.toFixed(2)}
+      </div>
 
       <div className={`grid-container-adjusted ${leftMenuOpen && menuOpen ? 'ml-[25%] mr-[25%]' : leftMenuOpen ? 'ml-[50%]' : menuOpen ? 'mr-[50%]' : ''}`}>
 

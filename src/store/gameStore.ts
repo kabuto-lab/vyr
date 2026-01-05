@@ -45,9 +45,6 @@ const initialSettings: GameSettings = {
   enableSound: true,
   gridSize: { rows: 53, cols: 127 },
   visualEffectQuality: 'medium', // 'low', 'medium', 'high'
-  mobileGridCols: 70,
-  mobileGridRows: 35,
-  maxTentaclesMobile: 10,
 };
 
 const initialGameState: GameState = {
