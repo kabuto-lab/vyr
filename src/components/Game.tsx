@@ -220,7 +220,7 @@ const Game: React.FC = () => {
 
 
   return (
-    <>
+    <div className="relative w-full h-full">
       {/* FPS Counter */}
       <div className="absolute top-4 left-4 z-[100] bg-black bg-opacity-50 text-white px-2 py-1 rounded font-mono text-sm">
         FPS: {gameState.performance.fps.toFixed(2)}
@@ -373,7 +373,7 @@ const Game: React.FC = () => {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -72,12 +72,15 @@ export type VisualEffectType =
   | 'resilience' | 'infectivity' | 'lethality' | 'stability'
   | 'attack' | 'expansion' | 'victory'
   | 'capture'
-  | 'expansionSource' | 'expansionPath' | 'expansionTarget';
+  | 'expansionSource' | 'expansionPath' | 'expansionTarget'
+  | 'wave';
 
 export interface PerformanceMetrics {
   fps: number;
   memoryUsage: number;
   activeCells: number;
+  lastUpdate: number;
+  frameCount: number;
 }
 
 export interface GameSettings {
@@ -86,6 +89,7 @@ export interface GameSettings {
   enableVisualEffects: boolean;
   enableSound: boolean;
   gridSize: { rows: number; cols: number };
+  visualEffectQuality: 'low' | 'medium' | 'high';
 }
 
 export interface Cell {

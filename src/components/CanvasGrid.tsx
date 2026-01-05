@@ -596,8 +596,8 @@ const CanvasGrid: React.FC = () => {
 
           // Additional check for wave effects to respect limits
           if (effect.type === 'wave') {
-            if ((window.VYRUS_QUALITY_MODE === 'low' && waveEffectsCount < MAX_WAVE_EFFECTS_LOW) ||
-              (window.VYRUS_QUALITY_MODE === 'high' && waveEffectsCount < MAX_WAVE_EFFECTS_HIGH)) {
+            if ((visualEffectQuality === 'low' && waveEffectsCount < MAX_WAVE_EFFECTS_LOW) ||
+              (visualEffectQuality === 'high' && waveEffectsCount < MAX_WAVE_EFFECTS_HIGH)) {
               waveEffectsCount++;
               isVisible = isVisible && true; // Keep visible if within limits
             } else {
@@ -739,7 +739,7 @@ const CanvasGrid: React.FC = () => {
            * В низком качестве пропускаем все параметрические эффекты кроме волновых
            * Skip all parameter effects except wave effects in low quality mode
            */
-          if (window.VYRUS_QUALITY_MODE === 'high' || effect.type === 'wave') {
+          if (visualEffectQuality === 'high' || effect.type === 'wave') {
             const x = offsetX + effect.position.x * cellWidth + cellWidth / 2;
             const y = offsetY + effect.position.y * cellHeight + cellHeight / 2;
             let rgbColor: { r: number; g: number; b: number } | null;
@@ -758,7 +758,7 @@ const CanvasGrid: React.FC = () => {
               case 'wave': {
                 // Масштабируем радиус в 3 раза больше базового размера
                 // Scale radius 3x larger than base size
-                const waveRadius = window.VYRUS_QUALITY_MODE === 'low'
+                const waveRadius = visualEffectQuality === 'low'
                   ? (5 + 10 * progress) * 1.5  // Уменьшенный радиус в низком качестве
                   : (5 + 10 * progress) * 3;   // Увеличенный радиус в высоком качестве
                 rgbColor = hexToRgb(effect.color);

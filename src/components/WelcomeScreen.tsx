@@ -179,7 +179,7 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
       </div>
 
       {/* CSS for animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0% { transform: scale(1); opacity: 0.1; }
           100% { transform: scale(1.2); opacity: 0.2; }
