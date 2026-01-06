@@ -8,6 +8,7 @@ export default {
     extend: {
       fontFamily: {
         pixy: ['PIXY', 'sans-serif'],
+        'press-start': ['"Press Start 2P"', 'cursive'],
       }
     },
   },

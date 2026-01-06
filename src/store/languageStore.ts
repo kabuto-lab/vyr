@@ -76,7 +76,8 @@ const translations: Record<Language, Record<string, string>> = {
     territoryCount: 'Territory Count',
     lab: 'LAB',
     menu: 'MENU',
-    
+    test: 'TEST',
+
     // Game instructions
     gameInstructions: 'Distribute 16 points among 16 virus parameters',
     pointsLeft: 'Points Left:',
@@ -156,6 +157,7 @@ const translations: Record<Language, Record<string, string>> = {
     territoryCount: 'Количество территории',
     lab: 'ЛАБ',
     menu: 'МЕНЮ',
+    test: 'ТЕСТ',
 
     // Game instructions
     gameInstructions: 'Распределите 16 очков между 16 параметрами вируса',

@@ -171,9 +171,12 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
     >
       <div className="flex flex-col items-center w-full">
         {/* Convex glass test tube container with refraction effect */}
-        <div className="relative w-10 h-24 rounded-b-[0.9rem] overflow-hidden flex items-center justify-center convex-glass">
-          {/* Refraction effect for background */}
-          <div className="refraction-effect" />
+        <div className="relative w-12 h-32 rounded-b-[1.5rem] rounded-t-[0.5rem] overflow-hidden flex items-center justify-center glass-tube">
+          {/* Background distortion effect */}
+          <div className="absolute inset-0 glass-refraction" />
+
+          {/* Inner glow effect */}
+          <div className="absolute inset-0 glass-inner-glow" />
 
           {/* Liquid fill with parameter-specific color */}
           <div
@@ -181,9 +184,12 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
             style={{ height: `${heightPercentage}%` }}
           />
 
-          {/* Emoji: -1 on click */}
+          {/* Emoji: -1 on click with animation for specific emojis */}
           <div
-            className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs z-20"
+            className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 text-sm z-20 ${
+              emoji === '🔄' ? 'animate-spin' :
+              emoji === '🕵️' ? 'animate-pulse' : ''
+            }`}
             onClick={(e) => {
               e.stopPropagation(); // Prevent +1 trigger
               onDecrease();
