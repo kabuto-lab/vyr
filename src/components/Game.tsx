@@ -268,8 +268,8 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[98vh] w-[90%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
-        <div className="h-full flex flex-col border-b border-white border-opacity-20">
+      <div className={`fixed top-[0.5%] left-0 h-[98vh] w-[90%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
+        <div className="h-full flex flex-col">
           {/* Scrollable content area */}
           <div className="flex-1 overflow-y-auto p-4">
             {/* Row 1: Player tabs - full width */}
@@ -387,10 +387,10 @@ const Game: React.FC = () => {
 
       {/* LAB button - moves with left sidebar on mobile, stays on right on desktop */}
       <div className={`fixed top-4 z-[60] ${leftMenuOpen ? 'left-[90%] md:left-[50%]' : 'left-4'} md:right-4 md:left-auto transition-all duration-300 ease-in-out`}>
-        {/* LAB button - square without background */}
+        {/* LAB button - square with rectangle background */}
         <button
           onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-          className="flex items-center justify-center font-pixy text-sm"
+          className="flex items-center justify-center font-pixy text-sm bg-white bg-opacity-10 backdrop-blur-lg rounded-lg px-2 py-1"
         >
           <div className="flex flex-col items-center">
             <div className="w-6 h-0.5 bg-white mb-1"></div>
