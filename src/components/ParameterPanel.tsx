@@ -108,21 +108,6 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
         </div>
       </div>
 
-      {gameState === 'setup' && (
-        <div className="mt-4">
-          <button
-            onClick={onPlayerReady}
-            className={`w-full py-2 px-4 font-pixy border-2 rounded-lg ${
-              pointsLeft === 0
-                ? 'bg-green-600 border-green-800 text-white hover:bg-green-700'
-                : 'bg-gray-600 border-gray-800 text-gray-400 cursor-not-allowed'
-            }`}
-            disabled={pointsLeft !== 0}
-          >
-            {player.isReady ? t('ready') : t('markReady')}
-          </button>
-        </div>
-      )}
     </div>
   );
 };

@@ -254,7 +254,7 @@ const Game: React.FC = () => {
     <div className="relative w-full h-full">
       {/* FPS Counter */}
 
-      <div className={`grid-container-adjusted ${leftMenuOpen ? 'ml-[92%] md:ml-[50%]' : ''}`}>
+      <div className={`grid-container-adjusted`}>
 
         {/* Center - Game Grid */}
         <div className="center-panel relative z-0 flex-1">
@@ -268,10 +268,10 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[calc(97.5vh-70px)] w-[92%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
+      <div className={`fixed top-[0.5%] left-0 h-[99vh] w-[90%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
         <div className="p-4 border-b border-white border-opacity-20 overflow-x-auto">
-          {/* Row 1: Player tabs */}
-          <div className="flex flex-nowrap space-x-2 mb-4">
+          {/* Row 1: Player tabs - full width */}
+          <div className="grid grid-cols-4 gap-2 mb-4">
             {gameState.players.map((player, idx) => (
               <button
                 key={player.id}
@@ -330,13 +330,19 @@ const Game: React.FC = () => {
             <button
               onClick={startBattle}
               disabled={!gameState.players.every(p => p.isReady)}
-              className={`col-span-2 py-2 px-4 font-pixy border-2 rounded-lg ${
+              className={`py-2 px-4 font-pixy border-2 rounded-lg ${
                 gameState.players.every(p => p.isReady)
                   ? 'bg-green-600 bg-opacity-70 border-green-800 text-white hover:bg-green-700'
                   : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
               }`}
             >
               {t('startBattle')}
+            </button>
+            <button
+              onClick={actions.resetGame}
+              className="py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
+            >
+              {t('reset')}
             </button>
           </div>
 
@@ -376,27 +382,31 @@ const Game: React.FC = () => {
         </div>
       </div>
 
-      {/* LAB button at the bottom-left corner */}
-      <button
-        onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-        className="fixed bottom-1 left-1 z-[70] w-14 h-14 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-base transition-all duration-200 relative overflow-hidden"
-        style={{
-          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent"></div>
-        <span className="relative z-10">{t('lab')}</span>
-      </button>
+      {/* Circular LAB button in transparent sidebar at the right side */}
+      <div className="fixed top-0 right-0 h-full w-12 bg-transparent border-0 z-50 z-[60]">
+        <div className="flex flex-col items-center pt-4 space-y-4">
+          {/* LAB button in the sidebar - circular */}
+          <button
+            onClick={() => setLeftMenuOpen(!leftMenuOpen)}
+            className="w-10 h-10 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-sm transition-all duration-200 relative overflow-hidden"
+            style={{
+              boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+            <span className="relative z-10">{t('lab')}</span>
+          </button>
+        </div>
+      </div>
 
-      {/* Player Territory Indicators at the very bottom of the screen */}
+      {/* Player Territory Indicators at the very bottom of the screen - twice as high */}
       <div className="fixed bottom-0 left-0 right-0 flex px-4 space-x-2 z-[65]">
         {gameState.players.map(player => (
           <div
             key={player.id}
             className="flex-1"
           >
-            <div className="w-full bg-gray-700 bg-opacity-50 rounded-full h-1">
+            <div className="w-full bg-gray-700 bg-opacity-50 rounded-full h-2"> {/* Changed h-1 to h-2 */}
               <div
                 className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold"
                 style={{
