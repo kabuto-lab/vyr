@@ -87,14 +87,17 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Other
     loading: 'Loading...',
-    selectLanguage: 'Select Language'
+    selectLanguage: 'Select Language',
+    rotateDevice: 'Rotate Your Device',
+    rotateForBestExperience: 'Please rotate your device to landscape mode for the best experience',
+    designedForLandscape: 'This game is designed for landscape orientation'
   },
   ru: {
     // Game state messages
     gameStateSetup: 'Настройка',
     gameStateBattle: 'Битва',
     gameStateGameOver: 'Игра окончена',
-    
+
     // Parameter names
     aggression: 'Агрессия',
     mutation: 'Мутация',
@@ -112,7 +115,7 @@ const translations: Record<Language, Record<string, string>> = {
     infectivity: 'Заразность',
     lethality: 'Летальность',
     stability: 'Стабильность',
-    
+
     // UI elements
     configure: 'Настроить:',
     virus: 'ВИРУС',
@@ -140,18 +143,21 @@ const translations: Record<Language, Record<string, string>> = {
     territoryCount: 'Количество территории',
     lab: 'ЛАБ',
     menu: 'МЕНЮ',
-    
+
     // Game instructions
     gameInstructions: 'Распределите 16 очков между 16 параметрами вируса',
     pointsLeft: 'Осталось очков:',
-    
+
     // Victory messages
     victory: 'Победа!',
     defeated: 'Поражение!',
-    
+
     // Other
     loading: 'Загрузка...',
-    selectLanguage: 'Выберите язык'
+    selectLanguage: 'Выберите язык',
+    rotateDevice: 'Переверните экран горизонтально',
+    rotateForBestExperience: 'Пожалуйста, переверните устройство в альбомную ориентацию для лучшего опыта',
+    designedForLandscape: 'Эта игра разработана для альбомной ориентации'
   }
 };
 

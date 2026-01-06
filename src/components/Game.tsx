@@ -385,22 +385,18 @@ const Game: React.FC = () => {
         </div>
       </div>
 
-      {/* LAB button - moves to top-left on mobile, stays on right on desktop */}
-      <div className="fixed top-4 left-4 h-14 w-14 z-[60] md:right-4 md:left-auto">
-        {/* LAB button - circular */}
+      {/* LAB button - moves with left sidebar on mobile, stays on right on desktop */}
+      <div className={`fixed top-4 z-[60] ${leftMenuOpen ? 'left-[90%] md:left-[50%]' : 'left-4'} md:right-4 md:left-auto transition-all duration-300 ease-in-out`}>
+        {/* LAB button - square without background */}
         <button
           onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-          className="w-full h-full flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-sm transition-all duration-200 relative overflow-hidden"
-          style={{
-            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
-          }}
+          className="flex items-center justify-center font-pixy text-sm"
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
           <div className="flex flex-col items-center">
             <div className="w-6 h-0.5 bg-white mb-1"></div>
             <div className="w-6 h-0.5 bg-white mb-1"></div>
             <div className="w-6 h-0.5 bg-white mb-1"></div>
-            <span className="relative z-10 text-xs">{t('lab')}</span>
+            <span className="text-xs">{t('lab')}</span>
           </div>
         </button>
       </div>

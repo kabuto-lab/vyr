@@ -52,9 +52,9 @@ function App() {
           ) : isMobile && !isLandscape ? (
             // Show landscape orientation prompt for mobile devices
             <div className="flex flex-col items-center justify-center h-full w-full bg-gray-900 text-white text-center p-4">
-              <div className="text-2xl font-bold mb-4">Rotate Your Device</div>
-              <div className="text-lg mb-6">Please rotate your device to landscape mode for the best experience</div>
-              <div className="text-sm opacity-75">This game is designed for landscape orientation</div>
+              <div className="text-2xl font-bold mb-4">{t('rotateDevice')}</div>
+              <div className="text-lg mb-6">{t('rotateForBestExperience')}</div>
+              <div className="text-sm opacity-75">{t('designedForLandscape')}</div>
             </div>
           ) : (
             <Routes>
