@@ -268,7 +268,7 @@ const Game: React.FC = () => {
       </div>
 
       {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[99vh] w-[90%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
+      <div className={`fixed top-[0.5%] left-0 h-[98vh] w-[90%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20 z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
         <div className="p-4 border-b border-white border-opacity-20 overflow-x-auto">
           {/* Row 1: Player tabs - full width */}
           <div className="grid grid-cols-4 gap-2 mb-4">
@@ -383,18 +383,23 @@ const Game: React.FC = () => {
       </div>
 
       {/* Circular LAB button in transparent sidebar at the right side */}
-      <div className="fixed top-0 right-0 h-full w-12 bg-transparent border-0 z-50 z-[60]">
+      <div className="fixed top-0 right-4 h-full w-12 bg-transparent border-0 z-50 z-[60]">
         <div className="flex flex-col items-center pt-4 space-y-4">
           {/* LAB button in the sidebar - circular */}
           <button
             onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-            className="w-10 h-10 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-sm transition-all duration-200 relative overflow-hidden"
+            className="w-14 h-14 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-full font-pixy text-sm transition-all duration-200 relative overflow-hidden"
             style={{
               boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.3)',
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-            <span className="relative z-10">{t('lab')}</span>
+            <div className="flex flex-col items-center">
+              <div className="w-6 h-0.5 bg-white mb-1"></div>
+              <div className="w-6 h-0.5 bg-white mb-1"></div>
+              <div className="w-6 h-0.5 bg-white mb-1"></div>
+              <span className="relative z-10 text-xs">{t('lab')}</span>
+            </div>
           </button>
         </div>
       </div>
