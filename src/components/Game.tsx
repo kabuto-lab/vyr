@@ -390,13 +390,13 @@ const Game: React.FC = () => {
         {/* LAB button - square with rectangle background */}
         <button
           onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-          className="flex items-center justify-center font-pixy text-sm bg-white bg-opacity-10 backdrop-blur-lg rounded-lg px-2 py-1"
+          className="flex items-center justify-center font-pixy text-sm bg-white bg-opacity-10 backdrop-blur-lg rounded-lg px-3 py-2"
         >
           <div className="flex flex-col items-center">
             <div className="w-6 h-0.5 bg-white mb-1"></div>
             <div className="w-6 h-0.5 bg-white mb-1"></div>
             <div className="w-6 h-0.5 bg-white mb-1"></div>
-            <span className="text-xs">{t('lab')}</span>
+            <span className="text-sm">{t('lab')}</span>
           </div>
         </button>
       </div>
