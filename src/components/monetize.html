@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Монетизация игры VYRUS</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    h2 {
+      margin-top: 1.8em;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.3em;
+    }
+    ul, ol {
+      margin-bottom: 1em;
+    }
+    code {
+      background: #f1f1f1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+    .platform {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .note {
+      background: #fff8e1;
+      border-left: 4px solid #ffc107;
+      padding: 12px 16px;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Монетизация игры VYRUS (HTML5 / TypeScript / Web Workers)</h1>
+
+  <p>Ваша игра — стратегический симулятор вирусов с сеткой, локальной и онлайн-многопользовательской поддержкой. Ниже — все возможные способы монетизации, адаптированные под ваш стек и тип игры.</p>
+
+  <h2>1. Интеграция через игровые HTML5-платформы</h2>
+
+  <div class="platform">
+    <h3>Yandex Games</h3>
+    <ul>
+      <li><strong>Модель:</strong> CPM (доход за показы рекламы), бонусы за вовлечённость</li>
+      <li><strong>Реклама:</strong> Pre-roll, mid-roll, rewarded video (через <code>YaGames</code> API)</li>
+      <li><strong>Требования:</strong> игра должна быть адаптирована под мобильные, поддерживать PWA или iframe, без внешних доменов (кроме разрешённых Yandex)</li>
+      <li><strong>Интеграция:</strong>
+        <ul>
+          <li>Добавьте <code>&lt;script src="https://yandex.ru/games/sdk/v2"></code></li>
+          <li>Используйте <code>YaGames.init().then(({ features }) => { features.AdvAPI.showFullscreenAdv(); })</code></li>
+          <li>Поддержка rewarded-видео позволяет давать игроку «бонусную мутацию» за просмотр</li>
+        </ul>
+      </li>
+      <li><strong>Плюсы:</strong> высокий трафик в СНГ, особенно Россия</li>
+    </ul>
+  </div>
+
+  <div class="platform">
+    <h3>VK Play (ранее My.Games)</h3>
+    <ul>
+      <li><strong>Модель:</strong> CPM + микротранзакции (через VK Pay)</li>
+      <li><strong>Реклама:</strong> rewarded video, interstitial</li>
+      <li><strong>Требования:</strong> адаптация под мобильные, поддержка логина через VK ID</li>
+      <li><strong>Интеграция:</strong>
+        <ul>
+          <li>Добавьте <code>vkBridge</code> и <code>vk-bridge</code> SDK</li>
+          <li>Используйте <code>vkBridge.send("VKWebAppShowNativeAds", { ad_format: "reward" })</code></li>
+          <li>Для внутриигровых покупок — <code>VK Pay</code> (например, купить «особый штамм вируса»)</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="platform">
+    <h3>CrazyGames, Poki, GamePix</h3>
+    <ul>
+      <li><strong>Модель:</strong> revenue share (обычно 30–50% от рекламных доходов)</li>
+      <li><strong>Реклама:</strong> их собственные SDK (обычно без изменений в коде, но требуют whitelabel-релиз)</li>
+      <li><strong>Подходит для:</strong> глобального трафика</li>
+      <li><strong>Особенность:</strong> не требуют изменения UI, но могут накладывать свои баннеры</li>
+    </ul>
+  </div>
+
+  <h2>2. Прямая монетизация на вашем домене</h2>
+
+  <div class="platform">
+    <h3>Google AdSense / Ezoic / Mediavine (для веб-сайта)</h3>
+    <ul>
+      <li>Вставьте рекламные блоки на страницу игры (например, над/под canvas)</li>
+      <li>Требуется домен и трафик >10k просмотров/мес (AdSense — от 0, но с риском бана при низком качестве)</li>
+      <li><strong>Не подходит для Vercel-домена</strong> — нужно своё доменное имя</li>
+    </ul>
+  </div>
+
+  <div class="platform">
+    <h3>Playwire / AdGem / AdColony (HTML5 In-Game Ads)</h3>
+    <ul>
+      <li>Специализируются на HTML5-играх</li>
+      <li>Предоставляют JS-SDK для rewarded video</li>
+      <li>Пример: игрок смотрит видео → получает +10 к «Мутации»</li>
+    </ul>
+  </div>
+
+  <h2>3. Внутриигровые покупки (если добавите онлайн-аккаунты)</h2>
+
+  <div class="platform">
+    <h3>Stripe / PayPal / Tinkoff (через ваш backend)</h3>
+    <ul>
+      <li>Продажа виртуальных предметов: уникальные вирусы, цвета, способности</li>
+      <li>Требует:
+        <ul>
+          <li>Backend (Node.js/Bun)</li>
+          <li>Аккаунт-систему (сохранение прогресса)</li>
+          <li>PCI-совместимую обработку платежей (лучше через Stripe Checkout)</li>
+        </ul>
+      </li>
+      <li>Можно реализовать «Battle Pass» — как вы планировали в BattleServer</li>
+    </ul>
+  </div>
+
+  <div class="platform">
+    <h3>Telegram / VK Mini Apps</h3>
+    <ul>
+      <li>Разместите игру как мини-приложение</li>
+      <li>Монетизация через встроенные платёжные системы (Telegram Stars, VK Pay)</li>
+      <li>Высокий виральный коэффициент</li>
+    </ul>
+  </div>
+
+  <h2>4. Альтернативные методы</h2>
+
+  <ul>
+    <li><strong>Donation / Boosty / Patreon:</strong> добавьте кнопку «Поддержать разработчика» (подходит для нишевой аудитории)</li>
+    <li><strong>Лицензирование:</strong> продажа исходного кода или white-label версий другим студиям</li>
+    <li><strong>Краудфандинг:</strong> запуск на Patreon с эксклюзивами (ранний доступ к новым вирусам)</li>
+  </ul>
+
+  <div class="note">
+    <strong>Рекомендация для VYRUS:</strong><br>
+    Начните с <strong>Yandex Games + VK Play</strong> — ваша аудитория в СНГ, игра на русском/английском.<br>
+    Добавьте <strong>rewarded video</strong> за:
+    <ul>
+      <li>Дополнительную мутацию перед боем</li>
+      <li>Реванш после поражения</li>
+      <li>Разблокировку редкого вируса</li>
+    </ul>
+    Это не нарушает баланс, но даёт доход.
+  </div>
+
+  <h2>5. Технические шаги для интеграции</h2>
+  <ol>
+    <li>Создайте отдельную сборку без рекламы для GitHub (open-source версия)</li>
+    <li>Создайте <code>ads/</code> ветку или <code>monetized/</code> сборку с интеграцией SDK</li>
+    <li>Используйте Vite environment variables: <code>import.meta.env.VITE_AD_PROVIDER</code></li>
+    <li>Оберните вызовы рекламы в <code>if (isMonetizedBuild)</code></li>
+    <li>Не храните ключи API в клиентском коде — вызывайте через ваш Bun-бэкенд (если есть)</li>
+  </ol>
+
+  <hr>
+  <p><em>Обновлено: январь 2026</em><br>
+  Стратегия монетизации для VYRUS v2 — фокус на rewarded-видео через Yandex/VK + позже — внутриигровые покупки с BattleServer.</p>
+</body>
+</html>

@@ -26,7 +26,7 @@ const Game: React.FC = () => {
   const [selectedPlayer, setSelectedPlayer] = useState(0);
   const [pointsLeft, setPointsLeft] = useState(16);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [leftMenuOpen, setLeftMenuOpen] = useState(false);
+  const [labMenuOpen, setLabMenuOpen] = useState(false);
   const workerRef = useRef<Worker | null>(null);
 
 
@@ -254,7 +254,7 @@ const Game: React.FC = () => {
     <div className="relative w-full h-full">
       {/* FPS Counter */}
 
-      <div className={`grid-container-adjusted`}>
+      <div className="grid-container-adjusted">
 
         {/* Center - Game Grid */}
         <div className="center-panel relative z-0 flex-1">
@@ -267,11 +267,139 @@ const Game: React.FC = () => {
 
       </div>
 
-      {/* Left Off-canvas menu - Virus Configuration */}
-      <div className={`fixed top-[0.5%] left-0 h-[98vh] w-[90%] md:w-[50%] bg-white bg-opacity-10 backdrop-blur-lg z-50 transform transition-transform duration-300 ease-in-out ${leftMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-[60] rounded-br-3xl left-sidebar`}>
-        <div className="h-full flex flex-col">
-          {/* Scrollable content area */}
-          <div className="flex-1 overflow-y-auto p-4">
+
+
+      {/* Right sidebar menu - appears when menu button is clicked */}
+      <div className={`fixed top-0 right-0 h-full w-64 bg-gray-900 bg-opacity-90 backdrop-blur-lg z-[70] transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} rounded-bl-3xl`}>
+        <div className="p-4 h-full flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold font-pixy">{t('menu')}</h2>
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="text-white hover:text-gray-300 text-2xl"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
+            <ul className="space-y-2">
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Go back to welcome screen
+                    window.location.reload();
+                  }}
+                >
+                  <span className="mr-3">🏠</span> {t('start')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Open laboratory menu
+                    setLabMenuOpen(true);
+                    setMenuOpen(false); // Close the main menu
+                  }}
+                >
+                  <span className="mr-3">🔬</span> {t('lab')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Save game state to localStorage
+                    localStorage.setItem('vyrusGameState', JSON.stringify(gameState));
+                    alert(t('gameSaved'));
+                  }}
+                >
+                  <span className="mr-3">💾</span> {t('save')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Load game state from localStorage
+                    const savedState = localStorage.getItem('vyrusGameState');
+                    if (savedState) {
+                      // In a real implementation, you would update the game state
+                      // For now, just show an alert
+                      alert(t('gameLoaded'));
+                    } else {
+                      alert(t('noSavedGame'));
+                    }
+                  }}
+                >
+                  <span className="mr-3">💾</span> {t('load')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Settings would go here
+                    alert(t('settingsComingSoon'));
+                  }}
+                >
+                  <span className="mr-3">⚙️</span> {t('settings')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Premium features would go here
+                    alert(t('premiumComingSoon'));
+                  }}
+                >
+                  <span className="mr-3">🎁</span> {t('premium')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Statistics would go here
+                    alert(t('statsComingSoon'));
+                  }}
+                >
+                  <span className="mr-3">📊</span> {t('stats')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  onClick={() => {
+                    // Close menu
+                    setMenuOpen(false);
+                  }}
+                >
+                  <span className="mr-3">❌</span> {t('closeMenu')}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Laboratory menu - appears when lab button is clicked */}
+      <div className={`fixed top-0 left-0 h-full w-full md:w-1/2 bg-gray-900 bg-opacity-90 backdrop-blur-lg z-[80] transform transition-transform duration-300 ease-in-out ${labMenuOpen ? 'translate-x-0' : '-translate-x-full'} rounded-br-3xl`}>
+        <div className="p-4 h-full flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold font-pixy">{t('lab')}</h2>
+            <button
+              onClick={() => setLabMenuOpen(false)}
+              className="text-white hover:text-gray-300 text-2xl"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
             {/* Row 1: Player tabs - full width */}
             <div className="grid grid-cols-4 gap-2 mb-4">
               {gameState.players.map((player, idx) => (
@@ -385,18 +513,16 @@ const Game: React.FC = () => {
         </div>
       </div>
 
-      {/* LAB button - moves with left sidebar on mobile, stays on right on desktop */}
-      <div className={`fixed top-4 z-[60] ${leftMenuOpen ? 'left-[90%] md:left-[50%]' : 'left-4'} md:right-4 md:left-auto transition-all duration-300 ease-in-out`}>
-        {/* LAB button - square with rectangle background */}
+      {/* Menu button in the right sidebar */}
+      <div className="fixed top-4 right-4 z-[60]">
         <button
-          onClick={() => setLeftMenuOpen(!leftMenuOpen)}
-          className="flex items-center justify-center font-pixy text-sm bg-white bg-opacity-10 backdrop-blur-lg rounded-lg px-3 py-2"
+          onClick={() => setMenuOpen(true)}
+          className="w-10 h-10 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-lg font-pixy text-sm transition-all duration-200"
         >
           <div className="flex flex-col items-center">
-            <div className="w-6 h-0.5 bg-white mb-1"></div>
-            <div className="w-6 h-0.5 bg-white mb-1"></div>
-            <div className="w-6 h-0.5 bg-white mb-1"></div>
-            <span className="text-sm">{t('lab')}</span>
+            <div className="w-4 h-0.5 bg-white mb-1"></div>
+            <div className="w-4 h-0.5 bg-white mb-1"></div>
+            <div className="w-4 h-0.5 bg-white"></div>
           </div>
         </button>
       </div>

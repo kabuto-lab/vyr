@@ -213,21 +213,8 @@ canvas {
   top: 0.5%;
   left: 0.5%;
   bottom: 60px; /* Additional space for taskbar and bottom buttons */
-  transition: margin-left 0.3s ease, margin-right 0.3s ease;
 }
 
-.grid-container-adjusted.ml-\[50\%\] {
-  margin-left: 50%;
-}
-
-.grid-container-adjusted.mr-\[50\%\] {
-  margin-right: 50%;
-}
-
-.grid-container-adjusted.ml-\[25\%\].mr-\[25\%\] {
-  margin-left: 25%;
-  margin-right: 25%;
-}
 
 /* Revert retro styling - back to original */
 

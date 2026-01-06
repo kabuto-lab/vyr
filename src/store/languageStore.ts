@@ -90,7 +90,20 @@ const translations: Record<Language, Record<string, string>> = {
     selectLanguage: 'Select Language',
     rotateDevice: 'Rotate Your Device',
     rotateForBestExperience: 'Please rotate your device to landscape mode for the best experience',
-    designedForLandscape: 'This game is designed for landscape orientation'
+    designedForLandscape: 'This game is designed for landscape orientation',
+    start: 'Start',
+    save: 'Save',
+    load: 'Load',
+    settings: 'Settings',
+    premium: 'Premium',
+    stats: 'Stats',
+    closeMenu: 'Close Menu',
+    gameSaved: 'Game saved successfully!',
+    gameLoaded: 'Game loaded successfully!',
+    noSavedGame: 'No saved game found!',
+    settingsComingSoon: 'Settings coming soon!',
+    premiumComingSoon: 'Premium features coming soon!',
+    statsComingSoon: 'Statistics coming soon!'
   },
   ru: {
     // Game state messages
@@ -157,7 +170,20 @@ const translations: Record<Language, Record<string, string>> = {
     selectLanguage: 'Выберите язык',
     rotateDevice: 'Переверните экран горизонтально',
     rotateForBestExperience: 'Пожалуйста, переверните устройство в альбомную ориентацию для лучшего опыта',
-    designedForLandscape: 'Эта игра разработана для альбомной ориентации'
+    designedForLandscape: 'Эта игра разработана для альбомной ориентации',
+    start: 'Старт',
+    save: 'Сохранить',
+    load: 'Загрузить',
+    settings: 'Настройки',
+    premium: 'Премиум',
+    stats: 'Статистика',
+    closeMenu: 'Закрыть меню',
+    gameSaved: 'Игра сохранена успешно!',
+    gameLoaded: 'Игра загружена успешно!',
+    noSavedGame: 'Сохраненная игра не найдена!',
+    settingsComingSoon: 'Настройки скоро появятся!',
+    premiumComingSoon: 'Премиум-функции скоро появятся!',
+    statsComingSoon: 'Статистика скоро появится!'
   }
 };
 
