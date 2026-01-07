@@ -276,7 +276,7 @@ const Game: React.FC = () => {
             <h2 className="text-xl font-bold font-furore">{t('menu')}</h2>
             <button
               onClick={() => setMenuOpen(false)}
-              className="text-white hover:text-gray-300 text-2xl"
+              className="text-white hover:text-gray-300 text-2xl font-furore"
             >
               &times;
             </button>
@@ -292,7 +292,7 @@ const Game: React.FC = () => {
                     window.location.reload();
                   }}
                 >
-                  <span className="mr-3">🏠</span> {t('start')}
+                  <span className="mr-3 font-furore">🏠</span> {t('start')}
                 </button>
               </li>
               <li>
@@ -304,7 +304,7 @@ const Game: React.FC = () => {
                     setMenuOpen(false); // Close the main menu
                   }}
                 >
-                  <span className="mr-3">🔬</span> {t('lab')}
+                  <span className="mr-3 font-furore">🔬</span> {t('lab')}
                 </button>
               </li>
               <li>
@@ -316,7 +316,7 @@ const Game: React.FC = () => {
                     alert(t('gameSaved'));
                   }}
                 >
-                  <span className="mr-3">💾</span> {t('save')}
+                  <span className="mr-3 font-furore">💾</span> {t('save')}
                 </button>
               </li>
               <li>
@@ -334,7 +334,7 @@ const Game: React.FC = () => {
                     }
                   }}
                 >
-                  <span className="mr-3">💾</span> {t('load')}
+                  <span className="mr-3 font-furore">💾</span> {t('load')}
                 </button>
               </li>
               <li>
@@ -345,7 +345,7 @@ const Game: React.FC = () => {
                     alert(t('settingsComingSoon'));
                   }}
                 >
-                  <span className="mr-3">⚙️</span> {t('settings')}
+                  <span className="mr-3 font-furore">⚙️</span> {t('settings')}
                 </button>
               </li>
               <li>
@@ -356,7 +356,7 @@ const Game: React.FC = () => {
                     alert(t('premiumComingSoon'));
                   }}
                 >
-                  <span className="mr-3">🎁</span> {t('premium')}
+                  <span className="mr-3 font-furore">🎁</span> {t('premium')}
                 </button>
               </li>
               <li>
@@ -367,7 +367,7 @@ const Game: React.FC = () => {
                     alert(t('statsComingSoon'));
                   }}
                 >
-                  <span className="mr-3">📊</span> {t('stats')}
+                  <span className="mr-3 font-furore">📊</span> {t('stats')}
                 </button>
               </li>
               <li>
@@ -421,7 +421,7 @@ const Game: React.FC = () => {
                     setMenuOpen(false);
                   }}
                 >
-                  <span className="mr-3">🧪</span> {t('test')}
+                  <span className="mr-3 font-furore">🧪</span> {t('test')}
                 </button>
               </li>
               <li>
@@ -432,7 +432,7 @@ const Game: React.FC = () => {
                     setMenuOpen(false);
                   }}
                 >
-                  <span className="mr-3">❌</span> {t('closeMenu')}
+                  <span className="mr-3 font-furore">❌</span> {t('closeMenu')}
                 </button>
               </li>
             </ul>
@@ -447,7 +447,7 @@ const Game: React.FC = () => {
             <h2 className="text-xl font-bold font-furore">{t('lab')}</h2>
             <button
               onClick={() => setLabMenuOpen(false)}
-              className="text-white hover:text-gray-300 text-2xl"
+              className="text-white hover:text-gray-300 text-2xl font-furore"
             >
               &times;
             </button>
@@ -470,9 +470,9 @@ const Game: React.FC = () => {
                     color: selectedPlayer === idx ? player.color : undefined
                   }}
                 >
-                  {t('virus')} {idx + 1}
+                  <span className="font-furore">{t('virus')} {idx + 1}</span>
                   {selectedPlayer === idx && (
-                    <span className={`absolute -bottom-4 left-0 right-0 text-center text-xs ${
+                    <span className={`absolute -bottom-4 left-0 right-0 text-center text-xs font-furore ${
                       pointsLeft === 0 ? 'text-green-400' : 'text-yellow-400'
                     }`}>
                       {pointsLeft}
@@ -503,13 +503,13 @@ const Game: React.FC = () => {
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
                 }`}
               >
-                {gameState.players[selectedPlayer].isReady ? t('ready') : t('markReady')}
+                <span className="font-furore">{gameState.players[selectedPlayer].isReady ? t('ready') : t('markReady')}</span>
               </button>
               <button
                 onClick={randomizePlayerParameters}
                 className="py-2 px-4 font-furore border-2 rounded-lg bg-purple-600 bg-opacity-70 border-purple-800 text-white hover:bg-purple-700"
               >
-                {t('randomize')}
+                <span className="font-furore">{t('randomize')}</span>
               </button>
               <button
                 onClick={startBattle}
@@ -520,13 +520,13 @@ const Game: React.FC = () => {
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
                 }`}
               >
-                {t('startBattle')}
+                <span className="font-furore">{t('startBattle')}</span>
               </button>
               <button
                 onClick={actions.resetGame}
                 className="py-2 px-4 font-furore border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
               >
-                {t('reset')}
+                <span className="font-furore">{t('reset')}</span>
               </button>
             </div>
 
@@ -540,7 +540,7 @@ const Game: React.FC = () => {
                     : 'bg-yellow-600 bg-opacity-70 border-yellow-800 text-white hover:bg-yellow-700'
                 }`}
               >
-                {gameState.isPaused ? t('resume') : t('pause')}
+                <span className="font-furore">{gameState.isPaused ? t('resume') : t('pause')}</span>
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(16)}
@@ -550,7 +550,7 @@ const Game: React.FC = () => {
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'
                 }`}
               >
-                16x
+                <span className="font-furore">16x</span>
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(64)}
@@ -560,7 +560,7 @@ const Game: React.FC = () => {
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'
                 }`}
               >
-                64x
+                <span className="font-furore">64x</span>
               </button>
             </div>
           </div>
@@ -571,7 +571,7 @@ const Game: React.FC = () => {
       <div className="fixed top-4 right-4 z-[60]">
         <button
           onClick={() => setMenuOpen(true)}
-          className="w-10 h-10 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-lg font-pixy text-sm transition-all duration-200"
+          className="w-10 h-10 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-lg font-furore text-sm transition-all duration-200"
         >
           <div className="flex flex-col items-center">
             <div className="w-4 h-0.5 bg-white mb-1"></div>
@@ -590,7 +590,7 @@ const Game: React.FC = () => {
           >
             <div className="w-full bg-gray-700 bg-opacity-50 rounded-full h-2"> {/* Changed h-1 to h-2 */}
               <div
-                className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold"
+                className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold font-furore"
                 style={{
                   width: `${Math.min(100, (player.territoryCount / 2450) * 100)}%`,
                   backgroundColor: player.color,
