@@ -27,6 +27,7 @@ const Game: React.FC = () => {
   const [pointsLeft, setPointsLeft] = useState(16);
   const [menuOpen, setMenuOpen] = useState(false);
   const [labMenuOpen, setLabMenuOpen] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const workerRef = useRef<Worker | null>(null);
 
 
@@ -119,6 +120,21 @@ const Game: React.FC = () => {
       }
     };
   }, [actions]);
+
+  // Listen for the showHelpModal event
+  useEffect(() => {
+    const handleShowHelpModal = () => {
+      setMenuOpen(false);
+      setLabMenuOpen(false);
+      setShowHelp(true);
+    };
+
+    window.addEventListener('showHelpModal', handleShowHelpModal);
+
+    return () => {
+      window.removeEventListener('showHelpModal', handleShowHelpModal);
+    };
+  }, []);
 
   // Simulation loop
   useEffect(() => {
@@ -625,6 +641,34 @@ const Game: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Help Modal */}
+      {showHelp && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-lg z-[100] flex items-center justify-center p-4"
+          onClick={() => setShowHelp(false)}
+        >
+          <div
+            className="bg-gray-800 rounded-xl border border-gray-700 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <h2 className="text-2xl font-bold font-furore text-center mb-4">{t('helpTitle')}</h2>
+              <div className="text-gray-300 mb-6 whitespace-pre-line">
+                {t('helpContent')}
+              </div>
+              <div className="flex justify-center">
+                <button
+                  onClick={() => setShowHelp(false)}
+                  className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-furore hover:from-blue-700 hover:to-indigo-700 transition-all"
+                >
+                  {t('close')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

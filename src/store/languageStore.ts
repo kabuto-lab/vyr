@@ -106,7 +106,20 @@ const translations: Record<Language, Record<string, string>> = {
     premiumComingSoon: 'Premium features coming soon!',
     statsComingSoon: 'Statistics coming soon!',
     welcomeTitle: 'VYRUS',
-    welcomeSubtitle: 'Strategic Virus Warfare Simulation'
+    welcomeSubtitle: 'Strategic Virus Warfare Simulation',
+    madeBy: 'Made by Lorem Totem',
+    gameTitle: 'VYRUS',
+    helpTitle: 'How to Play',
+    helpContent: `VYRUS is a strategic virus warfare simulation game where 4 different viruses compete for territory on a grid.
+
+1. Configure your virus by distributing 16 points among 16 different parameters
+2. Each parameter affects how your virus behaves during the battle
+3. Once all players are ready, click START BATTLE to begin
+4. Watch as your virus competes against others in real-time
+5. The virus that controls the most territory wins!
+
+Click anywhere to close this help.`,
+    close: 'CLOSE'
   },
   ru: {
     // Game state messages
@@ -189,7 +202,20 @@ const translations: Record<Language, Record<string, string>> = {
     premiumComingSoon: 'Премиум-функции скоро появятся!',
     statsComingSoon: 'Статистика скоро появится!',
     welcomeTitle: 'VYRUS',
-    welcomeSubtitle: 'Стратегическая вирусная война'
+    welcomeSubtitle: 'Стратегическая вирусная война',
+    madeBy: 'Сделано Lorem Totem',
+    gameTitle: 'VYRUS',
+    helpTitle: 'Как играть',
+    helpContent: `VYRUS - это стратегическая симуляция вирусной войны, в которой 4 разных вируса соревнуются за территорию на сетке.
+
+1. Настройте свой вирус, распределив 16 очков между 16 различными параметрами
+2. Каждый параметр влияет на поведение вашего вируса во время боя
+3. Как только все игроки будут готовы, нажмите НАЧАТЬ БОЙ, чтобы начать
+4. Наблюдайте, как ваш вирус сражается с другими в реальном времени
+5. Вирус, который контролирует больше всего территории, побеждает!
+
+Нажмите где угодно, чтобы закрыть это руководство.`,
+    close: 'ЗАКРЫТЬ'
   }
 };
 
