@@ -14,6 +14,7 @@
   src: url('../fnt/Furore.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 
@@ -40,11 +41,17 @@ canvas {
 }
 
 .font-furore {
-  font-family: 'Furore', Arial, sans-serif;
+  font-family: 'Furore', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern";
 }
 
 .font-pixy {
-  font-family: 'PIXY', monospace;
+  font-family: 'PIXY', 'Courier New', Courier, monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern";
 }
 
 @keyframes droplet-fall {
