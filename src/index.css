@@ -46,10 +46,11 @@ canvas {
 }
 
 .font-furore {
-  font-family: 'Furore', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Furore', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern";
+  text-rendering: optimizeLegibility;
 }
 
 .font-pixy {
