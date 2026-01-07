@@ -11,7 +11,12 @@
 
 @font-face {
   font-family: 'Furore';
-  src: url('../fnt/Furore.otf') format('opentype');
+  src: url('../fnt/Furore.woff2') format('woff2'),
+       url('../fnt/Furore.woff') format('woff'),
+       url('../fnt/Furore.ttf') format('truetype'),
+       url('../fnt/Furore.eot') format('embedded-opentype'),
+       url('../fnt/Furore.otf') format('opentype'),
+       url('../fnt/Furore.svg#Furore') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
