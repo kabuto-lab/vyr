@@ -326,9 +326,30 @@ const Game: React.FC = () => {
                     // Load game state from localStorage
                     const savedState = localStorage.getItem('vyrusGameState');
                     if (savedState) {
-                      // In a real implementation, you would update the game state
-                      // For now, just show an alert
-                      alert(t('gameLoaded'));
+                      try {
+                        const parsedState = JSON.parse(savedState);
+
+                        // Update the game state using the store actions
+                        actions.setGameState(parsedState.gameState);
+                        actions.updateGrid(parsedState.grid, parsedState.cellAge);
+                        actions.updatePlayers(parsedState.players);
+                        actions.updateTentacles(parsedState.tentacles);
+                        actions.updateSettings(parsedState.settings);
+
+                        // Update turn and phase
+                        actions.updateTurn(parsedState.turn);
+
+                        // Update simulation speed and pause state
+                        actions.setSimulationSpeed(parsedState.simulationSpeed);
+                        if (parsedState.isPaused !== gameState.isPaused) {
+                          actions.togglePause();
+                        }
+
+                        alert(t('gameLoaded'));
+                      } catch (error) {
+                        console.error('Error loading game state:', error);
+                        alert(t('noSavedGame'));
+                      }
                     } else {
                       alert(t('noSavedGame'));
                     }
