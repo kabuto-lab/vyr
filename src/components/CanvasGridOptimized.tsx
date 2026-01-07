@@ -159,6 +159,7 @@ const CanvasGridOptimized: React.FC = () => {
         const timeRowFactor2 = timeFactor * 2 + randomSeed(row * 200, col * 200) * 100;
         const pulseFactor = 0.9 + 0.1 * Math.sin(timeRowFactor2 + randomSeed(row * 200, col * 200) * 100);
 
+        // Fixed size for all cells (no age-based sizing)
         let width = (cellWidth * 0.4) * sizeVariation * breathingFactor;
         let height = (cellHeight * 0.4) * sizeVariation * breathingFactor;
 

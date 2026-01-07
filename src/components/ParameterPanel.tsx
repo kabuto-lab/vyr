@@ -184,12 +184,9 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
             style={{ height: `${heightPercentage}%` }}
           />
 
-          {/* Emoji: -1 on click with animation for specific emojis */}
+          {/* Emoji: -1 on click */}
           <div
-            className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 text-sm z-20 ${
-              emoji === '🔄' ? 'animate-spin' :
-              emoji === '🕵️' ? 'animate-pulse' : ''
-            }`}
+            className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-sm z-20"
             onClick={(e) => {
               e.stopPropagation(); // Prevent +1 trigger
               onDecrease();

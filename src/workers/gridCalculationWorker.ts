@@ -596,7 +596,7 @@ function calculateNextGameState(
     if (newGrid[attempt.to.row][attempt.to.col] === null) {
       newGrid[attempt.to.row][attempt.to.col] = attempt.player;
       // Update cell age - new cell born this turn
-      cellAge[attempt.to.row][attempt.to.col] = turn;
+      cellAge[attempt.to.row][attempt.to.col] = 0; // New cell has age 0
     }
   }
 
@@ -649,6 +649,8 @@ function calculateNextGameState(
       }
     }
   }
+
+  // No age increment - age represents the turn when the cell was born
 
   // Count territories for each player
   const territoryCounts = [0, 0, 0, 0];

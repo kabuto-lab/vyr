@@ -454,7 +454,8 @@ export const useGameStore = create<GameStore>((set) => ({
           territoryCount: 0,
           preferredDirection: null,
           lastMutationTurn: 0,
-        }))
+        })),
+        cellAge: Array(35).fill(null).map(() => Array(70).fill(-1)), // Reset cell ages
       }
     })),
 
@@ -575,7 +576,7 @@ export const useGameStore = create<GameStore>((set) => ({
 
       // Initialize cell age grid
       const initialCellAge = Array(35).fill(null).map(() => Array(70).fill(-1));
-      // Set birth turn for starting colonies
+      // Set birth age for starting colonies (age 0, will become 1 after first turn)
       initialCellAge[2][2] = 0;   // Player 0 starting position
       initialCellAge[2][67] = 0;  // Player 1 starting position
       initialCellAge[32][2] = 0;  // Player 2 starting position

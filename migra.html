@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYRUS Migration - Simplified Version</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #111827;
+      color: white;
+      overflow: hidden;
+    }
+    
+    #gameContainer {
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      max-width: 100%;
+    }
+    
+    #gridContainer {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      grid-template-rows: repeat(15, 1fr);
+      gap: 1px;
+      background-color: #374151;
+      border: 1px solid #4B5563;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    
+    .cell {
+      background-color: #1F2937;
+      transition: background-color 0.2s;
+      position: relative;
+    }
+    
+    .cell-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      position: relative;
+    }
+    
+    .cell-circle {
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    
+    #controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      background-color: #1F2937;
+      border-radius: 5px;
+    }
+    
+    button {
+      padding: 8px 16px;
+      background-color: #3B82F6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background-color: #2563EB;
+    }
+    
+    button:disabled {
+      background-color: #4B5563;
+      cursor: not-allowed;
+    }
+    
+    #status {
+      margin-left: auto;
+      font-weight: bold;
+    }
+    
+    #legend {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <h1>VYRUS - Simplified Migration Version</h1>
+  <p>This is a simplified version of the VYRUS game demonstrating the core mechanics with age-based cell sizing.</p>
+  
+  <div id="gameContainer">
+    <div id="gridContainer"></div>
+    
+    <div id="controls">
+      <button id="startBtn">Start Battle</button>
+      <button id="pauseBtn" disabled>Pause</button>
+      <button id="resetBtn">Reset</button>
+      <div id="speedControl">
+        <label for="speed">Speed:</label>
+        <select id="speed">
+          <option value="100">Slow (100ms)</option>
+          <option value="50" selected>Medium (50ms)</option>
+          <option value="20">Fast (20ms)</option>
+        </select>
+      </div>
+      <div id="status">Turn: <span id="turnCount">0</span> | Phase: <span id="phaseCount">0</span></div>
+    </div>
+    
+    <div id="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #EF4444;"></div>
+        <span>Player 1</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #3B82F6;"></div>
+        <span>Player 2</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #10B981;"></div>
+        <span>Player 3</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #F59E0B;"></div>
+        <span>Player 4</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Game constants
+    const ROWS = 15;
+    const COLS = 20;
+    const PLAYERS = 4;
+    const MAX_AGE = 20;
+    
+    // Game state
+    let grid = [];
+    let cellAge = [];
+    let turn = 0;
+    let phase = 0;
+    let isRunning = false;
+    let gameInterval = null;
+    let simulationSpeed = 50; // ms
+    
+    // Player colors
+    const playerColors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B'];
+    
+    // Initialize the game grid
+    function initializeGrid() {
+      grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
+      cellAge = Array(ROWS).fill().map(() => Array(COLS).fill(-1));
+      
+      // Place starting colonies for each player in corners
+      // Player 0 - top-left
+      grid[1][1] = 0;
+      cellAge[1][1] = 1;
+      
+      // Player 1 - top-right
+      grid[1][COLS-2] = 1;
+      cellAge[1][COLS-2] = 1;
+      
+      // Player 2 - bottom-left
+      grid[ROWS-2][1] = 2;
+      cellAge[ROWS-2][1] = 1;
+      
+      // Player 3 - bottom-right
+      grid[ROWS-2][COLS-2] = 3;
+      cellAge[ROWS-2][COLS-2] = 1;
+      
+      renderGrid();
+    }
+    
+    // Render the grid to the DOM
+    function renderGrid() {
+      const gridContainer = document.getElementById('gridContainer');
+      gridContainer.innerHTML = '';
+      
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const cellValue = grid[row][col];
+          const age = cellAge[row][col];
+          
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = row;
+          cell.dataset.col = col;
+          
+          const cellContent = document.createElement('div');
+          cellContent.className = 'cell-content';
+          
+          if (cellValue !== null) {
+            // Calculate size based on age (10% for age 1, 100% for age 20)
+            const clampedAge = Math.min(MAX_AGE, Math.max(1, age));
+            const ageFactor = 0.1 + ((clampedAge - 1) / (MAX_AGE - 1)) * 0.9; // From 10% to 100%
+            
+            const cellCircle = document.createElement('div');
+            cellCircle.className = 'cell-circle';
+            cellCircle.style.backgroundColor = playerColors[cellValue];
+            cellCircle.style.width = `${100 * ageFactor}%`;
+            cellCircle.style.height = `${100 * ageFactor}%`;
+            cellCircle.style.transform = `scale(${ageFactor})`;
+            
+            cellContent.appendChild(cellCircle);
+          }
+          
+          cell.appendChild(cellContent);
+          gridContainer.appendChild(cell);
+        }
+      }
+    }
+    
+    // Calculate the next state of the game
+    function calculateNextState() {
+      // Create a copy of the current grid
+      const newGrid = grid.map(row => [...row]);
+      const newCellAge = cellAge.map(row => [...row]);
+      
+      // Increment age of all existing cells (up to max age of 20)
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          if (newGrid[row][col] !== null && newCellAge[row][col] >= 0) {
+            // Increase age but cap at MAX_AGE
+            newCellAge[row][col] = Math.min(MAX_AGE, newCellAge[row][col] + 1);
+          }
+        }
+      }
+      
+      // Expansion phase - cells attempt to spread to adjacent empty cells
+      const expansionAttempts = [];
+      
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const owner = newGrid[row][col];
+          if (owner !== null) {
+            // Get adjacent empty cells
+            const adjacentCells = getAdjacentCells(row, col);
+            const emptyCells = adjacentCells.filter(pos => newGrid[pos.row][pos.col] === null);
+            
+            if (emptyCells.length > 0 && Math.random() < 0.3) { // 30% chance to expand
+              const targetCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+              
+              expansionAttempts.push({
+                from: { row, col },
+                to: targetCell,
+                player: owner
+              });
+            }
+          }
+        }
+      }
+      
+      // Execute expansion attempts
+      for (const attempt of expansionAttempts) {
+        // Only expand if the target cell is still empty
+        if (newGrid[attempt.to.row][attempt.to.col] === null) {
+          newGrid[attempt.to.row][attempt.to.col] = attempt.player;
+          newCellAge[attempt.to.row][attempt.to.col] = 1; // New cell starts at age 1
+        }
+      }
+      
+      // Combat phase - cells battle with adjacent opponent cells
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const owner = newGrid[row][col];
+          if (owner !== null) {
+            // Get adjacent opponent cells
+            const adjacentCells = getAdjacentCells(row, col);
+            const opponentCells = adjacentCells.filter(pos => {
+              const cellOwner = newGrid[pos.row][pos.col];
+              return cellOwner !== null && cellOwner !== owner;
+            });
+            
+            if (opponentCells.length > 0 && Math.random() < 0.1) { // 10% chance to attack
+              const targetCell = opponentCells[Math.floor(Math.random() * opponentCells.length)];
+              
+              // Perform attack - the attacker wins
+              newGrid[targetCell.row][targetCell.col] = owner;
+              newCellAge[targetCell.row][targetCell.col] = 1; // New cell starts at age 1
+            }
+          }
+        }
+      }
+      
+      // Update the grid and cell ages
+      grid = newGrid;
+      cellAge = newCellAge;
+      
+      // Update turn and phase
+      turn++;
+      phase = (phase + 1) % 7; // 7 phases per turn
+      
+      // Update UI
+      document.getElementById('turnCount').textContent = turn;
+      document.getElementById('phaseCount').textContent = phase;
+      
+      renderGrid();
+    }
+    
+    // Helper function to get adjacent cells
+    function getAdjacentCells(row, col) {
+      const adjacent = [];
+      const directions = [
+        [-1, 0], [1, 0], [0, -1], [0, 1],  // up, down, left, right
+        [-1, -1], [-1, 1], [1, -1], [1, 1]  // diagonals
+      ];
+      
+      for (const [dr, dc] of directions) {
+        const newRow = row + dr;
+        const newCol = col + dc;
+        
+        if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS) {
+          adjacent.push({ row: newRow, col: newCol });
+        }
+      }
+      
+      return adjacent;
+    }
+    
+    // Start the game simulation
+    function startGame() {
+      if (isRunning) return;
+      
+      isRunning = true;
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('pauseBtn').disabled = false;
+      
+      gameInterval = setInterval(() => {
+        calculateNextState();
+      }, simulationSpeed);
+    }
+    
+    // Pause the game simulation
+    function pauseGame() {
+      if (!isRunning) return;
+      
+      isRunning = false;
+      clearInterval(gameInterval);
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('pauseBtn').disabled = true;
+    }
+    
+    // Reset the game
+    function resetGame() {
+      pauseGame();
+      turn = 0;
+      phase = 0;
+      document.getElementById('turnCount').textContent = turn;
+      document.getElementById('phaseCount').textContent = phase;
+      initializeGrid();
+    }
+    
+    // Event listeners
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('pauseBtn').addEventListener('click', pauseGame);
+    document.getElementById('resetBtn').addEventListener('click', resetGame);
+    document.getElementById('speed').addEventListener('change', (e) => {
+      simulationSpeed = parseInt(e.target.value);
+      if (isRunning) {
+        pauseGame();
+        startGame(); // Restart with new speed
+      }
+    });
+    
+    // Initialize the game
+    initializeGrid();
+  </script>
+</body>
+</html>

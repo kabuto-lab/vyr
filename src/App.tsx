@@ -4,6 +4,7 @@ import Game from './components/Game';
 import FullscreenButton from './components/FullscreenButton';
 import WelcomeScreen from './components/WelcomeScreen';
 import { useState, useEffect } from 'react';
+import { useLanguageStore } from './store/languageStore';
 
 function App() {
   // State to track if the game has started (welcome screen is dismissed)
@@ -12,6 +13,9 @@ function App() {
   const [isLandscape, setIsLandscape] = useState(true);
   // State to track if device is mobile
   const [isMobile, setIsMobile] = useState(false);
+
+  // Get the translation function from the language store
+  const { t } = useLanguageStore();
 
   // Function to start the game after the welcome screen
   const startGame = () => {
