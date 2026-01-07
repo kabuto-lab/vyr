@@ -273,7 +273,7 @@ const Game: React.FC = () => {
       <div className={`fixed top-0 right-0 h-full w-64 bg-black bg-opacity-30 backdrop-blur-lg z-[70] transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} rounded-bl-3xl`}>
         <div className="p-4 h-full flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold font-pixy">{t('menu')}</h2>
+            <h2 className="text-xl font-bold font-furore">{t('menu')}</h2>
             <button
               onClick={() => setMenuOpen(false)}
               className="text-white hover:text-gray-300 text-2xl"
@@ -286,7 +286,7 @@ const Game: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Go back to welcome screen
                     window.location.reload();
@@ -297,7 +297,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Open laboratory menu
                     setLabMenuOpen(true);
@@ -309,7 +309,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Save game state to localStorage
                     localStorage.setItem('vyrusGameState', JSON.stringify(gameState));
@@ -321,7 +321,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Load game state from localStorage
                     const savedState = localStorage.getItem('vyrusGameState');
@@ -339,7 +339,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Settings would go here
                     alert(t('settingsComingSoon'));
@@ -350,7 +350,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Premium features would go here
                     alert(t('premiumComingSoon'));
@@ -361,7 +361,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Statistics would go here
                     alert(t('statsComingSoon'));
@@ -372,7 +372,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Test battle - randomize all virus parameters, mark all as ready, and start battle at 64x speed
                     for (let i = 0; i < gameState.players.length; i++) {
@@ -426,7 +426,7 @@ const Game: React.FC = () => {
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
                     // Close menu
                     setMenuOpen(false);
@@ -444,7 +444,7 @@ const Game: React.FC = () => {
       <div className={`fixed top-0 left-0 h-full w-full md:w-1/2 bg-black bg-opacity-30 backdrop-blur-lg z-[80] transform transition-transform duration-300 ease-in-out ${labMenuOpen ? 'translate-x-0' : '-translate-x-full'} rounded-br-3xl`}>
         <div className="p-4 h-full flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold font-pixy">{t('lab')}</h2>
+            <h2 className="text-xl font-bold font-furore">{t('lab')}</h2>
             <button
               onClick={() => setLabMenuOpen(false)}
               className="text-white hover:text-gray-300 text-2xl"
@@ -460,7 +460,7 @@ const Game: React.FC = () => {
                 <button
                   key={player.id}
                   onClick={() => setSelectedPlayer(idx)}
-                  className={`px-3 py-2 text-sm font-bold font-pixy whitespace-nowrap relative ${
+                  className={`px-3 py-2 text-sm font-bold font-furore whitespace-nowrap relative ${
                     selectedPlayer === idx
                       ? 'border-t-2 border-white text-white'
                       : 'text-gray-300 hover:text-white'
@@ -497,7 +497,7 @@ const Game: React.FC = () => {
             <div className="grid grid-cols-2 gap-2 mb-4">
               <button
                 onClick={handlePlayerReady}
-                className={`py-2 px-4 font-pixy border-2 rounded-lg ${
+                className={`py-2 px-4 font-furore border-2 rounded-lg ${
                   validateParameterAllocation(gameState.players[selectedPlayer].virus).isValid
                     ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white hover:bg-blue-700'
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
@@ -507,14 +507,14 @@ const Game: React.FC = () => {
               </button>
               <button
                 onClick={randomizePlayerParameters}
-                className="py-2 px-4 font-pixy border-2 rounded-lg bg-purple-600 bg-opacity-70 border-purple-800 text-white hover:bg-purple-700"
+                className="py-2 px-4 font-furore border-2 rounded-lg bg-purple-600 bg-opacity-70 border-purple-800 text-white hover:bg-purple-700"
               >
                 {t('randomize')}
               </button>
               <button
                 onClick={startBattle}
                 disabled={!gameState.players.every(p => p.isReady)}
-                className={`py-2 px-4 font-pixy border-2 rounded-lg ${
+                className={`py-2 px-4 font-furore border-2 rounded-lg ${
                   gameState.players.every(p => p.isReady)
                     ? 'bg-green-600 bg-opacity-70 border-green-800 text-white hover:bg-green-700'
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-gray-400 cursor-not-allowed'
@@ -524,7 +524,7 @@ const Game: React.FC = () => {
               </button>
               <button
                 onClick={actions.resetGame}
-                className="py-2 px-4 font-pixy border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
+                className="py-2 px-4 font-furore border-2 rounded-lg bg-red-600 bg-opacity-70 border-red-800 text-white hover:bg-red-700"
               >
                 {t('reset')}
               </button>
@@ -534,7 +534,7 @@ const Game: React.FC = () => {
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={actions.togglePause}
-                className={`py-2 px-4 font-pixy border-2 rounded-lg ${
+                className={`py-2 px-4 font-furore border-2 rounded-lg ${
                   gameState.isPaused
                     ? 'bg-green-600 bg-opacity-70 border-green-800 text-white hover:bg-green-700'
                     : 'bg-yellow-600 bg-opacity-70 border-yellow-800 text-white hover:bg-yellow-700'
@@ -544,7 +544,7 @@ const Game: React.FC = () => {
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(16)}
-                className={`py-2 px-4 font-pixy border-2 rounded-lg ${
+                className={`py-2 px-4 font-furore border-2 rounded-lg ${
                   gameState.simulationSpeed === 16
                     ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white'
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'
@@ -554,7 +554,7 @@ const Game: React.FC = () => {
               </button>
               <button
                 onClick={() => actions.setSimulationSpeed(64)}
-                className={`py-2 px-4 font-pixy border-2 rounded-lg ${
+                className={`py-2 px-4 font-furore border-2 rounded-lg ${
                   gameState.simulationSpeed === 64
                     ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white'
                     : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'

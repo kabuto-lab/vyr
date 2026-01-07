@@ -9,6 +9,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Furore';
+  src: url('../fnt/Furore.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 body {
   margin: 0;
@@ -30,6 +37,14 @@ canvas {
 .param-name {
   font-size: 0.6rem;
   line-height: 1;
+}
+
+.font-furore {
+  font-family: 'Furore', Arial, sans-serif;
+}
+
+.font-pixy {
+  font-family: 'PIXY', monospace;
 }
 
 @keyframes droplet-fall {
