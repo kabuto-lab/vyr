@@ -8,6 +8,7 @@ export default {
     extend: {
       fontFamily: {
         pixy: ['PIXY', 'sans-serif'],
+        furore: ['Furore', 'sans-serif'],
       }
     },
   },

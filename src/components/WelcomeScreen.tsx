@@ -75,7 +75,7 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 py-8 max-w-2xl w-full">
         {/* Logo/title area */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold mb-2 font-pixy text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500">
+          <h1 className="text-4xl md:text-6xl font-bold mb-2 font-furore text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500">
             {t('welcomeTitle')}
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-8">

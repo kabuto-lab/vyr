@@ -104,7 +104,9 @@ const translations: Record<Language, Record<string, string>> = {
     noSavedGame: 'No saved game found!',
     settingsComingSoon: 'Settings coming soon!',
     premiumComingSoon: 'Premium features coming soon!',
-    statsComingSoon: 'Statistics coming soon!'
+    statsComingSoon: 'Statistics coming soon!',
+    welcomeTitle: 'VYRUS',
+    welcomeSubtitle: 'Strategic Virus Warfare Simulation'
   },
   ru: {
     // Game state messages
@@ -185,7 +187,9 @@ const translations: Record<Language, Record<string, string>> = {
     noSavedGame: 'Сохраненная игра не найдена!',
     settingsComingSoon: 'Настройки скоро появятся!',
     premiumComingSoon: 'Премиум-функции скоро появятся!',
-    statsComingSoon: 'Статистика скоро появится!'
+    statsComingSoon: 'Статистика скоро появится!',
+    welcomeTitle: 'VYRUS',
+    welcomeSubtitle: 'Стратегическая вирусная война'
   }
 };
 
