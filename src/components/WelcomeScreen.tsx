@@ -76,7 +76,7 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
         {/* Logo/title area */}
         <div className="mb-8">
           <h1 className="text-4xl md:text-6xl font-bold mb-2 font-furore text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500">
-            {t('gameTitle')}
+            VYRUS
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-4">
             {t('welcomeSubtitle')}
@@ -88,7 +88,7 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
               rel="noopener noreferrer"
               className="text-sm text-gray-400 hover:text-white transition-colors font-furore underline"
             >
-              {t('madeBy')}
+              Made by Lorem Totem
             </a>
           </div>
         </div>
