@@ -315,6 +315,17 @@ const Game: React.FC = () => {
                 <button
                   className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
+                    // New item functionality
+                    alert('New item clicked!');
+                  }}
+                >
+                  <span className="mr-3 font-furore">🆕</span> New Item
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  onClick={() => {
                     // Go back to welcome screen
                     window.location.reload();
                   }}
