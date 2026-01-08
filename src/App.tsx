@@ -20,12 +20,6 @@ function App() {
   // Function to start the game after the welcome screen
   const startGame = () => {
     setGameStarted(true);
-
-    // Show help modal after a short delay to allow the game to load
-    setTimeout(() => {
-      const event = new CustomEvent('showHelpModal', { detail: {} });
-      window.dispatchEvent(event);
-    }, 500);
   };
 
   // Check if device is mobile and set orientation

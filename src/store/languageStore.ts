@@ -30,7 +30,7 @@ const translations: Record<Language, Record<string, string>> = {
     gameStateSetup: 'Setup',
     gameStateBattle: 'Battle',
     gameStateGameOver: 'Game Over',
-    
+
     // Parameter names
     aggression: 'Aggression',
     mutation: 'Mutation',
@@ -48,7 +48,7 @@ const translations: Record<Language, Record<string, string>> = {
     infectivity: 'Infectivity',
     lethality: 'Lethality',
     stability: 'Stability',
-    
+
     // UI elements
     configure: 'Configure:',
     virus: 'VIRUS',
@@ -81,11 +81,11 @@ const translations: Record<Language, Record<string, string>> = {
     // Game instructions
     gameInstructions: 'Distribute 16 points among 16 virus parameters',
     pointsLeft: 'Points Left:',
-    
+
     // Victory messages
     victory: 'Victory!',
-    defeated: 'Defeated!',
-    
+    defeated: 'Defected!',
+
     // Other
     loading: 'Loading...',
     selectLanguage: 'Select Language',
@@ -223,20 +223,20 @@ Click anywhere to close this help.`,
 export const useLanguageStore = create<LanguageStore>((set, get) => ({
   // Default language is English
   currentLanguage: 'en',
-  
+
   // Function to set the current language
   setLanguage: (lang: Language) => {
     // Update the language in the store
     set({ currentLanguage: lang });
-    
+
     // Save the language preference to localStorage for persistence
     localStorage.setItem('vyrus-language', lang);
   },
-  
+
   // Translation function that returns the appropriate text based on the current language
   t: (key: string): string => {
     const { currentLanguage } = get();
-    
+
     // Return the translation if it exists, otherwise return the key
     return translations[currentLanguage][key] || key;
   }

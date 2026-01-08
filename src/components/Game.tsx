@@ -465,6 +465,18 @@ const Game: React.FC = () => {
                 <button
                   className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
+                    // Show help modal
+                    setShowHelp(true);
+                    setMenuOpen(false);
+                  }}
+                >
+                  <span className="mr-3 font-furore">❓</span> {t('helpTitle')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  onClick={() => {
                     // Close menu
                     setMenuOpen(false);
                   }}
