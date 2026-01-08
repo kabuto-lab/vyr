@@ -135,8 +135,8 @@ const CanvasGridOptimized: React.FC = () => {
       if (owner !== null) {
         const player = gameState.players[owner];
         const virusParams = player?.virus || {};
-        const birthTurn = gameState.cellAge?.[row]?.[col] ?? -1;
-        const lifetime = birthTurn >= 0 ? gameState.turn - birthTurn : 0;
+        const cellAge = gameState.cellAge?.[row]?.[col] ?? -1;
+        const lifetime = cellAge >= 0 ? cellAge : 0;
 
         let color = '#EF4444';
         if (owner === 0) color = '#EF4444';
@@ -173,11 +173,11 @@ const CanvasGridOptimized: React.FC = () => {
           ctx.fillStyle = color;
         }
 
-        if (lifetime < 10) {
+        if (lifetime < 100) { // 10 times slower aging
           ctx.beginPath();
           ctx.ellipse(centerX + variationX, centerY + variationY, width, height, 0, 0, 2 * Math.PI);
-        } else if (lifetime < 50) {
-          const transitionFactor = (lifetime - 10) / 40;
+        } else if (lifetime < 500) { // 10 times slower aging
+          const transitionFactor = (lifetime - 100) / 400; // 10 times slower aging
           const cornerRadius = 5 + 10 * transitionFactor;
           roundedRect(ctx, centerX + variationX - width, centerY + variationY - height, width * 2, height * 2, cornerRadius);
         } else {

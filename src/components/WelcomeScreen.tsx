@@ -22,6 +22,8 @@ type Language = 'en' | 'ru';
 const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
   // State to manage loading state when starting the game
   const [isLoading, setIsLoading] = useState(false);
+  // State for help modal
+  const [showHelp, setShowHelp] = useState(false);
 
   // Get the translation function and setLanguage from the language store
   const { currentLanguage, setLanguage, t } = useLanguageStore();
@@ -93,6 +95,14 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
           </div>
         </div>
 
+        {/* Central Help button */}
+        <button
+          onClick={() => setShowHelp(true)}
+          className="mb-8 px-8 py-4 rounded-full text-xl font-bold transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30"
+        >
+          {t('helpTitle')}
+        </button>
+
         {/* Language selection */}
         <div className="mb-10 w-full max-w-md">
           <h2 className="text-xl font-semibold mb-4">{t('selectLanguage')}</h2>
@@ -153,6 +163,34 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
               : 'Стратегическая игра, в которой 4 вируса соревнуются за территорию, используя 16 различных параметров'}
           </p>
         </div>
+
+        {/* Help Modal */}
+        {showHelp && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-lg z-[100] flex items-center justify-center p-4"
+            onClick={() => setShowHelp(false)}
+          >
+            <div
+              className="bg-gray-800 rounded-xl border border-gray-700 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <h2 className="text-2xl font-bold font-furore text-center mb-4">{t('helpTitle')}</h2>
+                <div className="text-gray-300 mb-6 whitespace-pre-line">
+                  {t('helpContent')}
+                </div>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setShowHelp(false)}
+                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-furore hover:from-blue-700 hover:to-indigo-700 transition-all"
+                  >
+                    {t('close')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CSS for animations */}

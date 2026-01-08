@@ -175,8 +175,8 @@ function calculateNextGameState(
       if (updatedTentacle.progress >= 1.0) {
         newGrid[updatedTentacle.to.row][updatedTentacle.to.col] = updatedTentacle.owner;
 
-        // Update cell age - new cell born this turn
-        cellAge[updatedTentacle.to.row][updatedTentacle.to.col] = turn;
+        // Update cell age - new cell born this turn (will have age 1 after increment)
+        cellAge[updatedTentacle.to.row][updatedTentacle.to.col] = 0;
 
         // Add interaction events for the capture
         interactionEvents.push({
@@ -542,8 +542,8 @@ function calculateNextGameState(
                       if (newGrid[cell.row][cell.col] === null && Math.random() < 0.7) { // 70% success rate
                         newGrid[cell.row][cell.col] = owner;
 
-                        // Update cell age - new cell born this turn
-                        cellAge[cell.row][cell.col] = turn;
+                        // Update cell age - new cell born this turn (will have age 1 after increment)
+                        cellAge[cell.row][cell.col] = 0;
 
                         // Removed expansion event to reduce visual clutter
                         // expansionEvents.push({
@@ -650,7 +650,16 @@ function calculateNextGameState(
     }
   }
 
-  // No age increment - age represents the turn when the cell was born
+  // Increment age for all existing cells (slower aging - 10x slower)
+  if (turn % 10 === 0) { // Only age cells every 10 turns
+    for (let row = 0; row < 35; row++) {
+      for (let col = 0; col < 70; col++) {
+        if (cellAge[row][col] !== -1) { // If cell exists (not empty)
+          cellAge[row][col]++;
+        }
+      }
+    }
+  }
 
   // Count territories for each player
   const territoryCounts = [0, 0, 0, 0];

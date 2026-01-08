@@ -304,6 +304,17 @@ const Game: React.FC = () => {
                 <button
                   className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
                   onClick={() => {
+                    // Placeholder for item 1
+                    console.log('Item 1 clicked');
+                  }}
+                >
+                  <span className="mr-3 font-furore">1️⃣</span> 1
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  onClick={() => {
                     // Go back to welcome screen
                     window.location.reload();
                   }}
@@ -654,7 +665,7 @@ const Game: React.FC = () => {
         ))}
       </div>
 
-      {/* Help Modal */}
+      {/* ✅ FIX: Переносим модальное окно ВНУТРЬ корневого контейнера для соблюдения правила единственного корневого элемента React */}
       {showHelp && (
         <div
           className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-lg z-[100] flex items-center justify-center p-4"
