@@ -1,0 +1,52 @@
+```
+# Dependencies
+node_modules/
+.julia/
+.zig-cache/
+zig-cache/
+target/
+.gradle/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+.env
+.env.local
+.env.*
+
+# Build artifacts
+dist/
+build/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Cache directories
+.mypy_cache/
+.pytest_cache/
+```
