@@ -4,9 +4,20 @@
 
 @font-face {
   font-family: 'PIXY';
-  src: url('../fnt/PIXY.ttf') format('truetype');
+  src: url('../fnt/PIXY.woff2') format('woff2'),
+       url('../fnt/PIXY.woff') format('woff'),
+       url('../fnt/PIXY.ttf') format('truetype'),
+       url('../fnt/PIXY.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
+}
+
+.font-pixy {
+  font-family: 'PIXY', 'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern";
 }
 
 @font-face {
@@ -61,10 +72,14 @@ canvas {
 }
 
 .font-pixy {
-  font-family: 'PIXY', 'Courier New', Courier, monospace;
+  font-family: 'PIXY', 'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern";
+  text-rendering: optimizeLegibility;
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  font-kerning: normal;
 }
 
 .font-buse {
