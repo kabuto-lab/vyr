@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYRUS Project Architecture Mindmap</title>
+    <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #network {
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+        }
+        .legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .legend-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        .legend-label {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -500px; /* Initially hidden */
+            width: 500px;
+            height: 100vh;
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            padding: 15px;
+            background-color: #272932;
+            border-bottom: 1px solid #44475a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sidebar-title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: #f8f8f2;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .editor-container {
+            flex: 1;
+            overflow: auto;
+            padding: 15px;
+        }
+        
+        .file-content {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #f8f8f2;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #f8f8f2;
+        }
+        
+        .instructions {
+            padding: 15px;
+            background-color: #ffcc00;
+            color: #000;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        /* Context menu styles */
+        .context-menu {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 3000;
+            display: none;
+            min-width: 150px;
+        }
+        
+        .context-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .context-menu li {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .context-menu li:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .context-menu li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="network"></div>
+    <div class="legend">
+        <h3>Legend</h3>
+        <div class="legend-item">
+            <input type="checkbox" id="main-components" class="legend-checkbox" checked>
+            <div class="legend-color" style="background-color: #FF6B6B;"></div>
+            <label for="main-components" class="legend-label">Main Components</label>
+        </div>
+        <div class="legend-item">
+            <input type="checkbox" id="store-state" class="legend-checkbox" checked>
+            <div class="legend-color" style="background-color: #4ECDC4;"></div>
+            <label for="store-state" class="legend-label">Store/State</label>
+        </div>
+        <div class="legend-item">
+            <input type="checkbox" id="workers" class="legend-checkbox" checked>
+            <label for="workers" class="legend-label"><div class="legend-color" style="background-color: #45B7D1;"></div>Workers</label>
+        </div>
+        <div class="legend-item">
+            <input type="checkbox" id="utils-types" class="legend-checkbox" checked>
+            <label for="utils-types" class="legend-label"><div class="legend-color" style="background-color: #96CEB4;"></div>Utils/Types</label>
+        </div>
+        <div class="legend-item">
+            <input type="checkbox" id="ui-components" class="legend-checkbox" checked>
+            <label for="ui-components" class="legend-label"><div class="legend-color" style="background-color: #FFEAA7;"></div>UI Components</label>
+        </div>
+        <div class="legend-item">
+            <input type="checkbox" id="configuration" class="legend-checkbox" checked>
+            <label for="configuration" class="legend-label"><div class="legend-color" style="background-color: #DDA0DD;"></div>Configuration</label>
+        </div>
+    </div>
+
+    <!-- Instructions banner -->
+    <div class="instructions">
+        Note: To view file contents, serve this HTML file from a local web server (e.g., python -m http.server or live-server)
+    </div>
+
+    <!-- Sidebar for file content -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title" id="sidebar-title">File Content</h3>
+            <button class="close-btn" id="close-sidebar">&times;</button>
+        </div>
+        <div class="editor-container">
+            <div class="loading" id="loading">
+                Loading file content...
+            </div>
+            <pre class="file-content" id="file-content" style="display: none;"></pre>
+        </div>
+    </div>
+
+    <!-- Context menu -->
+    <div class="context-menu" id="context-menu">
+        <ul>
+            <li id="open-file">Open File</li>
+            <li id="close-file">Close File</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Base path for the project - adjust this to match your project location
+            const basePath = 'C:/__Qwen1/vyrus/VYRU5/VYRU6/v1a';
+            
+            // File paths mapping
+            const filePaths = {
+                1: 'src/App.tsx',
+                2: 'src/store/gameStore.ts',
+                3: 'src/store/languageStore.ts',
+                4: 'src/components/Game.tsx',
+                5: 'src/components/Sandbox.tsx',
+                6: 'src/components/WelcomeScreen.tsx',
+                7: 'src/components/CanvasGridOptimized.tsx',
+                8: 'src/workers/gridCalculationWorker.ts',
+                9: 'src/types/game.ts',
+                10: 'src/utils/parameterValidation.ts',
+                11: 'src/hooks/useGameState.ts',
+                12: 'package.json',
+                13: 'tsconfig.json',
+                14: 'vite.config.js',
+                15: 'src/components/ParameterPanel.tsx',
+                16: 'src/components/GameControls.tsx',
+                17: 'src/components/FullscreenButton.tsx',
+                18: 'src/components/GameStateProvider.tsx',
+                19: 'public/index.html',
+                20: 'src/main.tsx',
+                21: 'src/index.css'
+            };
+
+            // Current selected node ID
+            let currentNodeId = null;
+
+            // Create nodes dataset
+            const nodes = new vis.DataSet([
+                // Main Application
+                {id: 1, label: 'App.tsx', title: 'Main application component', color: '#FF6B6B', group: 'main-components'},
+                
+                // Store Components
+                {id: 2, label: 'gameStore.ts', title: 'Zustand store for game state', color: '#4ECDC4', group: 'store-state'},
+                {id: 3, label: 'languageStore.ts', title: 'Language management store', color: '#4ECDC4', group: 'store-state'},
+                
+                // Main Game Components
+                {id: 4, label: 'Game.tsx', title: 'Main game component with UI controls', color: '#FF6B6B', group: 'main-components'},
+                {id: 5, label: 'Sandbox.tsx', title: 'Testing environment for features', color: '#FF6B6B', group: 'main-components'},
+                {id: 6, label: 'WelcomeScreen.tsx', title: 'Initial screen with language selection', color: '#FF6B6B', group: 'main-components'},
+                
+                // Visualization Components
+                {id: 7, label: 'CanvasGridOptimized.tsx', title: 'Optimized canvas rendering of game grid', color: '#FFEAA7', group: 'ui-components'},
+                
+                // Worker
+                {id: 8, label: 'gridCalculationWorker.ts', title: 'Web worker for game calculations', color: '#45B7D1', group: 'workers'},
+                
+                // Utils and Types
+                {id: 9, label: 'types/game.ts', title: 'Type definitions for game entities', color: '#96CEB4', group: 'utils-types'},
+                {id: 10, label: 'utils/parameterValidation.ts', title: 'Validation for parameter allocation', color: '#96CEB4', group: 'utils-types'},
+                
+                // Hooks
+                {id: 11, label: 'hooks/useGameState.ts', title: 'Custom hook for game state', color: '#96CEB4', group: 'utils-types'},
+                
+                // Configuration
+                {id: 12, label: 'package.json', title: 'Project dependencies and scripts', color: '#DDA0DD', group: 'configuration'},
+                {id: 13, label: 'tsconfig.json', title: 'TypeScript configuration', color: '#DDA0DD', group: 'configuration'},
+                {id: 14, label: 'vite.config.js', title: 'Vite build configuration', color: '#DDA0DD', group: 'configuration'},
+                
+                // Additional Components
+                {id: 15, label: 'ParameterPanel.tsx', title: 'UI for configuring virus parameters', color: '#FFEAA7', group: 'ui-components'},
+                {id: 16, label: 'GameControls.tsx', title: 'Game control buttons', color: '#FFEAA7', group: 'ui-components'},
+                {id: 17, label: 'FullscreenButton.tsx', title: 'Fullscreen toggle button', color: '#FFEAA7', group: 'ui-components'},
+                {id: 18, label: 'GameStateProvider.tsx', title: 'Context provider for game state', color: '#FFEAA7', group: 'ui-components'},
+                
+                // Assets
+                {id: 19, label: 'public/index.html', title: 'Main HTML entry point', color: '#DDA0DD', group: 'configuration'},
+                {id: 20, label: 'src/main.tsx', title: 'Main entry point for React app', color: '#DDA0DD', group: 'configuration'},
+                {id: 21, label: 'src/index.css', title: 'Global styles', color: '#DDA0DD', group: 'configuration'}
+            ]);
+
+            // Create edges dataset
+            const edges = new vis.DataSet([
+                // App connections
+                {from: 1, to: 2, arrows: 'to', label: 'uses'},
+                {from: 1, to: 3, arrows: 'to', label: 'uses'},
+                {from: 1, to: 4, arrows: 'to', label: 'renders'},
+                {from: 1, to: 5, arrows: 'to', label: 'renders'},
+                {from: 1, to: 6, arrows: 'to', label: 'renders'},
+                
+                // Game component connections
+                {from: 4, to: 2, arrows: 'to', label: 'uses'},
+                {from: 4, to: 3, arrows: 'to', label: 'uses'},
+                {from: 4, to: 7, arrows: 'to', label: 'renders'},
+                {from: 4, to: 8, arrows: 'to', label: 'communicates'},
+                {from: 4, to: 9, arrows: 'to', label: 'uses types'},
+                {from: 4, to: 15, arrows: 'to', label: 'renders'},
+                {from: 4, to: 16, arrows: 'to', label: 'renders'},
+                
+                // Store connections
+                {from: 2, to: 9, arrows: 'to', label: 'uses types'},
+                {from: 3, to: 9, arrows: 'to', label: 'uses types'},
+                
+                // Worker connections
+                {from: 8, to: 9, arrows: 'to', label: 'uses types'},
+                
+                // Welcome screen connections
+                {from: 6, to: 2, arrows: 'to', label: 'uses'},
+                {from: 6, to: 3, arrows: 'to', label: 'uses'},
+                
+                // Sandbox connections
+                {from: 5, to: 3, arrows: 'to', label: 'uses'},
+                
+                // Canvas connections
+                {from: 7, to: 2, arrows: 'to', label: 'uses'},
+                
+                // Entry points
+                {from: 20, to: 1, arrows: 'to', label: 'renders'},
+                {from: 19, to: 20, arrows: 'to', label: 'loads'},
+                
+                // Provider
+                {from: 18, to: 2, arrows: 'to', label: 'provides'},
+                {from: 1, to: 18, arrows: 'to', label: 'wraps'}
+            ]);
+
+            // Create network
+            const container = document.getElementById('network');
+            const data = {nodes: nodes, edges: edges};
+            const options = {
+                nodes: {
+                    shape: 'box',
+                    font: {
+                        face: 'Arial',
+                        size: 14,
+                        color: '#000000'
+                    },
+                    margin: 10,
+                    widthConstraint: { maximum: 200 }
+                },
+                edges: {
+                    arrows: 'to',
+                    smooth: true,
+                    font: {
+                        align: 'middle',
+                        size: 12
+                    }
+                },
+                physics: {
+                    enabled: true,
+                    stabilization: { iterations: 100 },
+                    barnesHut: {
+                        gravitationalConstant: -8000,
+                        springConstant: 0.001,
+                        springLength: 200
+                    }
+                },
+                layout: {
+                    improvedLayout: true
+                }
+            };
+
+            const network = new vis.Network(container, data, options);
+
+            // Sidebar elements
+            const sidebar = document.getElementById('sidebar');
+            const sidebarTitle = document.getElementById('sidebar-title');
+            const fileContent = document.getElementById('file-content');
+            const loading = document.getElementById('loading');
+            const closeBtn = document.getElementById('close-sidebar');
+
+            // Context menu elements
+            const contextMenu = document.getElementById('context-menu');
+            const openFileItem = document.getElementById('open-file');
+            const closeFileItem = document.getElementById('close-file');
+
+            // Function to load and display file content
+            async function loadFileContent(filePath) {
+                try {
+                    // Show loading indicator
+                    loading.style.display = 'flex';
+                    fileContent.style.display = 'none';
+                    
+                    // Construct the full file path
+                    const fullPath = basePath + '/' + filePath;
+                    
+                    // Use fetch to get the file content
+                    const response = await fetch(fullPath);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const content = await response.text();
+                    
+                    // Update the sidebar
+                    fileContent.textContent = content;
+                    sidebarTitle.textContent = filePath;
+                    
+                    // Hide loading and show content
+                    loading.style.display = 'none';
+                    fileContent.style.display = 'block';
+                    
+                    // Show the sidebar
+                    sidebar.classList.add('active');
+                } catch (error) {
+                    console.error('Error loading file:', error);
+                    fileContent.textContent = `Error loading file: ${error.message}\n\nMake sure the file exists at:\n${basePath}/${filePath}\n\nNote: This only works when served from a web server.\nTry using: python -m http.server or live-server`;
+                    sidebarTitle.textContent = 'Error Loading File';
+                    loading.style.display = 'none';
+                    fileContent.style.display = 'block';
+                    sidebar.classList.add('active');
+                }
+            }
+
+            // Show context menu on right-click
+            network.on('oncontext', function(params) {
+                params.event.preventDefault();
+                
+                // Get the node at the clicked position
+                const nodeId = network.getNodeAt(params.pointer.DOM);
+                
+                if (nodeId) {
+                    // Store the current node ID
+                    currentNodeId = nodeId;
+                    
+                    // Show context menu at mouse position
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = params.event.clientX + 'px';
+                    contextMenu.style.top = params.event.clientY + 'px';
+                }
+            });
+
+            // Hide context menu when clicking elsewhere
+            document.addEventListener('click', function() {
+                contextMenu.style.display = 'none';
+            });
+
+            // Handle "Open File" menu item
+            openFileItem.addEventListener('click', function() {
+                if (currentNodeId && filePaths[currentNodeId]) {
+                    loadFileContent(filePaths[currentNodeId]);
+                    contextMenu.style.display = 'none';
+                }
+            });
+
+            // Handle "Close File" menu item
+            closeFileItem.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                contextMenu.style.display = 'none';
+            });
+
+            // Add click event to show more info
+            network.on('click', function(params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    const node = nodes.get(nodeId);
+                    if (node) {
+                        alert(`File: ${node.label}\nDescription: ${node.title}`);
+                    }
+                }
+            });
+
+            // Add checkbox event listeners
+            document.querySelectorAll('.legend-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const groupId = this.id;
+                    
+                    // Get all nodes of this group
+                    const groupNodes = nodes.get({filter: function(item) {
+                        return item.group === groupId;
+                    }}).map(node => node.id);
+                    
+                    if (this.checked) {
+                        // Show nodes
+                        network.body.data.nodes.update(groupNodes.map(id => ({id: id, hidden: false})));
+                    } else {
+                        // Hide nodes
+                        network.body.data.nodes.update(groupNodes.map(id => ({id: id, hidden: true})));
+                    }
+                });
+            });
+
+            // Close sidebar event
+            closeBtn.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -36,6 +36,7 @@ const initialPlayers: Player[] = Array(4).fill(null).map((_, i) => ({
   territoryCount: 0,
   preferredDirection: null,
   lastMutationTurn: 0,
+  skin: i === 0 ? 'neon' : undefined, // Apply neon skin to first virus (player 0)
 }));
 
 const initialSettings: GameSettings = {
@@ -66,6 +67,7 @@ const initialGameState: GameState = {
   phase: 0,
   simulationSpeed: 1,
   isPaused: false,
+  showHelpOnStart: false,
 };
 
 interface GameStore {
@@ -96,6 +98,7 @@ interface GameStore {
     updateSettings: (settings: Partial<GameSettings>) => void;
     calculateFPS: () => void;
     testBattle: () => void;
+    setShowHelpOnStart: (show: boolean) => void;
   };
 }
 
@@ -427,37 +430,49 @@ export const useGameStore = create<GameStore>((set) => ({
       gameState: { ...store.gameState, isPaused: !store.gameState.isPaused }
     })),
 
-    resetGame: () => set(() => ({
-      gameState: {
-        ...initialGameState,
-        players: initialPlayers.map(player => ({
-          ...player,
-          isReady: false,
-          virus: {
-            aggression: 0,
-            mutation: 0,
-            speed: 0,
-            defense: 0,
-            reproduction: 0,
-            resistance: 0,
-            stealth: 0,
-            adaptability: 0,
-            virulence: 0,
-            endurance: 0,
-            mobility: 0,
-            intelligence: 0,
-            resilience: 0,
-            infectivity: 0,
-            lethality: 0,
-            stability: 0,
-          },
-          territoryCount: 0,
-          preferredDirection: null,
-          lastMutationTurn: 0,
-        })),
-        cellAge: Array(35).fill(null).map(() => Array(70).fill(-1)), // Reset cell ages
-      }
-    })),
+    resetGame: () => {
+      // Create fresh initial players to ensure proper reset
+      const freshInitialPlayers = Array(4).fill(null).map((_, i) => ({
+        id: i,
+        name: `Player ${i + 1}`,
+        color: ['#EF4444', '#3B82F6', '#10B981', '#F59E0B'][i], // Red, Blue, Green, Yellow
+        isReady: false,
+        virus: {
+          aggression: 0,
+          mutation: 0,
+          speed: 0,
+          defense: 0,
+          reproduction: 0,
+          resistance: 0,
+          stealth: 0,
+          adaptability: 0,
+          virulence: 0,
+          endurance: 0,
+          mobility: 0,
+          intelligence: 0,
+          resilience: 0,
+          infectivity: 0,
+          lethality: 0,
+          stability: 0,
+        },
+        territoryCount: 0,
+        preferredDirection: null,
+        lastMutationTurn: 0,
+        skin: i === 0 ? 'neon' : undefined, // Apply neon skin to first virus (player 0)
+      }));
+
+      set(() => ({
+        gameState: {
+          ...initialGameState,
+          gameState: 'setup', // Explicitly set to setup state
+          isPaused: false, // Explicitly set to not paused
+          simulationSpeed: 1, // Explicitly set to 1x speed
+          players: freshInitialPlayers,
+          cellAge: Array(35).fill(null).map(() => Array(70).fill(-1)), // Reset cell ages
+          showHelpOnStart: false, // Explicitly set to false
+        }
+      }));
+    },
 
     updatePerformance: (metrics) => set((store) => ({
       gameState: {
@@ -586,14 +601,22 @@ export const useGameStore = create<GameStore>((set) => ({
         gameState: {
           ...store.gameState,
           gameState: 'battle',
-          players: updatedPlayers,
+          players: updatedPlayers.map((player, index) => ({
+            ...player,
+            skin: store.gameState.players[index]?.skin // Preserve skins during test battle
+          })),
           grid,
           cellAge: initialCellAge,
           turn: 0,
           phase: 0,
-          isPaused: false
+          isPaused: false,
+          showHelpOnStart: false // Explicitly set to false for test battle
         }
       };
     }),
+
+    setShowHelpOnStart: (show) => set((store) => ({
+      gameState: { ...store.gameState, showHelpOnStart: show }
+    }))
   }
 }));

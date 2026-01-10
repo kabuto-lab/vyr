@@ -1,11 +1,11 @@
 @font-face {
-    font-family: 'Furore';
-    src: url('Furore.eot');
-    src: url('Furore.eot?#iefix') format('embedded-opentype'),
-        url('Furore.woff2') format('woff2'),
-        url('Furore.woff') format('woff'),
-        url('Furore.ttf') format('truetype'),
-        url('Furore.svg#Furore') format('svg');
+    font-family: 'BUSEletters168';
+    src: url('BUSEletters168.eot');
+    src: url('BUSEletters168.eot?#iefix') format('embedded-opentype'),
+        url('BUSEletters168.woff2') format('woff2'),
+        url('BUSEletters168.woff') format('woff'),
+        url('BUSEletters168.ttf') format('truetype'),
+        url('BUSEletters168.svg#BUSEletters168') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: swap;

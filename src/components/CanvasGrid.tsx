@@ -189,8 +189,8 @@ const CanvasGrid: React.FC = () => {
           const lifetime = birthTurn >= 0 ? gameState.turn - birthTurn : 0;
 
           // Set color based on owner
-          let color = '#EF4444'; // Default to Player 1 - Red
-          if (owner === 0) color = '#EF4444'; // Player 1 - Red
+          let color = 'rgba(239, 68, 68, 0.5)'; // Default to Player 1 - Red with 50% transparency
+          if (owner === 0) color = 'rgba(239, 68, 68, 0.5)'; // Player 1 - Red with 50% transparency
           else if (owner === 1) color = '#3B82F6'; // Player 2 - Blue
           else if (owner === 2) color = '#10B981'; // Player 3 - Green
           else if (owner === 3) color = '#F59E0B'; // Player 4 - Yellow
@@ -326,6 +326,7 @@ const CanvasGrid: React.FC = () => {
           ctx.strokeStyle = '#374151';
           ctx.lineWidth = 0.5;
           ctx.stroke();
+
         } else {
           // Empty cell - draw a very subtle dot to indicate grid positions
           ctx.beginPath();

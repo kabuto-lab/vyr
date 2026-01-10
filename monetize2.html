@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>План монетизации игры VYRUS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .platform {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        /* Стили для вкладок */
+        .tab-container {
+            margin-top: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .tab-button {
+            padding: 10px 15px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .tab-button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 5px;
+            background-color: white;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-section {
+            margin-bottom: 20px;
+        }
+        
+        .tab-section h3 {
+            color: #2980b9;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .requirement-status {
+            font-weight: bold;
+        }
+        
+        .status-compliant {
+            color: green;
+        }
+        
+        .status-non-compliant {
+            color: red;
+        }
+        
+        .status-partial {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>План монетизации игры VYRUS</h1>
+        
+        <div class="highlight">
+            <strong>Описание игры:</strong> VYRUS - стратегическая вирусная игра с 16 параметрами, где 4 вируса соревнуются за территорию на сетке 70x35. Игра включает в себя элементы планирования, стратегии и визуальной составляющей.
+        </div>
+
+        <h2>1. Площадки для публикации и монетизации</h2>
+        
+        <!-- Вкладки -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab(event, 'yandex')">Яндекс.Игры</button>
+                <button class="tab-button" onclick="openTab(event, 'vk')">ВК Игры</button>
+                <button class="tab-button" onclick="openTab(event, 'mailru')">Mail.Ru Игры</button>
+                <button class="tab-button" onclick="openTab(event, 'td')">Тонкий Дизайн</button>
+                <button class="tab-button" onclick="openTab(event, 'itch')">Itch.io</button>
+                <button class="tab-button" onclick="openTab(event, 'playstore')">Google Play</button>
+                <button class="tab-button" onclick="openTab(event, 'steam')">Steam</button>
+            </div>
+            
+            <!-- Яндекс.Игры -->
+            <div id="yandex" class="tab-content active">
+                <div class="tab-section">
+                    <h3>Преимущества</h3>
+                    <ul>
+                        <li>Крупнейшая российская игровая платформа</li>
+                        <li>Интеграция с Яндекс.Деньгами</li>
+                        <li>Высокий трафик и широкая аудитория</li>
+                        <li>Возможность монетизации через рекламу и внутриигровые покупки</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Монетизация</h3>
+                    <ul>
+                        <li>Реклама (Яндекс.Директ)</li>
+                        <li>Внутриигровые покупки</li>
+                        <li>Премиум-функции</li>
+                        <li>Спонсорство и брендирование</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Требования</h3>
+                    <ul>
+                        <li>HTML5/JavaScript версия игры</li>
+                        <li>Соответствие контент-политике Яндекса</li>
+                        <li>Адаптивный дизайн для разных устройств</li>
+                        <li>Регистрация в Яндекс.Партнерской сети</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Соответствие требованиям</h3>
+                    <table>
+                        <tr>
+                            <th>Требование</th>
+                            <th>Тип требования</th>
+                            <th>Соответствие VYRUS</th>
+                            <th>Варианты обхода</th>
+                        </tr>
+                        <tr>
+                            <td>HTML5/JavaScript версия игры</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Соответствие контент-политике Яндекса</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Адаптивный дизайн для разных устройств</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Доработать адаптивность под мобильные устройства</td>
+                        </tr>
+                        <tr>
+                            <td>Регистрация в Яндекс.Партнерской сети</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Зарегистрироваться как разработчик</td>
+                        </tr>
+                        <tr>
+                            <td>Интеграция с Яндекс.Метрикой</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Добавить код Яндекс.Метрики в игру</td>
+                        </tr>
+                        <tr>
+                            <td>Создание промо-материалов</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Подготовить качественные скриншоты и описание</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Комиссия</h3>
+                    <p>50/50 разделение доходов от рекламы</p>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Шаги для публикации</h3>
+                    <ol>
+                        <li>Зарегистрироваться как разработчик в Яндекс.Партнерском Network</li>
+                        <li>Подготовить игру в формате HTML5 с адаптивным дизайном</li>
+                        <li>Пройти модерацию на Яндекс.Играх</li>
+                        <li>Настроить рекламные блоки и монетизацию</li>
+                        <li>Запустить игру и отслеживать метрики</li>
+                    </ol>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Рекомендации по оптимизации</h3>
+                    <ul>
+                        <li>Использовать A/B тестирование для рекламных блоков</li>
+                        <li>Добавить социальные функции для повышения удержания</li>
+                        <li>Регулярно обновлять контент для поддержания интереса</li>
+                        <li>Анализировать поведение пользователей и оптимизировать UX</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- ВК Игры -->
+            <div id="vk" class="tab-content">
+                <div class="tab-section">
+                    <h3>Преимущества</h3>
+                    <ul>
+                        <li>Интеграция с крупнейшей социальной сетью России</li>
+                        <li>Широкая аудитория и высокий трафик</li>
+                        <li>Социальные функции (рейтинги, друзья, соревнования)</li>
+                        <li>Возможность быстрого распространения через социальные сети</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Монетизация</h3>
+                    <ul>
+                        <li>Внутриигровые покупки</li>
+                        <li>Реклама (баннеры, видеореклама)</li>
+                        <li>Платные функции и премиум-аккаунты</li>
+                        <li>Турниры и соревнования с призовыми фондами</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Требования</h3>
+                    <ul>
+                        <li>HTML5/JavaScript версия игры</li>
+                        <li>Интеграция с API ВКонтакте</li>
+                        <li>Соответствие правилам публикации в VK Mini Apps</li>
+                        <li>Социальные функции для взаимодействия с друзьями</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Соответствие требованиям</h3>
+                    <table>
+                        <tr>
+                            <th>Требование</th>
+                            <th>Тип требования</th>
+                            <th>Соответствие VYRUS</th>
+                            <th>Варианты обхода</th>
+                        </tr>
+                        <tr>
+                            <td>HTML5/JavaScript версия игры</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Интеграция с API ВКонтакте</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Добавить интеграцию с API ВКонтакте</td>
+                        </tr>
+                        <tr>
+                            <td>Соответствие правилам публикации в VK Mini Apps</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Изучить и соблюдать правила публикации</td>
+                        </tr>
+                        <tr>
+                            <td>Социальные функции для взаимодействия с друзьями</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Добавить рейтинги, соревнования с друзьями</td>
+                        </tr>
+                        <tr>
+                            <td>Регистрация как разработчика в ВК</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Зарегистрироваться как разработчик</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Комиссия</h3>
+                    <p>70/30 (разработчик/платформа)</p>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Шаги для публикации</h3>
+                    <ol>
+                        <li>Создать приложение в VK Mini Apps или VK Игры</li>
+                        <li>Подготовить игру с интеграцией API ВКонтакте</li>
+                        <li>Пройти модерацию и техническую проверку</li>
+                        <li>Настроить систему монетизации</li>
+                        <li>Запустить игру и начать продвижение</li>
+                    </ol>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Рекомендации по оптимизации</h3>
+                    <ul>
+                        <li>Использовать социальные механики для привлечения новых игроков</li>
+                        <li>Регулярно проводить турниры и конкурсы</li>
+                        <li>Интегрировать систему достижений и наград</li>
+                        <li>Анализировать поведение пользователей и оптимизировать UX</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Mail.Ru Игры -->
+            <div id="mailru" class="tab-content">
+                <div class="tab-section">
+                    <h3>Преимущества</h3>
+                    <ul>
+                        <li>Крупная российская платформа с интеграцией в почтовые сервисы</li>
+                        <li>Широкая аудитория пользователей Mail.Ru</li>
+                        <li>Поддержка различных форматов игр (HTML5, Flash)</li>
+                        <li>Инструменты аналитики и монетизации</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Монетизация</h3>
+                    <ul>
+                        <li>Реклама (баннеры, видеореклама)</li>
+                        <li>Внутриигровые покупки</li>
+                        <li>Премиум-аккаунты</li>
+                        <li>Спонсорство и брендирование</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Требования</h3>
+                    <ul>
+                        <li>HTML5/Flash версия игры</li>
+                        <li>Регистрация в партнерской программе Mail.Ru</li>
+                        <li>Соответствие техническим требованиям платформы</li>
+                        <li>Качественные маркетинговые материалы</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Соответствие требованиям</h3>
+                    <table>
+                        <tr>
+                            <th>Требование</th>
+                            <th>Тип требования</th>
+                            <th>Соответствие VYRUS</th>
+                            <th>Варианты обхода</th>
+                        </tr>
+                        <tr>
+                            <td>HTML5/Flash версия игры</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Регистрация в партнерской программе Mail.Ru</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Зарегистрироваться в партнерской программе</td>
+                        </tr>
+                        <tr>
+                            <td>Соответствие техническим требованиям платформы</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Проверить и адаптировать под требования</td>
+                        </tr>
+                        <tr>
+                            <td>Качественные маркетинговые материалы</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Подготовить качественные скриншоты и описание</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Комиссия</h3>
+                    <p>70/30 (разработчик/платформа)</p>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Шаги для публикации</h3>
+                    <ol>
+                        <li>Зарегистрироваться в партнерской программе Mail.Ru</li>
+                        <li>Подготовить игру в соответствии с техническими требованиями</li>
+                        <li>Отправить игру на модерацию</li>
+                        <li>Настроить монетизацию через внутренние инструменты</li>
+                        <li>Запустить игру и отслеживать метрики</li>
+                    </ol>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Рекомендации по оптимизации</h3>
+                    <ul>
+                        <li>Использовать инструменты аналитики для оптимизации UX</li>
+                        <li>Регулярно обновлять контент для поддержания интереса</li>
+                        <li>Интегрировать социальные функции для повышения удержания</li>
+                        <li>Тестировать разные форматы рекламы для повышения дохода</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Тонкий Дизайн -->
+            <div id="td" class="tab-content">
+                <div class="tab-section">
+                    <h3>Преимущества</h3>
+                    <ul>
+                        <li>Российская платформа для HTML5 игр</li>
+                        <li>Поддержка инди-разработчиков</li>
+                        <li>Низкий порог входа</li>
+                        <li>Возможность быстрой публикации</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Монетизация</h3>
+                    <ul>
+                        <li>Реклама (баннеры, видеореклама)</li>
+                        <li>Премиум-функции</li>
+                        <li>Спонсорство</li>
+                        <li>Платные версии игры</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Требования</h3>
+                    <ul>
+                        <li>HTML5/JavaScript версия игры</li>
+                        <li>Оригинальный контент</li>
+                        <li>Качественные графические ресурсы</li>
+                        <li>Регистрация как разработчика</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Соответствие требованиям</h3>
+                    <table>
+                        <tr>
+                            <th>Требование</th>
+                            <th>Тип требования</th>
+                            <th>Соответствие VYRUS</th>
+                            <th>Варианты обхода</th>
+                        </tr>
+                        <tr>
+                            <td>HTML5/JavaScript версия игры</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Оригинальный контент</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Качественные графические ресурсы</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Регистрация как разработчика</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Зарегистрироваться как разработчик</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Комиссия</h3>
+                    <p>60/40 (разработчик/платформа)</p>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Шаги для публикации</h3>
+                    <ol>
+                        <li>Зарегистрироваться как разработчик</li>
+                        <li>Подготовить игру в формате HTML5</li>
+                        <li>Отправить заявку на публикацию</li>
+                        <li>Настроить рекламные блоки</li>
+                        <li>Запустить игру и отслеживать метрики</li>
+                    </ol>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Рекомендации по оптимизации</h3>
+                    <ul>
+                        <li>Регулярно обновлять контент для поддержания интереса</li>
+                        <li>Оптимизировать рекламные блоки для повышения дохода</li>
+                        <li>Анализировать поведение пользователей и улучшать UX</li>
+                        <li>Использовать социальные функции для распространения</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Itch.io -->
+            <div id="itch" class="tab-content">
+                <div class="tab-section">
+                    <h3>Преимущества</h3>
+                    <ul>
+                        <li>Низкий порог входа</li>
+                        <li>Поддержка Pay What You Want</li>
+                        <li>Хорошее сообщество инди-разработчиков</li>
+                        <li>Возможность продажи напрямую</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Монетизация</h3>
+                    <ul>
+                        <li>Прямые продажи</li>
+                        <li>Pay What You Want</li>
+                        <li>Donation-система</li>
+                        <li>Patreon интеграция</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Требования</h3>
+                    <ul>
+                        <li>HTML5/JavaScript версия игры</li>
+                        <li>Качественные маркетинговые материалы</li>
+                        <li>Описание и теги для каталога</li>
+                        <li>Регистрация аккаунта разработчика</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Соответствие требованиям</h3>
+                    <table>
+                        <tr>
+                            <th>Требование</th>
+                            <th>Тип требования</th>
+                            <th>Соответствие VYRUS</th>
+                            <th>Варианты обхода</th>
+                        </tr>
+                        <tr>
+                            <td>HTML5/JavaScript версия игры</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-compliant">✓ Соответствует</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Качественные маркетинговые материалы</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Подготовить качественные скриншоты и описание</td>
+                        </tr>
+                        <tr>
+                            <td>Описание и теги для каталога</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Создать подробное описание и теги</td>
+                        </tr>
+                        <tr>
+                            <td>Регистрация аккаунта разработчика</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Зарегистрироваться как разработчик</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Комиссия</h3>
+                    <p>0-10% (в зависимости от настроек)</p>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Шаги для публикации</h3>
+                    <ol>
+                        <li>Создать аккаунт разработчика</li>
+                        <li>Подготовить билд игры (HTML5)</li>
+                        <li>Добавить скриншоты, описание, теги</li>
+                        <li>Установить цену или "Pay What You Want"</li>
+                        <li>Опубликовать и продвигать игру</li>
+                    </ol>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Рекомендации по оптимизации</h3>
+                    <ul>
+                        <li>Создать привлекательную страницу игры</li>
+                        <li>Регулярно обновлять контент и добавлять новые функции</li>
+                        <li>Взаимодействовать с сообществом игроков</li>
+                        <li>Использовать социальные сети для продвижения</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Google Play -->
+            <div id="playstore" class="tab-content">
+                <div class="tab-section">
+                    <h3>Преимущества</h3>
+                    <ul>
+                        <li>Наиболее популярная мобильная платформа</li>
+                        <li>Широкая международная аудитория</li>
+                        <li>Надежная система платежей</li>
+                        <li>Инструменты аналитики и маркетинга</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Монетизация</h3>
+                    <ul>
+                        <li>Платные загрузки</li>
+                        <li>Внутриигровые покупки</li>
+                        <li>Подписки</li>
+                        <li>Реклама (через AdMob)</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Требования</h3>
+                    <ul>
+                        <li>Android APK или AAB</li>
+                        <li>Разработка через Capacitor/Cordova</li>
+                        <li>Соответствие политике Google Play</li>
+                        <li>Маркетинговые материалы (иконки, скриншоты)</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Соответствие требованиям</h3>
+                    <table>
+                        <tr>
+                            <th>Требование</th>
+                            <th>Тип требования</th>
+                            <th>Соответствие VYRUS</th>
+                            <th>Варианты обхода</th>
+                        </tr>
+                        <tr>
+                            <td>Android APK или AAB</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Преобразовать игру в мобильное приложение (Capacitor, Cordova)</td>
+                        </tr>
+                        <tr>
+                            <td>Разработка через Capacitor/Cordova</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Использовать инструменты для преобразования в мобильное приложение</td>
+                        </tr>
+                        <tr>
+                            <td>Соответствие политике Google Play</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Изучить и соблюдать политику Google Play</td>
+                        </tr>
+                        <tr>
+                            <td>Маркетинговые материалы (иконки, скриншоты)</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Подготовить качественные маркетинговые материалы</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Комиссия</h3>
+                    <p>15% (до $1 млн годового дохода), затем 30%</p>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Шаги для публикации</h3>
+                    <ol>
+                        <li>Зарегистрировать разработческий аккаунт ($25)</li>
+                        <li>Преобразовать игру в мобильное приложение (Capacitor, Cordova)</li>
+                        <li>Подготовить маркетинговые материалы</li>
+                        <li>Загрузить в консоль разработчика</li>
+                        <li>Пройти модерацию и запустить игру</li>
+                    </ol>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Рекомендации по оптимизации</h3>
+                    <ul>
+                        <li>Оптимизировать ASO (App Store Optimization)</li>
+                        <li>Регулярно обновлять игру и исправлять баги</li>
+                        <li>Анализировать поведение пользователей и улучшать UX</li>
+                        <li>Использовать A/B тестирование для монетизационных элементов</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Steam -->
+            <div id="steam" class="tab-content">
+                <div class="tab-section">
+                    <h3>Преимущества</h3>
+                    <ul>
+                        <li>Крупнейшая PC-платформа</li>
+                        <li>Большая аудитория геймеров</li>
+                        <li>Steam Workshop и инструменты сообщества</li>
+                        <li>Система достижений и таблицы лидеров</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Монетизация</h3>
+                    <ul>
+                        <li>Платные продажи</li>
+                        <li>Внутриигровые покупки</li>
+                        <li>DLC и дополнительный контент</li>
+                        <li>Steam Microtransactions</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Требования</h3>
+                    <ul>
+                        <li>ПК-версия игры (Electron, Unity, Godot и т.д.)</li>
+                        <li>Заявка на Steam Direct ($100)</li>
+                        <li>Соответствие политике Valve</li>
+                        <li>Маркетинговые материалы и трейлер</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Соответствие требованиям</h3>
+                    <table>
+                        <tr>
+                            <th>Требование</th>
+                            <th>Тип требования</th>
+                            <th>Соответствие VYRUS</th>
+                            <th>Варианты обхода</th>
+                        </tr>
+                        <tr>
+                            <td>ПК-версия игры (Electron, Unity, Godot и т.д.)</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Преобразовать игру в ПК-приложение (Electron)</td>
+                        </tr>
+                        <tr>
+                            <td>Заявка на Steam Direct ($100)</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Подать заявку на Steam Direct</td>
+                        </tr>
+                        <tr>
+                            <td>Соответствие политике Valve</td>
+                            <td>Обязательное</td>
+                            <td class="requirement-status status-non-compliant">✗ Не соответствует</td>
+                            <td>Изучить и соблюдать политику Valve</td>
+                        </tr>
+                        <tr>
+                            <td>Маркетинговые материалы и трейлер</td>
+                            <td>Рекомендуемое</td>
+                            <td class="requirement-status status-partial">~ Частично</td>
+                            <td>Подготовить качественные маркетинговые материалы и трейлер</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Комиссия</h3>
+                    <p>30% (может снижаться при высоких продажах)</p>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Шаги для публикации</h3>
+                    <ol>
+                        <li>Подать заявку на Steam Direct ($100)</li>
+                        <li>Преобразовать игру в ПК-приложение (Electron или другая технология)</li>
+                        <li>Подготовить маркетинговые материалы</li>
+                        <li>Пройти проверку и публикацию</li>
+                        <li>Запустить кампанию продвижения</li>
+                    </ol>
+                </div>
+                
+                <div class="tab-section">
+                    <h3>Рекомендации по оптимизации</h3>
+                    <ul>
+                        <li>Создать качественный трейлер и маркетинговые материалы</li>
+                        <li>Интегрировать Steam-функции (достижения, таблицы лидеров)</li>
+                        <li>Активно взаимодействовать с сообществом</li>
+                        <li>Регулярно выпускать обновления и улучшения</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <h2>2. Стратегии монетизации</h2>
+        
+        <table>
+            <tr>
+                <th>Стратегия</th>
+                <th>Описание</th>
+                <th>Преимущества</th>
+                <th>Недостатки</th>
+                <th>Рекомендация</th>
+            </tr>
+            <tr>
+                <td>Freemium</td>
+                <td>Бесплатная базовая версия с платными улучшениями</td>
+                <td>Широкое распространение, низкий порог входа</td>
+                <td>Не все пользователи платят</td>
+                <td>★★★★☆</td>
+            </tr>
+            <tr>
+                <td>Платная загрузка</td>
+                <td>Одноразовая оплата за доступ к игре</td>
+                <td>Стабильный доход, меньше рекламы</td>
+                <td>Меньше пользователей, конкуренция</td>
+                <td>★★★☆☆</td>
+            </tr>
+            <tr>
+                <td>Подписка</td>
+                <td>Ежемесячная оплата за доступ</td>
+                <td>Стабильный рекуррентный доход</td>
+                <td>Требует постоянных обновлений</td>
+                <td>★★★★☆</td>
+            </tr>
+            <tr>
+                <td>Реклама</td>
+                <td>Показ рекламы в игре</td>
+                <td>Не требует оплаты от пользователей</td>
+                <td>Может раздражать игроков</td>
+                <td>★★☆☆☆</td>
+            </tr>
+            <tr>
+                <td>Внутриигровые покупки</td>
+                <li>Покупка косметических или игровых улучшений</li>
+                <td>Высокая маржинальность</td>
+                <td>Может восприниматься как "pay-to-win"</td>
+                <td>★★★★★</td>
+            </tr>
+        </table>
+        
+        <h2>3. Техническая подготовка игры</h2>
+        
+        <h3>3.1. Адаптация для разных платформ</h3>
+        <ul>
+            <li><strong>Веб-версия:</strong> Убедиться, что игра корректно работает в браузерах (Chrome, Firefox, Safari, Edge)</li>
+            <li><strong>Мобильная версия:</strong> Адаптировать интерфейс для сенсорного управления</li>
+            <li><strong>ПК-версия:</strong> Добавить поддержку мыши и клавиатуры, оконный/полнокранный режим</li>
+        </ul>
+        
+        <h3>3.2. Добавление монетизационных элементов</h3>
+        <ul>
+            <li>Система достижений и таблица лидеров</li>
+            <li>Премиум-скины для вирусов</li>
+            <li>Дополнительные игровые режимы</li>
+            <li>Расширенная статистика</li>
+            <li>Эксклюзивные параметры вирусов</li>
+        </ul>
+        
+        <h2>4. Маркетинг и продвижение</h2>
+        
+        <h3>4.1. Создание бренда</h3>
+        <ul>
+            <li>Разработать уникальный визуальный стиль</li>
+            <li>Создать логотип и фирменные цвета</li>
+            <li>Разработать слоган и позиционирование</li>
+        </ul>
+        
+        <h3>4.2. Социальные сети и сообщества</h3>
+        <ul>
+            <li>Создать аккаунты в Twitter, Instagram, TikTok</li>
+            <li>Участие в Reddit-сообществах (r/gamedev, r/indiegames)</li>
+            <li>Создание Discord-сервера для фанатов</li>
+            <li>Публикация в YouTube с игровыми обзорами</li>
+        </ul>
+        
+        <h3>4.3. SEO и ASO</h3>
+        <ul>
+            <li>Оптимизация ключевых слов для поисковых систем</li>
+            <li>Создание качественных описаний и превью</li>
+            <li>Поиск инфлюенсеров для продвижения</li>
+        </ul>
+        
+        <h2>5. Анализ и оптимизация</h2>
+        
+        <h3>5.1. Метрики для отслеживания</h3>
+        <ul>
+            <li>Количество загрузок/посещений</li>
+            <li>Конверсия в платящих пользователей</li>
+            <li>Средняя продолжительность сессии</li>
+            <li>Частота возврата пользователей</li>
+            <li>Доход на пользователя (ARPU)</li>
+        </ul>
+        
+        <h3>5.2. A/B тестирование</h3>
+        <ul>
+            <li>Тестирование разных ценовых моделей</li>
+            <li>Оптимизация пользовательского интерфейса</li>
+            <li>Тестирование разных вариантов рекламы</li>
+        </ul>
+        
+        <h2>6. Рекомендуемый план действий</h2>
+        
+        <ol>
+            <li><strong>Фаза 1 (Неделя 1-2):</strong> Подготовка игры для публикации
+                <ul>
+                    <li>Тестирование и отладка игры</li>
+                    <li>Создание маркетинговых материалов (скриншоты, видео)</li>
+                    <li>Подготовка описания и ключевых слов</li>
+                </ul>
+            </li>
+            
+            <li><strong>Фаза 2 (Неделя 3-4):</strong> Публикация на российские веб-платформы
+                <ul>
+                    <li>Регистрация на Яндекс.Играх и ВК Играх</li>
+                    <li>Публикация бесплатной версии игры</li>
+                    <li>Начало маркетинговой кампании</li>
+                </ul>
+            </li>
+            
+            <li><strong>Фаза 3 (Месяц 2):</strong> Монетизация и аналитика
+                <ul>
+                    <li>Добавление внутриигровых покупок</li>
+                    <li>Настройка аналитики (Google Analytics, Яндекс.Метрика)</li>
+                    <li>Сбор обратной связи от пользователей</li>
+                </ul>
+            </li>
+            
+            <li><strong>Фаза 4 (Месяц 3):</strong> Расширение на международные платформы
+                <ul>
+                    <li>Подготовка мобильной версии (Capacitor/Cordova)</li>
+                    <li>Публикация в Google Play Store</li>
+                    <li>Публикация на Itch.io и других международных платформах</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <h2>7. Внутриигровые покупки</h2>
+
+        <h3>7.1. Косметические улучшения</h3>
+        <ul>
+            <li><strong>Темы оформления:</strong> Различные цветовые схемы для каждого из 4 вирусов</li>
+            <li><strong>Анимированные эффекты:</strong> Уникальные анимации для каждого вируса</li>
+            <li><strong>Формы клеток:</strong> Круглые, квадратные, звездчатые и другие формы вместо стандартных</li>
+            <li><strong>Визуальные эффекты:</strong> Уникальные анимации при перемещении вирусов</li>
+            <li><strong>Специальные эффекты боя:</strong> Визуальные эффекты при столкновениях вирусов</li>
+            <li><strong>Эффекты захвата территории:</strong> Анимации при захвате новых клеток</li>
+            <li><strong>Темы интерфейса:</strong> Различные стили оформления меню и панелей</li>
+            <li><strong>Анимированные иконки:</strong> Динамические иконки для параметров</li>
+            <li><strong>Персонализированные фоны:</strong> Различные фоновые изображения для игры</li>
+        </ul>
+
+        <h3>7.2. Функциональные улучшения</h3>
+        <ul>
+            <li><strong>Премиум-слоты:</strong> Возможность выделить больше очков на определенные параметры (например, до 20 вместо 16)</li>
+            <li><strong>Бонус к параметрам:</strong> Временные или постоянные бонусы к одному или нескольким параметрам</li>
+            <li><strong>Уникальные комбинации параметров:</strong> Специальные наборы параметров, недоступные в бесплатной версии</li>
+            <li><strong>Особые вирусы:</strong> Временные или постоянные вирусы с уникальными способностями</li>
+            <li><strong>Способности на карте:</strong> Специальные эффекты, которые можно активировать во время игры</li>
+            <li><strong>Ускорители:</strong> Временные улучшения скорости развития вируса</li>
+            <li><strong>Расширенная статистика:</strong> Подробная информация о развитии вирусов</li>
+            <li><strong>Анализ противников:</strong> Информация о параметрах вирусов других игроков</li>
+            <li><strong>Прогнозирование:</strong> Предсказание будущих движений и захватов территории</li>
+        </ul>
+
+        <h3>7.3. Удобства и ускорения</h3>
+        <ul>
+            <li><strong>Автоматический анализ:</strong> Автоматическое определение сильных и слабых сторон вируса</li>
+            <li><strong>Сохранение настроек:</strong> Возможность сохранять и загружать конфигурации параметров</li>
+            <li><strong>Шаблоны:</strong> Предустановленные наборы параметров для разных стратегий</li>
+            <li><strong>Ускорение симуляции:</strong> Временное увеличение скорости игры</li>
+            <li><strong>Режим просмотра:</strong> Возможность наблюдать за чужими играми с улучшенной информацией</li>
+            <li><strong>Дополнительные попытки:</strong> Возможность перезапустить симуляцию без ограничений</li>
+        </ul>
+
+        <h3>7.4. Содержание и режимы</h3>
+        <ul>
+            <li><strong>Специальные карты:</strong> Карта с препятствиями, специальными зонами и т.д.</li>
+            <li><strong>Турнирные режимы:</strong> Специальные соревновательные форматы</li>
+            <li><strong>Кампания:</strong> Последовательность сценариев с разными целями</li>
+            <li><strong>Информация о вирусологии:</strong> Интересные факты о реальных вирусах</li>
+            <li><strong>Исторические сценарии:</strong> Игровые сценарии, основанные на реальных эпидемиях</li>
+            <li><strong>Научные объяснения:</strong> Объяснение биологических процессов, представленных в игре</li>
+        </ul>
+
+        <h3>7.5. Социальные функции</h3>
+        <ul>
+            <li><strong>Премиум-статус:</strong> Дополнительные привилегии в рейтингах</li>
+            <li><strong>Специальные турниры:</strong> Доступ к эксклюзивным соревнованиям</li>
+            <li><strong>Кастомные комнаты:</strong> Возможность создавать свои игровые комнаты</li>
+            <li><strong>Эмоции и реакции:</strong> Специальные значки для общения с противниками</li>
+            <li><strong>Персонализированные профили:</strong> Возможность настроить свой игровой профиль</li>
+        </ul>
+
+        <h3>7.6. Пакеты и подписки</h3>
+        <ul>
+            <li><strong>Стартовые пакеты:</strong> Набор базовых косметических элементов, набор инструментов анализа и улучшений, полный набор косметических элементов</li>
+            <li><strong>Подписка:</strong> Еженедельные награды, эксклюзивный контент, бонусы к опыту</li>
+        </ul>
+
+        <h3>7.7. Сезонные и тематические события</h3>
+        <ul>
+            <li><strong>Тематические скины:</strong> Сезонные и праздничные оформления вирусов</li>
+            <li><strong>Ограниченные режимы:</strong> Временные игровые режимы с особыми правилами</li>
+            <li><strong>Коллекционные предметы:</strong> Элементы, доступные только в определенные периоды</li>
+        </ul>
+
+        <h3>7.8. Рекомендации по реализации</h3>
+        <ul>
+            <li><strong>Баланс:</strong> Убедиться, что внутриигровые покупки не создают значительного преимущества в игре, чтобы сохранить честность соревнований</li>
+            <li><strong>Прозрачность:</strong> Четко указывать, какие функции являются платными, а какие бесплатными</li>
+            <li><strong>Ценность:</strong> Предоставлять реальную ценность покупателям, чтобы они чувствовали, что получили что-то стоящее</li>
+            <li><strong>Гибкость:</strong> Предлагать разные варианты покупок для разных типов игроков</li>
+            <li><strong>Регулярные обновления:</strong> Постоянно добавлять новый контент, чтобы поддерживать интерес к покупкам</li>
+        </ul>
+
+        <div class="highlight">
+            <h3>Заключение</h3>
+            <p>Монетизация стратегической игры VYRUS требует комплексного подхода, включающего публикацию на российские и международные платформы, использование различных моделей дохода и активное продвижение. Начните с российских платформ (Яндекс.Игры, ВК Игры) для тестирования концепции, затем масштабируйтесь на международные платформы. Постоянно анализируйте метрики и оптимизируйте пользовательский опыт для повышения конверсии.</p>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            // Скрыть все вкладки
+            var tabContents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            
+            // Удалить активный класс с кнопок
+            var tabButtons = document.getElementsByClassName("tab-button");
+            for (var i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+            
+            // Показать выбранную вкладку и добавить активный класс кнопке
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>

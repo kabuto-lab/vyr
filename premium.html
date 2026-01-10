@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYRUS Premium Features</title>
+    <link href="https://fonts.googleapis.com/css2?family=Furore:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'Furore', sans-serif;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, #ef4444, #3b82f6, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab-button {
+            padding: 15px 30px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #cbd5e1;
+            font-family: 'Furore', sans-serif;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-button:hover {
+            background: rgba(56, 70, 97, 0.7);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-color: rgba(99, 102, 241, 0.8);
+            color: white;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .feature-title {
+            font-family: 'Furore', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+        }
+
+        .feature-description {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feature-benefit {
+            background: rgba(79, 70, 229, 0.15);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #c7d2fe;
+            display: inline-block;
+        }
+
+        .pricing-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .pricing-title {
+            font-family: 'Furore', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+        }
+
+        .price-description {
+            color: #94a3b8;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-family: 'Furore', sans-serif;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab-button {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VYRUS PREMIUM</h1>
+            <p class="subtitle">Unlock advanced features and elevate your viral conquest strategy to the next level</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="visual">🎨 Visual Enhancements</button>
+            <button class="tab-button" data-tab="strategy">🧠 Strategy Tools</button>
+            <button class="tab-button" data-tab="analytics">📊 Analytics</button>
+            <button class="tab-button" data-tab="customization">✨ Customization</button>
+        </div>
+
+        <!-- Visual Enhancements Tab -->
+        <div id="visual" class="tab-content active">
+            <h2 class="feature-title">Visual Enhancements</h2>
+            <p class="feature-description">Immerse yourself in stunning visuals and advanced graphical effects</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌟</div>
+                    <h3 class="feature-title">Ultra Visual Effects</h3>
+                    <p class="feature-description">Enable maximum visual effect quality with enhanced particle systems, dynamic lighting, and fluid animations.</p>
+                    <span class="feature-benefit">Premium Visual Experience</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <h3 class="feature-title">Cinematic Camera</h3>
+                    <p class="feature-description">Smooth camera movements with zoom, pan, and rotation controls for better battlefield observation.</p>
+                    <span class="feature-benefit">Enhanced View Control</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌈</div>
+                    <h3 class="feature-title">Dynamic Color Schemes</h3>
+                    <p class="feature-description">Access exclusive color palettes and themes to customize the appearance of your viruses and UI.</p>
+                    <span class="feature-benefit">Personalized Aesthetics</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">👁️</div>
+                    <h3 class="feature-title">Enhanced Visibility</h3>
+                    <p class="feature-description">Improved contrast and highlighting options to better distinguish between different virus types.</p>
+                    <span class="feature-benefit">Better Game Awareness</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy Tools Tab -->
+        <div id="strategy" class="tab-content">
+            <h2 class="feature-title">Strategy Tools</h2>
+            <p class="feature-description">Advanced tools to analyze and improve your viral conquest strategies</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3 class="feature-title">Battle Analytics</h3>
+                    <p class="feature-description">Real-time statistics on expansion rates, combat effectiveness, and territory control.</p>
+                    <span class="feature-benefit">Data-Driven Decisions</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">AI Strategy Advisor</h3>
+                    <p class="feature-description">Get intelligent suggestions on parameter allocation and tactical decisions during battles.</p>
+                    <span class="feature-benefit">Expert Guidance</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3 class="feature-title">Scenario Builder</h3>
+                    <p class="feature-description">Create custom battle scenarios with specific starting conditions and challenges.</p>
+                    <span class="feature-benefit">Custom Challenges</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3 class="feature-title">Advanced Replay System</h3>
+                    <p class="feature-description">Record, save, and replay battles with frame-by-frame controls and multiple viewing angles.</p>
+                    <span class="feature-benefit">Detailed Analysis</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <h2 class="feature-title">Analytics</h2>
+            <p class="feature-description">Deep insights into your gameplay and performance metrics</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Performance Tracking</h3>
+                    <p class="feature-description">Track your win rates, average territory control, and parameter effectiveness over time.</p>
+                    <span class="feature-benefit">Progress Monitoring</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Parameter Optimization</h3>
+                    <p class="feature-description">Get recommendations on parameter combinations based on your playstyle and results.</p>
+                    <span class="feature-benefit">Strategic Improvement</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Match History</h3>
+                    <p class="feature-description">Comprehensive records of all your battles with detailed statistics and outcomes.</p>
+                    <span class="feature-benefit">Historical Data</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Achievement System</h3>
+                    <p class="feature-description">Unlock achievements for various milestones and special accomplishments in the game.</p>
+                    <span class="feature-benefit">Recognition & Rewards</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization Tab -->
+        <div id="customization" class="tab-content">
+            <h2 class="feature-title">Customization</h2>
+            <p class="feature-description">Personalize your gaming experience with exclusive customization options</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">Custom Virus Skins</h3>
+                    <p class="feature-description">Apply unique visual skins to your viruses with special animations and effects.</p>
+                    <span class="feature-benefit">Unique Identity</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3 class="feature-title">Premium Soundtrack</h3>
+                    <p class="feature-description">Access to exclusive atmospheric soundtracks and sound effects for immersion.</p>
+                    <span class="feature-benefit">Enhanced Audio</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">👤</div>
+                    <h3 class="feature-title">Profile Customization</h3>
+                    <p class="feature-description">Personalize your profile with badges, avatars, and custom titles earned through achievements.</p>
+                    <span class="feature-benefit">Personal Branding</span>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3 class="feature-title">Advanced Controls</h3>
+                    <p class="feature-description">Additional control schemes including keyboard shortcuts and gesture controls.</p>
+                    <span class="feature-benefit">Enhanced Usability</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-section">
+            <h2 class="pricing-title">Unlock Premium Features</h2>
+            <p class="price">$4.99<span style="font-size: 1rem; color: #94a3b8;">/month</span></p>
+            <p class="price-description">Get access to all premium features with a monthly subscription. Cancel anytime.</p>
+            <button class="cta-button">UPGRADE TO PREMIUM</button>
+        </div>
+
+        <footer>
+            <p>VYRUS Premium - Strategic Virus Warfare Simulation</p>
+            <p>© 2023 Lorem Totem. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and content
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

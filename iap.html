@@ -1,0 +1,66 @@
+<!-- iap.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>In-App Purchases Catalog — VYRUS v2</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.5; padding: 20px; background: #f9f9f9; color: #333; }
+    h1, h2, h3 { margin-top: 1.5em; }
+    ul { padding-left: 1.2em; }
+    .section { background: white; padding: 16px; border-radius: 8px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    code { background: #eee; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<h1>In-App Purchase (IAP) Implementation Examples — VYRUS v2</h1>
+
+<div class="section">
+  <h2>1. Косметические улучшения</h2>
+
+  <h3>1.1. Темы оформления</h3>
+  <ul>
+    <li><strong>Темы для вирусов:</strong> Хранить цветовые схемы в JSON или INI: <code>{ virus1: "#ff5252", virus2: "#4caf50", ... }</code></li>
+    <li><strong>Анимированные эффекты:</strong> Использовать CSS keyframes или SVG SMIL для уникальных анимаций (например, пульсация, мерцание)</li>
+    <li><strong>Формы клеток:</strong> Реализовать через SVG-паттерны или Canvas draw functions с переключением по типу: <code>drawCell(type: 'circle' | 'square' | 'star')</code></li>
+  </ul>
+
+  <h3>1.2. Визуальные эффекты</h3>
+  <ul>
+    <li><strong>Эффекты движения:</strong> Добавлять трейлы/следы при перемещении через временные canvas overlays</li>
+    <li><strong>Специальные эффекты боя:</strong> Взрывы/искры через particle.js или собственный WebGL-шейдер</li>
+    <li><strong>Эффекты захвата территории:</strong> Wave-анимация от центра новой клетки с использованием radial-gradient + transition</li>
+  </ul>
+
+  <h3>1.3. Интерфейс</h3>
+  <ul>
+    <li><strong>Темы интерфейса:</strong> CSS переменные + localStorage для сохранения выбранной темы</li>
+    <li><strong>Анимированные иконки:</strong> Lottie или inline SVG с SMIL-анимацией</li>
+    <li><strong>Персонализированные фоны:</strong> Загружать фон из assets/backgrounds/[id].jpg и применять через <code>document.body.style.backgroundImage</code></li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>2. Функциональные улучшения</h2>
+
+  <h3>2.1. Улучшенные параметры</h3>
+  <ul>
+    <li><strong>Премиум-слоты:</strong> Проверка подписки перед увеличением лимита очков: <code>maxPoints = isPremium ? 20 : 16</code></li>
+    <li><strong>Бонус к параметрам:</strong> Временный модификатор в state: <code>{ speed: baseSpeed + (hasBooster ? 2 : 0) }</code></li>
+    <li><strong>Уникальные комбинации:</strong> Блокировка UI-элементов до покупки: <code>virusPreset.locked = !userOwns('elite_preset')</code></li>
+  </ul>
+
+  <h3>2.2. Специальные способности</h3>
+  <ul>
+    <li><strong>Особые вирусы:</strong> Отдельный класс VirusWithAbility extends Virus с методом <code>activateSpecial()</code></li>
+    <li><strong>Способности на карте:</strong> Кнопка активации в UI → вызов game.useAbility('heal_zone')</li>
+    <li><strong>Ускорители:</strong> Таймер boostDuration в game state; обновление скорости симуляции через <code>setInterval(..., baseDelay / (isBoosted ? 2 : 1))</code></li>
+  </ul>
+
+  <h3>2.3. Инструменты анализа</h3>
+  <ul>
+    <li><strong>Расширенная статистика:</strong> Экспорт данных в CSV или отображение в модальном окне с графиками Chart.js</li>
+    <li><strong>Анализ противников:</strong> API-запрос к /api/opponent-stats?id=... → отображение в таблице</li>
+    <li><strong>Прогнозирование:</strong> Запуск

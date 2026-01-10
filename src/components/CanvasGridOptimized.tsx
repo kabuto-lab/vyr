@@ -186,6 +186,32 @@ const CanvasGridOptimized: React.FC = () => {
         }
         ctx.fill();
 
+        // Apply neon skin effect if player has neon skin
+        const playerSkin = gameState.players[owner]?.skin;
+        if (playerSkin === 'neon') {
+          // Create neon glow effect
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 15;
+
+          // Draw the shape again to create the glow
+          if (lifetime < 100) { // 10 times slower aging
+            ctx.beginPath();
+            ctx.ellipse(centerX + variationX, centerY + variationY, width, height, 0, 0, 2 * Math.PI);
+          } else if (lifetime < 500) { // 10 times slower aging
+            const transitionFactor = (lifetime - 100) / 400; // 10 times slower aging
+            const cornerRadius = 5 + 10 * transitionFactor;
+            roundedRect(ctx, centerX + variationX - width, centerY + variationY - height, width * 2, height * 2, cornerRadius);
+          } else {
+            const cornerRadius = 2;
+            roundedRect(ctx, centerX + variationX - width, centerY + variationY - height, width * 2, height * 2, cornerRadius);
+          }
+          ctx.stroke();
+
+          // Reset shadow
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+        }
+
         // Parameter effects
         if (virusParams) {
           const playerColor = hexToRgb(color);

@@ -28,6 +28,9 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
   // Get the translation function and setLanguage from the language store
   const { currentLanguage, setLanguage, t } = useLanguageStore();
 
+  // Get actions from the game store
+  const { actions } = useGameStore();
+
   // Initialize language based on game state or default to English
   useEffect(() => {
     // In a real implementation, we might load the language preference from localStorage
@@ -46,6 +49,8 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
   // Handle starting the game
   const handleStartGame = () => {
     setIsLoading(true);
+    // Set showHelpOnStart to true before starting the game
+    actions.setShowHelpOnStart(true);
     // Simulate a brief loading period before starting the game
     setTimeout(() => {
       onStart();
@@ -77,10 +82,10 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 py-8 max-w-2xl w-full">
         {/* Logo/title area */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold mb-2 font-furore text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500">
+          <h1 className="text-6xl md:text-8xl font-normal mb-2 font-buse text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500 leading-[1.3] pt-2 pb-2">
             VYRUS
           </h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-4">
+          <p className="text-lg md:text-xl text-gray-300 mb-4 font-pixy">
             {t('welcomeSubtitle')}
           </p>
           <div className="mt-4">
@@ -88,7 +93,7 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
               href="https://loremtotem.ru"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-gray-400 hover:text-white transition-colors font-furore underline"
+              className="text-sm text-gray-400 hover:text-white transition-colors font-pixy underline"
             >
               Made by Lorem Totem
             </a>
@@ -98,19 +103,19 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
         {/* Central Help button */}
         <button
           onClick={() => setShowHelp(true)}
-          className="mb-8 px-8 py-4 rounded-full text-xl font-bold transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30"
+          className="mb-8 px-8 py-4 rounded-full text-xl font-bold font-pixy transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30"
         >
           {t('helpTitle')}
         </button>
 
         {/* Language selection */}
         <div className="mb-10 w-full max-w-md">
-          <h2 className="text-xl font-semibold mb-4">{t('selectLanguage')}</h2>
+          <h2 className="text-xl font-semibold mb-4 font-pixy">{t('selectLanguage')}</h2>
           <div className="flex justify-center space-x-4">
             {/* English language button */}
             <button
               onClick={() => handleLanguageSelect('en')}
-              className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 ${
+              className={`px-6 py-3 rounded-lg font-bold font-pixy transition-all duration-300 ${
                 currentLanguage === 'en'
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -121,7 +126,7 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
             {/* Russian language button */}
             <button
               onClick={() => handleLanguageSelect('ru')}
-              className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 ${
+              className={`px-6 py-3 rounded-lg font-bold font-pixy transition-all duration-300 ${
                 currentLanguage === 'ru'
                   ? 'bg-red-600 text-white shadow-lg shadow-red-500/30'
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -136,10 +141,10 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
         <button
           onClick={handleStartGame}
           disabled={isLoading}
-          className={`px-8 py-4 rounded-full text-xl font-bold transition-all duration-300 transform hover:scale-105 ${
+          className={`px-8 py-4 rounded-full text-xl font-bold font-pixy transition-all duration-300 transform hover:scale-105 ${
             isLoading
               ? 'bg-gray-600 cursor-not-allowed'
-              : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white shadow-lg shadow-green-500/30'
+              : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-500 text-white shadow-lg shadow-green-500/30'
           }`}
         >
           {isLoading ? (
@@ -157,7 +162,7 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
 
         {/* Additional information */}
         <div className="mt-12 text-sm text-gray-400 max-w-md">
-          <p>
+          <p className="font-pixy">
             {currentLanguage === 'en'
               ? 'A strategic game where 4 viruses compete for territory using 16 different parameters'
               : 'Стратегическая игра, в которой 4 вируса соревнуются за территорию, используя 16 различных параметров'}
@@ -175,14 +180,14 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <h2 className="text-2xl font-bold font-furore text-center mb-4">{t('helpTitle')}</h2>
-                <div className="text-gray-300 mb-6 whitespace-pre-line">
+                <h2 className="text-2xl font-bold font-pixy text-center mb-4">{t('helpTitle')}</h2>
+                <div className="text-gray-300 mb-6 whitespace-pre-line font-pixy">
                   {t('helpContent')}
                 </div>
                 <div className="flex justify-center">
                   <button
                     onClick={() => setShowHelp(false)}
-                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-furore hover:from-blue-700 hover:to-indigo-700 transition-all"
+                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-pixy hover:from-blue-700 hover:to-indigo-700 transition-all"
                   >
                     {t('close')}
                   </button>

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GameStateProvider } from './components/GameStateProvider';
 import Game from './components/Game';
+import Sandbox from './components/Sandbox';
 import FullscreenButton from './components/FullscreenButton';
 import WelcomeScreen from './components/WelcomeScreen';
 import { useState, useEffect } from 'react';
@@ -65,6 +66,11 @@ function App() {
               <Route path="/" element={
                 <div className="h-full">
                   <Game />
+                </div>
+              } />
+              <Route path="/sandbox" element={
+                <div className="h-full">
+                  <Sandbox />
                 </div>
               } />
             </Routes>
