@@ -154,21 +154,13 @@ const CanvasGridOptimized: React.FC = () => {
         const sizeRandomness = 0.1;
         const sizeVariation = 1 + (randomSeed(row + 200, col + 200) - 0.5) * sizeRandomness;
 
-        // Disable breathing/pulse on emulator for stability
-        const breathingFactor = 1 + 0.05 * Math.sin(timeFactor + randomSeed(row * 100, col * 100) * 100);
-        const timeRowFactor2 = timeFactor * 2 + randomSeed(row * 200, col * 200) * 100;
-        const pulseFactor = 0.9 + 0.1 * Math.sin(timeRowFactor2 + randomSeed(row * 200, col * 200) * 100);
-
         // Fixed size for all cells (no age-based sizing)
-        let width = (cellWidth * 0.4) * sizeVariation * breathingFactor;
-        let height = (cellHeight * 0.4) * sizeVariation * breathingFactor;
+        let width = (cellWidth * 0.4) * sizeVariation;
+        let height = (cellHeight * 0.4) * sizeVariation;
 
         const colorComponents = hexToRgb(color);
         if (colorComponents) {
-          const r = Math.min(255, Math.floor(colorComponents.r * pulseFactor));
-          const g = Math.min(255, Math.floor(colorComponents.g * pulseFactor));
-          const b = Math.min(255, Math.floor(colorComponents.b * pulseFactor));
-          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.fillStyle = `rgb(${colorComponents.r}, ${colorComponents.g}, ${colorComponents.b})`;
         } else {
           ctx.fillStyle = color;
         }
@@ -186,31 +178,6 @@ const CanvasGridOptimized: React.FC = () => {
         }
         ctx.fill();
 
-        // Apply neon skin effect if player has neon skin
-        const playerSkin = gameState.players[owner]?.skin;
-        if (playerSkin === 'neon') {
-          // Create neon glow effect
-          ctx.shadowColor = color;
-          ctx.shadowBlur = 15;
-
-          // Draw the shape again to create the glow
-          if (lifetime < 100) { // 10 times slower aging
-            ctx.beginPath();
-            ctx.ellipse(centerX + variationX, centerY + variationY, width, height, 0, 0, 2 * Math.PI);
-          } else if (lifetime < 500) { // 10 times slower aging
-            const transitionFactor = (lifetime - 100) / 400; // 10 times slower aging
-            const cornerRadius = 5 + 10 * transitionFactor;
-            roundedRect(ctx, centerX + variationX - width, centerY + variationY - height, width * 2, height * 2, cornerRadius);
-          } else {
-            const cornerRadius = 2;
-            roundedRect(ctx, centerX + variationX - width, centerY + variationY - height, width * 2, height * 2, cornerRadius);
-          }
-          ctx.stroke();
-
-          // Reset shadow
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-        }
 
         // Parameter effects
         if (virusParams) {

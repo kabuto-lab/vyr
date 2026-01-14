@@ -23,7 +23,7 @@ export interface Player {
   territoryCount: number;
   preferredDirection?: [number, number] | null; // For mobility-based directional growth
   lastMutationTurn?: number; // For tracking mutation effects
-  skin?: string; // For premium skins like 'neon', 'holographic', etc.
+  skin?: string; // For premium skins like 'holographic', etc.
 }
 
 export interface VirusParameters {

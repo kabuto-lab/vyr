@@ -171,7 +171,10 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
     >
       <div className="flex flex-col items-center w-full">
         {/* Convex glass test tube container with refraction effect */}
-        <div className="relative w-12 h-32 rounded-b-[1.5rem] rounded-t-[0.5rem] overflow-hidden flex items-center justify-center glass-tube">
+        <div className="relative w-12 h-32 overflow-hidden flex items-center justify-center glass-tube">
+          {/* Bright sky blue line at the top */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-sky-400 z-20" />
+
           {/* Background distortion effect */}
           <div className="absolute inset-0 glass-refraction" />
 
@@ -213,7 +216,15 @@ const ParameterTube: React.FC<ParameterTubeProps> = ({
         >
           {label}
         </div>
-        <div className="text-xs font-bold mt-1">{value}</div>
+        <div
+          className="text-xs font-bold mt-1 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent +1 trigger
+            onDecrease();
+          }}
+        >
+          {value}
+        </div>
       </div>
     </div>
   );

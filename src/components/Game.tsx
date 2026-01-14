@@ -381,13 +381,13 @@ const Game: React.FC = () => {
 
 
       {/* Right sidebar menu - appears when menu button is clicked */}
-      <div className={`fixed top-0 right-0 h-full w-64 bg-black bg-opacity-30 backdrop-blur-lg z-[90] transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} rounded-bl-3xl`}>
+      <div className={`fixed top-0 right-0 h-full w-80 bg-black bg-opacity-30 backdrop-blur-lg z-[90] transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} rounded-bl-3xl`}>
         <div className="p-4 h-full flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold font-furore">{t('menu')}</h2>
+            <h2 className="text-xl font-bold font-pixy">{t('menu')}</h2>
             <button
               onClick={() => setMenuOpen(false)}
-              className="text-white hover:text-gray-300 text-2xl font-furore"
+              className="text-white hover:text-gray-300 text-2xl font-pixy"
             >
               &times;
             </button>
@@ -397,137 +397,74 @@ const Game: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Go back to welcome screen
                     window.location.reload();
                   }}
                 >
-                  <span className="mr-3 font-furore">🏠</span> {t('start')}
+                  <span className="mr-3 font-pixy">🏠</span> {t('start')}
                 </button>
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Open laboratory menu
                     setLabMenuOpen(true);
                     setMenuOpen(false); // Close the main menu
                   }}
                 >
-                  <span className="mr-3 font-furore">🔬</span> {t('lab')}
+                  <span className="mr-3 font-pixy">🔬</span> {t('lab')}
                 </button>
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
-                  onClick={() => {
-                    // Save game state to localStorage
-                    localStorage.setItem('vyrusGameState', JSON.stringify(gameState));
-                    alert(t('gameSaved'));
-                  }}
-                >
-                  <span className="mr-3 font-furore">💾</span> {t('save')}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
-                  onClick={() => {
-                    // Load game state from localStorage
-                    const savedState = localStorage.getItem('vyrusGameState');
-                    if (savedState) {
-                      try {
-                        const parsedState = JSON.parse(savedState);
-
-                        // Update the game state using the store actions
-                        actions.setGameState(parsedState.gameState);
-                        actions.updateGrid(parsedState.grid, parsedState.cellAge);
-                        actions.updatePlayers(parsedState.players);
-                        actions.updateTentacles(parsedState.tentacles);
-                        actions.updateSettings(parsedState.settings);
-
-                        // Update turn and phase
-                        actions.updateTurn(parsedState.turn);
-
-                        // Update simulation speed and pause state
-                        actions.setSimulationSpeed(parsedState.simulationSpeed);
-                        if (parsedState.isPaused !== gameState.isPaused) {
-                          actions.togglePause();
-                        }
-
-                        alert(t('gameLoaded'));
-                      } catch (error) {
-                        console.error('Error loading game state:', error);
-                        alert(t('noSavedGame'));
-                      }
-                    } else {
-                      alert(t('noSavedGame'));
-                    }
-                  }}
-                >
-                  <span className="mr-3 font-furore">💾</span> {t('load')}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
-                  onClick={() => {
-                    // Navigate to sandbox page
-                    navigate('/sandbox');
-                  }}
-                >
-                  <span className="mr-3 font-furore">🧪</span> {t('sandbox')}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Reset the game to initial state
                     actions.resetGame();
                     setMenuOpen(false);
                   }}
                 >
-                  <span className="mr-3 font-furore">🔄</span> {t('reset')}
+                  <span className="mr-3 font-pixy">🔄</span> {t('reset')}
                 </button>
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Settings would go here
                     alert(t('settingsComingSoon'));
                   }}
                 >
-                  <span className="mr-3 font-furore">⚙️</span> {t('settings')}
+                  <span className="mr-3 font-pixy">⚙️</span> {t('settings')}
                 </button>
               </li>
               <li>
-                <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
-                  onClick={() => {
-                    // Premium features would go here
-                    alert(t('premiumComingSoon'));
-                  }}
+                <a
+                  href="https://t.me/Metatron3000"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy block"
                 >
-                  <span className="mr-3 font-furore">🎁</span> {t('premium')}
-                </button>
+                  <span className="mr-3 font-pixy">💬</span> ТГ разработчика
+                </a>
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Statistics would go here
                     alert(t('statsComingSoon'));
                   }}
                 >
-                  <span className="mr-3 font-furore">📊</span> {t('stats')}
+                  <span className="mr-3 font-pixy">📊</span> {t('stats')}
                 </button>
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Test battle - randomize all virus parameters, mark all as ready, and start battle at 64x speed
                     for (let i = 0; i < gameState.players.length; i++) {
@@ -576,30 +513,30 @@ const Game: React.FC = () => {
                     setMenuOpen(false);
                   }}
                 >
-                  <span className="mr-3 font-furore">🧪</span> {t('test')}
+                  <span className="mr-3 font-pixy">🧪</span> {t('test')}
                 </button>
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Show help modal
                     setShowHelp(true);
                     setMenuOpen(false);
                   }}
                 >
-                  <span className="mr-3 font-furore">❓</span> {t('helpTitle')}
+                  <span className="mr-3 font-pixy">❓</span> {t('helpTitle')}
                 </button>
               </li>
               <li>
                 <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-furore"
+                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
                   onClick={() => {
                     // Close menu
                     setMenuOpen(false);
                   }}
                 >
-                  <span className="mr-3 font-furore">❌</span> {t('closeMenu')}
+                  <span className="mr-3 font-pixy">❌</span> {t('closeMenu')}
                 </button>
               </li>
             </ul>
@@ -627,7 +564,7 @@ const Game: React.FC = () => {
                 <button
                   key={player.id}
                   onClick={() => setSelectedPlayer(idx)}
-                  className={`px-3 py-2 text-sm font-bold font-pixy whitespace-nowrap relative ${
+                  className={`px-3 py-2 text-base font-bold font-pixy whitespace-nowrap relative ${
                     selectedPlayer === idx
                       ? 'border-t-2 border-white text-white'
                       : 'text-gray-300 hover:text-white'
@@ -733,7 +670,7 @@ const Game: React.FC = () => {
       <div className="fixed top-4 right-4 z-[60]">
         <button
           onClick={() => setMenuOpen(true)}
-          className="w-10 h-10 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-lg font-furore text-sm transition-all duration-200"
+          className="w-10 h-10 flex items-center justify-center bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-lg border border-white/30 rounded-lg font-pixy text-sm transition-all duration-200"
         >
           <div className="flex flex-col items-center">
             <div className="w-4 h-0.5 bg-white mb-1"></div>
@@ -752,7 +689,7 @@ const Game: React.FC = () => {
           >
             <div className="w-full bg-gray-700 bg-opacity-50 rounded-full h-2"> {/* Changed h-1 to h-2 */}
               <div
-                className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold font-furore"
+                className="h-full rounded-full flex items-center justify-end pr-1 text-[0.6rem] font-bold font-pixy"
                 style={{
                   width: `${Math.min(100, (player.territoryCount / 2450) * 100)}%`,
                   backgroundColor: player.color,
@@ -775,7 +712,7 @@ const Game: React.FC = () => {
         >
           <div className="bg-gray-800 rounded-xl border border-gray-700 shadow-lg">
             <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-              <h2 className="text-lg font-bold font-furore">{t('helpTitle')}</h2>
+              <h2 className="text-lg font-bold font-pixy">{t('helpTitle')}</h2>
               <button
                 onClick={() => {
                   setShowHelp(false);
@@ -796,7 +733,7 @@ const Game: React.FC = () => {
                     setShowHelp(false);
                     actions.setShowHelpOnStart(false);
                   }}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-furore hover:from-blue-700 hover:to-indigo-700 transition-all text-sm"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-pixy hover:from-blue-700 hover:to-indigo-700 transition-all text-sm"
                 >
                   {t('close')}
                 </button>

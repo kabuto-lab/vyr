@@ -36,7 +36,7 @@ const initialPlayers: Player[] = Array(4).fill(null).map((_, i) => ({
   territoryCount: 0,
   preferredDirection: null,
   lastMutationTurn: 0,
-  skin: i === 0 ? 'neon' : undefined, // Apply neon skin to first virus (player 0)
+  skin: undefined, // No skin applied by default
 }));
 
 const initialSettings: GameSettings = {
@@ -458,7 +458,7 @@ export const useGameStore = create<GameStore>((set) => ({
         territoryCount: 0,
         preferredDirection: null,
         lastMutationTurn: 0,
-        skin: i === 0 ? 'neon' : undefined, // Apply neon skin to first virus (player 0)
+        skin: undefined, // No skin applied by default
       }));
 
       set(() => ({

@@ -104,11 +104,11 @@ const Sandbox: React.FC = () => {
         return (
           <div className="flex-1 flex flex-col md:flex-row p-4 gap-4">
             <div className="md:w-1/4 bg-gray-800 p-4 rounded-lg">
-              <h2 className="text-lg font-bold mb-4 font-furore">{t('cellForms')}</h2>
+              <h2 className="text-lg font-bold mb-4 font-pixy">{t('cellForms')}</h2>
 
               <div className="space-y-3">
                 <button
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center font-furore ${
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center font-pixy ${
                     cellType === 'circle' ? 'bg-blue-600 bg-opacity-70' : 'hover:bg-gray-700'
                   }`}
                   onClick={() => setCellType('circle')}
@@ -117,7 +117,7 @@ const Sandbox: React.FC = () => {
                 </button>
 
                 <button
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center font-furore ${
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center font-pixy ${
                     cellType === 'square' ? 'bg-blue-600 bg-opacity-70' : 'hover:bg-gray-700'
                   }`}
                   onClick={() => setCellType('square')}
@@ -126,7 +126,7 @@ const Sandbox: React.FC = () => {
                 </button>
 
                 <button
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center font-furore ${
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center font-pixy ${
                     cellType === 'star' ? 'bg-blue-600 bg-opacity-70' : 'hover:bg-gray-700'
                   }`}
                   onClick={() => setCellType('star')}
@@ -136,7 +136,7 @@ const Sandbox: React.FC = () => {
               </div>
 
               <div className="mt-6">
-                <h3 className="font-bold mb-2 font-furore">{t('currentForm')}</h3>
+                <h3 className="font-bold mb-2 font-pixy">{t('currentForm')}</h3>
                 <div className="bg-gray-900 p-4 rounded-lg flex justify-center">
                   <div className="relative w-24 h-24 flex items-center justify-center">
                     <canvas
@@ -152,7 +152,7 @@ const Sandbox: React.FC = () => {
             </div>
 
             <div className="flex-1 bg-gray-800 p-4 rounded-lg">
-              <h2 className="text-lg font-bold mb-4 font-furore">{t('preview')}</h2>
+              <h2 className="text-lg font-bold mb-4 font-pixy">{t('preview')}</h2>
               <div className="bg-gray-900 h-full rounded-lg overflow-hidden relative">
                 <canvas
                   ref={canvasRef}
@@ -168,11 +168,11 @@ const Sandbox: React.FC = () => {
       case 'visual':
         return (
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6 font-furore">{t('visualEnhancements')}</h2>
+            <h2 className="text-2xl font-bold mb-6 font-pixy">{t('visualEnhancements')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🌟</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('ultraVisualEffects')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('ultraVisualEffects')}</h3>
                 <p className="text-gray-300">{t('ultraVisualEffectsDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -181,7 +181,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🎬</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('cinematicCamera')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('cinematicCamera')}</h3>
                 <p className="text-gray-300">{t('cinematicCameraDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -190,7 +190,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🌈</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('dynamicColorSchemes')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('dynamicColorSchemes')}</h3>
                 <p className="text-gray-300">{t('dynamicColorSchemesDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -199,7 +199,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">👁️</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('enhancedVisibility')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('enhancedVisibility')}</h3>
                 <p className="text-gray-300">{t('enhancedVisibilityDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -212,11 +212,11 @@ const Sandbox: React.FC = () => {
       case 'strategy':
         return (
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6 font-furore">{t('strategyTools')}</h2>
+            <h2 className="text-2xl font-bold mb-6 font-pixy">{t('strategyTools')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🔍</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('battleAnalytics')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('battleAnalytics')}</h3>
                 <p className="text-gray-300">{t('battleAnalyticsDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -225,7 +225,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🧠</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('aiAdvisor')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('aiAdvisor')}</h3>
                 <p className="text-gray-300">{t('aiAdvisorDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -234,7 +234,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">📋</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('scenarioBuilder')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('scenarioBuilder')}</h3>
                 <p className="text-gray-300">{t('scenarioBuilderDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -243,7 +243,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🔄</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('advancedReplay')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('advancedReplay')}</h3>
                 <p className="text-gray-300">{t('advancedReplayDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -256,11 +256,11 @@ const Sandbox: React.FC = () => {
       case 'analytics':
         return (
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6 font-furore">{t('analytics')}</h2>
+            <h2 className="text-2xl font-bold mb-6 font-pixy">{t('analytics')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">📈</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('performanceTracking')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('performanceTracking')}</h3>
                 <p className="text-gray-300">{t('performanceTrackingDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -269,7 +269,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🎯</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('parameterOptimization')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('parameterOptimization')}</h3>
                 <p className="text-gray-300">{t('parameterOptimizationDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -278,7 +278,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">📊</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('matchHistory')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('matchHistory')}</h3>
                 <p className="text-gray-300">{t('matchHistoryDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -287,7 +287,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🏆</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('achievementSystem')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('achievementSystem')}</h3>
                 <p className="text-gray-300">{t('achievementSystemDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded">
                   <p className="text-sm text-gray-400">{t('demoArea')}</p>
@@ -300,20 +300,20 @@ const Sandbox: React.FC = () => {
       case 'skins':
         return (
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6 font-furore">{t('customVirusSkins')}</h2>
+            <h2 className="text-2xl font-bold mb-6 font-pixy">{t('customVirusSkins')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🎨</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('neonSkin')}</h3>
-                <p className="text-gray-300">{t('neonSkinDesc')}</p>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('holographicSkin')}</h3>
+                <p className="text-gray-300">{t('holographicSkinDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-400 to-teal-400"></div>
                 </div>
               </div>
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🎭</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('holographicSkin')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('holographicSkin')}</h3>
                 <p className="text-gray-300">{t('holographicSkinDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded flex justify-center">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-400 to-teal-400"></div>
@@ -322,7 +322,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">🔥</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('fireSkin')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('fireSkin')}</h3>
                 <p className="text-gray-300">{t('fireSkinDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded flex justify-center">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-r from-red-500 to-orange-500"></div>
@@ -331,7 +331,7 @@ const Sandbox: React.FC = () => {
 
               <div className="bg-gray-800 p-6 rounded-lg">
                 <div className="text-4xl mb-4">❄️</div>
-                <h3 className="text-xl font-bold mb-2 font-furore">{t('iceSkin')}</h3>
+                <h3 className="text-xl font-bold mb-2 font-pixy">{t('iceSkin')}</h3>
                 <p className="text-gray-300">{t('iceSkinDesc')}</p>
                 <div className="mt-4 p-4 bg-gray-900 rounded flex justify-center">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-300 to-cyan-300"></div>
@@ -353,7 +353,7 @@ const Sandbox: React.FC = () => {
   return (
     <div className="w-full h-full flex flex-col bg-gray-900 text-white overflow-hidden">
       <div className="p-4 border-b border-gray-700">
-        <h1 className="text-2xl font-bold font-furore">{t('sandbox')}</h1>
+        <h1 className="text-2xl font-bold font-pixy">{t('sandbox')}</h1>
         <p className="text-gray-400">{t('sandboxDescription')}</p>
       </div>
 
@@ -364,7 +364,7 @@ const Sandbox: React.FC = () => {
               activeTab === 'cellForms'
                 ? 'bg-blue-600 text-white'
                 : 'hover:bg-gray-800 text-gray-300'
-            } font-furore`}
+            } font-pixy`}
             onClick={() => setActiveTab('cellForms')}
           >
             {t('cellForms')}
@@ -374,7 +374,7 @@ const Sandbox: React.FC = () => {
               activeTab === 'visual'
                 ? 'bg-blue-600 text-white'
                 : 'hover:bg-gray-800 text-gray-300'
-            } font-furore`}
+            } font-pixy`}
             onClick={() => setActiveTab('visual')}
           >
             {t('visualEnhancements')}
@@ -384,7 +384,7 @@ const Sandbox: React.FC = () => {
               activeTab === 'strategy'
                 ? 'bg-blue-600 text-white'
                 : 'hover:bg-gray-800 text-gray-300'
-            } font-furore`}
+            } font-pixy`}
             onClick={() => setActiveTab('strategy')}
           >
             {t('strategyTools')}
@@ -394,7 +394,7 @@ const Sandbox: React.FC = () => {
               activeTab === 'analytics'
                 ? 'bg-blue-600 text-white'
                 : 'hover:bg-gray-800 text-gray-300'
-            } font-furore`}
+            } font-pixy`}
             onClick={() => setActiveTab('analytics')}
           >
             {t('analytics')}
@@ -404,7 +404,7 @@ const Sandbox: React.FC = () => {
               activeTab === 'skins'
                 ? 'bg-blue-600 text-white'
                 : 'hover:bg-gray-800 text-gray-300'
-            } font-furore`}
+            } font-pixy`}
             onClick={() => setActiveTab('skins')}
           >
             {t('customVirusSkins')}
