@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Объяснение эффекта щупальцев VYRUS</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #111827;
+            color: #e5e7eb;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #fbbf24;
+            text-align: center;
+        }
+        .section {
+            background-color: #1f2937;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #374151;
+        }
+        .code-block {
+            background-color: #111827;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #374151;
+        }
+        .highlight {
+            background-color: #374151;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .variable {
+            color: #f87171;
+        }
+        .function {
+            color: #60a5fa;
+        }
+        .comment {
+            color: #a3a3a3;
+        }
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        canvas {
+            border: 1px solid #374151;
+            background-color: #0f172a;
+        }
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #374151;
+            z-index: 1;
+        }
+        .timeline-point {
+            position: relative;
+            text-align: center;
+            z-index: 2;
+            background: #1f2937;
+            padding: 10px;
+            border-radius: 8px;
+            width: 120px;
+        }
+        .timeline-label {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Объяснение эффекта щупальцев VYRUS</h1>
+        
+        <div class="section">
+            <h2>Обзор</h2>
+            <p>Эффект щупалец в VYRUS представляет собой попытки вирусов захватить вражеские клетки. Это визуальные представления основной механики игры, при которой один вирус пытается захватить клетку, занятую другим вирусом.</p>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="color-box" style="background: #EF4444;"></div>
+                    <span>Игрок 1 (Красный)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #3B82F6;"></div>
+                    <span>Игрок 2 (Синий)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #10B981;"></div>
+                    <span>Игрок 3 (Зеленый)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #F59E0B;"></div>
+                    <span>Игрок 4 (Желтый)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Механика щупалец</h2>
+            <p>Щупальца появляются когда:</p>
+            <ul>
+                <li>Клетка вируса обнаруживает соседнюю вражескую клетку</li>
+                <li>Вирус решает инициировать попытку вторжения</li>
+                <li>Вторжение находится в процессе (значение прогресса увеличивается со временем)</li>
+            </ul>
+            <p>Каждое щупальце имеет следующие свойства:</p>
+            <ul>
+                <li><span class="variable">from</span>: Позиция исходной клетки (ряд, колонка)</li>
+                <li><span class="variable">to</span>: Позиция целевой клетки (ряд, колонка)</li>
+                <li><span class="variable">owner</span>: ID игрока вируса, пытающегося захватить</li>
+                <li><span class="variable">progress</span>: Значение от 0 до 1, указывающее прогресс вторжения</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Хронология эффекта щупальцев</h2>
+            <div class="timeline">
+                <div class="timeline-point">
+                    <strong>Инициация</strong>
+                    <div class="timeline-label">t=0</div>
+                </div>
+                <div class="timeline-point">
+                    <strong>Прогресс</strong>
+                    <div class="timeline-label">t=0.3</div>
+                </div>
+                <div class="timeline-point">
+                    <strong>Пик активности</strong>
+                    <div class="timeline-label">t=0.7</div>
+                </div>
+                <div class="timeline-point">
+                    <strong>Захват/Отступление</strong>
+                    <div class="timeline-label">t=1.0</div>
+                </div>
+            </div>
+            <p>Эффект щупалец происходит в течение нескольких игровых ходов и состоит из четырех фаз:</p>
+            <ol>
+                <li><strong>Инициация</strong>: Щупальце появляется, соединяя исходную и целевую клетки</li>
+                <li><strong>Прогресс</strong>: Значение прогресса увеличивается по мере продолжения вторжения</li>
+                <li><strong>Пик активности</strong>: Щупальце наиболее видимо и активно</li>
+                <li><strong>Захват/Отступление</strong>: Происходит либо успешный захват, либо отступление</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>Визуализация на Canvas</h2>
+            <div class="canvas-container">
+                <canvas id="tentacleEffectCanvas" width="600" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Реализация кода в CanvasGridOptimized.tsx</h2>
+            <p>Это фактический код, ответственный за отрисовку эффекта щупалец:</p>
+            <div class="code-block">
+                // === ЩУПАЛЬЦА ===<br>
+                if (gameState.gameState === 'battle') {<br>
+                &nbsp;&nbsp;// Фильтруем щупальца, которые находятся в пределах видимости<br>
+                &nbsp;&nbsp;const visibleTentacles = gameState.tentacles.filter(tentacle => {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const startX = offsetX + tentacle.from.col * cellWidth + cellWidth / 2;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const startY = offsetY + tentacle.from.row * cellHeight + cellHeight / 2;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const endX = offsetX + tentacle.to.col * cellWidth + cellWidth / 2;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const endY = offsetY + tentacle.to.row * cellHeight + cellHeight / 2;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const padding = 50; // Добавляем отступ для видимости щупалец за пределами экрана<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;return (<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(startX >= -padding && startX <= displayWidth + padding && startY >= -padding && startY <= displayHeight + padding) ||<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(endX >= -padding && endX <= displayWidth + padding && endY >= -padding && endY <= displayHeight + padding)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;);<br>
+                &nbsp;&nbsp;});<br><br>
+
+                &nbsp;&nbsp;// Ограничиваем количество отрисовываемых щупалец в зависимости от качества визуальных эффектов<br>
+                &nbsp;&nbsp;const tentaclesToDraw = Math.min(<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;visibleTentacles.length,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;visualEffectQuality === 'high' ? 100 : visualEffectQuality === 'medium' ? 50 : 20<br>
+                &nbsp;&nbsp;);<br><br>
+
+                &nbsp;&nbsp;// Рисуем каждое щупальце<br>
+                &nbsp;&nbsp;for (let i = 0; i < tentaclesToDraw; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const tentacle = visibleTentacles[i];<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const startX = offsetX + tentacle.from.col * cellWidth + cellWidth / 2;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const startY = offsetY + tentacle.from.row * cellHeight + cellHeight / 2;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const endX = offsetX + tentacle.to.col * cellWidth + cellWidth / 2;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const endY = offsetY + tentacle.to.row * cellHeight + cellHeight / 2;<br><br>
+
+                &nbsp;&nbsp;&nbsp;&nbsp;// Начинаем рисовать линию щупальца<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;ctx.beginPath();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;ctx.moveTo(startX, startY);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;ctx.lineTo(endX, endY);<br><br>
+
+                &nbsp;&nbsp;&nbsp;&nbsp;// Получаем цвет владельца щупальца<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const playerColor = gameState.players[tentacle.owner]?.color || '#FFFFFF';<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const rgbColor = hexToRgb(playerColor);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (rgbColor) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Рассчитываем прозрачность щупальца в зависимости от прогресса<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const alpha = Math.min(1, 0.3 + tentacle.progress * 0.7);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.strokeStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${alpha})`;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.strokeStyle = `rgba(255, 255, 255, 0.5)`;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;ctx.lineWidth = 1.5;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;ctx.stroke();<br><br>
+
+                &nbsp;&nbsp;&nbsp;&nbsp;// Рисуем пульсирующий кончик щупальца если прогресс больше 0.7<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (tentacle.progress > 0.7) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const pulseFactor = Math.sin(Date.now() * 0.005) * 0.5 + 0.5; // Пульсация с течением времени<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const tipRadius = 3 + 4 * pulseFactor; // Радиус кончика изменяется с пульсацией<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.beginPath();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.arc(endX, endY, tipRadius, 0, 2 * Math.PI);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.fillStyle = playerColor;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.globalAlpha = 0.7;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.fill();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.globalAlpha = 1;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;}<br>
+                }
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Реализация кода в Grid Calculation Worker</h2>
+            <p>Это код, который создает щупальца в воркере:</p>
+            <div class="code-block">
+                // Проверяем, существует ли уже щупальце для этой пары from->to<br>
+                const tentacleKey = `${row},${col},${targetCell.row},${targetCell.col},${owner}`;<br>
+                if (!existingTentacleMap.has(tentacleKey) && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {<br>
+                &nbsp;&nbsp;const newTentacle: Tentacle = {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;id: `tentacle-${Date.now()}-${Math.random()}`,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;from: { row, col },<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;to: targetCell,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;owner: owner,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;progress: 0.05, // Начинаем с небольшого прогресса<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;type: 'invasion'<br>
+                &nbsp;&nbsp;};<br><br>
+
+                &nbsp;&nbsp;tentacles.push(newTentacle);<br>
+                &nbsp;&nbsp;newTentacleCount++;<br>
+                }
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Архитектура поведения щупалец</h2>
+            <p>Система щупалец в VYRUS следует этим правилам поведения:</p>
+            <ul>
+                <li><strong>Время жизни:</strong> Щупальца существуют до тех пор, пока продолжается попытка вторжения. Они исчезают, когда либо исходная клетка захватывается другим вирусом, либо вторжение успешно завершается.</li>
+                <li><strong>Перекрытие:</strong> Щупальца не перекрываются друг с другом. Система предотвращает создание нескольких щупалец между одинаковыми исходными и целевыми клетками.</li>
+                <li><strong>Ограничение количества:</strong> Максимум 30 новых щупалец могут быть созданы за ход (MAX_NEW_TENTACLES_PER_TURN).</li>
+                <li><strong>Уникальность:</strong> Каждое щупальце соединяет уникальную исходную клетку с уникальной целевой клеткой (без дубликатов).</li>
+                <li><strong>Прогресс:</strong> Щупальца имеют значение прогресса, которое увеличивается со временем, представляя попытку вторжения.</li>
+                <li><strong>Принадлежность:</strong> Каждое щупальце принадлежит определенному игроку (вирусу), который инициировал вторжение.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Объяснение переменных</h2>
+            <ul>
+                <li><span class="variable">tentacle</span>: Объект, содержащий свойства from, to, owner, progress и type</li>
+                <li><span class="variable">startX, startY</span>: Координаты исходной клетки (откуда исходит щупальце)</li>
+                <li><span class="variable">endX, endY</span>: Координаты целевой клетки (куда направлено щупальце)</li>
+                <li><span class="variable">progress</span>: Значение от 0 до 1, указывающее прогресс вторжения (0 = только началось, 1 = завершено)</li>
+                <li><span class="variable">alpha</span>: Значение прозрачности, рассчитанное на основе прогресса (0.3 + progress * 0.7)</li>
+                <li><span class="variable">tipRadius</span>: Радиус пульсирующего кончика в конце щупальца</li>
+                <li><span class="variable">pulseFactor</span>: Фактор, заставляющий кончик щупальца пульсировать ритмично</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Объяснение функций</h2>
+            <ul>
+                <li><span class="function">ctx.beginPath()</span>: Начинает новый путь для рисования</li>
+                <li><span class="function">ctx.moveTo(x, y)</span>: Перемещает перо в определенную координату без рисования</li>
+                <li><span class="function">ctx.lineTo(x, y)</span>: Рисует линию от текущей позиции до указанной координаты</li>
+                <li><span class="function">ctx.stroke()</span>: Обводит текущий путь с текущим стилем обводки</li>
+                <li><span class="function">ctx.arc(x, y, radius, startAngle, endAngle)</span>: Рисует дугу (в данном случае круг) в точке (x,y) с заданным радиусом</li>
+                <li><span class="function">ctx.fill()</span>: Заполняет текущий путь текущим стилем заливки</li>
+                <li><span class="function">Math.sin(value)</span>: Вычисляет синус значения, часто используется для колеблющихся эффектов</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Хронология визуального эффекта</h2>
+            <p>На каждом этапе анимации щупальца:</p>
+            <ol>
+                <li><strong>t=0</strong>: Щупальце появляется, соединяя источник и цель с низкой непрозрачностью</li>
+                <li><strong>t=0.3</strong>: Прогресс увеличивается, щупальце становится более заметным</li>
+                <li><strong>t=0.5</strong>: В середине вторжения щупальце имеет умеренную непрозрачность</li>
+                <li><strong>t=0.7</strong>: Кончик щупальца начинает пульсировать, когда прогресс приближается к завершению</li>
+                <li><strong>t=1.0</strong>: Происходит либо успешный захват, либо щупальце исчезает</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Animation for the tentacle effect visualization
+        const canvas = document.getElementById('tentacleEffectCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions to match its display size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        let animationProgress = 0;
+
+        // Генерируем путь с рандомизированным хаотичным движением
+        function generateChaoticPath(startX, startY, endX, endY) {
+            const path = [];
+            const numPoints = 100; // Количество точек для создания хаотичного паттерна
+            const dx = (endX - startX) / numPoints;
+            const dy = (endY - startY) / numPoints;
+
+            // Базовая амплитуда для хаотичного паттерна
+            const baseAmplitude = Math.sqrt(dx * dx + dy * dy) * 3.0;
+
+            // Генерируем случайные пики и впадины
+            const peaks = [];
+            for (let i = 0; i < 10; i++) {
+                peaks.push({
+                    position: Math.random(), // Позиция вдоль пути (от 0 до 1)
+                    amplitude: (Math.random() - 0.5) * 2 * baseAmplitude, // Случайная амплитуда, положительная или отрицательная
+                    width: 0.05 + Math.random() * 0.1 // Ширина пика
+                });
+            }
+
+            for (let i = 0; i <= numPoints; i++) {
+                const baseX = startX + i * dx;
+                const baseY = startY + i * dy;
+
+                const t = i / numPoints;
+
+                // Вычисляем смещение на основе всех пиков
+                let yOffset = 0;
+                for (const peak of peaks) {
+                    // Вычисляем расстояние от текущей позиции до пика
+                    const dist = Math.abs(t - peak.position);
+
+                    // Если внутри зоны влияния пика
+                    if (dist < peak.width) {
+                        // Применяем эффект пика, используя колоколообразную кривую
+                        const influence = Math.exp(-(dist * dist) / (2 * (peak.width/3) * (peak.width/3)));
+                        yOffset += peak.amplitude * influence;
+                    }
+                }
+
+                // Добавляем перпендикулярное смещение к пути (перпендикулярно вектору направления)
+                const perpX = -dy; // Перпендикулярный вектор
+                const perpY = dx;
+                const len = Math.sqrt(perpX * perpX + perpY * perpY);
+                const normPerpX = perpX / len;
+                const normPerpY = perpY / len;
+
+                path.push({
+                    x: baseX + normPerpX * yOffset,
+                    y: baseY + normPerpY * yOffset
+                });
+            }
+
+            // Убедиться, что последняя точка точно является целью
+            path[path.length - 1] = {x: endX, y: endY};
+
+            return path;
+        }
+
+        // Сохраняем хаотичный путь
+        let chaoticPath = generateChaoticPath(
+            canvas.width / 3,
+            canvas.height / 2,
+            2 * canvas.width / 3,
+            canvas.height / 2
+        );
+
+        // Функция получения точки вдоль хаотичного пути
+        function getPointOnChaoticPath(t, path) {
+            if (path.length < 2) return path[0] || {x: 0, y: 0};
+
+            // Находим, в каком сегменте мы находимся
+            const segmentCount = path.length - 1;
+            const segmentIndex = Math.min(segmentCount - 1, Math.floor(t * segmentCount));
+            const segmentProgress = (t * segmentCount) - segmentIndex;
+
+            // Получаем начальную и конечную точки текущего сегмента
+            const startPoint = path[segmentIndex];
+            const endPoint = path[segmentIndex + 1];
+
+            // Интерполируем между начальной и конечной точками
+            return {
+                x: startPoint.x + (endPoint.x - startPoint.x) * segmentProgress,
+                y: startPoint.y + (endPoint.y - startPoint.y) * segmentProgress
+            };
+        }
+
+        function drawTentacleEffect() {
+            // Очищаем холст
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Рисуем фоновую сетку
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= canvas.width; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= canvas.height; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Рисуем клетки вирусов
+            const startX = canvas.width / 3;
+            const startY = canvas.height / 2;
+            const endX = 2 * canvas.width / 3;
+            const endY = canvas.height / 2;
+
+            // Рисуем исходную клетку вируса
+            ctx.beginPath();
+            ctx.arc(startX, startY, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#EF4444'; // Красный вирус
+            ctx.fill();
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Рисуем целевую клетку вируса
+            ctx.beginPath();
+            ctx.arc(endX, endY, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#3B82F6'; // Синий вирус
+            ctx.fill();
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Вычисляем свойства щупальца
+            const progress = Math.min(1, animationProgress);
+            const alpha = Math.min(1, 0.3 + progress * 0.7);
+
+            // Рисуем щупальце вдоль хаотичного пути
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+
+            // Рисуем сегменты щупальца до текущего прогресса
+            const segments = 200; // Больше сегментов для более плавного хаотичного пути
+            for (let i = 0; i <= segments * progress; i++) {
+                const t = i / segments;
+                const point = getPointOnChaoticPath(t, chaoticPath);
+                if (i === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            }
+
+            ctx.strokeStyle = `rgba(239, 68, 68, ${alpha})`; // Красный с изменяющимся значением альфа
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Рисуем пульсирующий кончик, если прогресс достаточно высок
+            if (progress > 0.7) {
+                const tipPoint = getPointOnChaoticPath(progress, chaoticPath);
+                const pulseFactor = Math.sin(Date.now() * 0.005) * 0.5 + 0.5;
+                const tipRadius = 3 + 4 * pulseFactor;
+
+                ctx.beginPath();
+                ctx.arc(tipPoint.x, tipPoint.y, tipRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = '#EF4444'; // Красный
+                ctx.globalAlpha = 0.7;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            // Обновляем прогресс анимации
+            animationProgress += 0.005;
+
+            // Сброс при достижении конца и генерация нового хаотичного пути
+            if (animationProgress > 1.2) {
+                animationProgress = 0;
+                chaoticPath = generateChaoticPath(startX, startY, endX, endY);
+            }
+
+            // Продолжаем анимацию
+            requestAnimationFrame(drawTentacleEffect);
+        }
+
+        // Запускаем анимацию
+        drawTentacleEffect();
+    </script>
+</body>
+</html>

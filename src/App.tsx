@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GameStateProvider } from './components/GameStateProvider';
 import Game from './components/Game';
 import Sandbox from './components/Sandbox';
+import AnimationSandbox from './components/AnimationSandbox';
+import VisualEffectsSandbox from './components/VisualEffectsSandbox';
 import FullscreenButton from './components/FullscreenButton';
 import WelcomeScreen from './components/WelcomeScreen';
 import { useState, useEffect } from 'react';
@@ -51,30 +53,30 @@ function App() {
       <GameStateProvider>
         <div className="h-screen w-screen bg-gray-900 text-white overflow-hidden">
           <FullscreenButton />
-          {/* Show welcome screen if game hasn't started yet */}
-          {!gameStarted ? (
-            <WelcomeScreen onStart={startGame} />
-          ) : isMobile && !isLandscape ? (
-            // Show landscape orientation prompt for mobile devices
-            <div className="flex flex-col items-center justify-center h-full w-full bg-gray-900 text-white text-center p-4">
-              <div className="text-2xl font-bold mb-4">{t('rotateDevice')}</div>
-              <div className="text-lg mb-6">{t('rotateForBestExperience')}</div>
-              <div className="text-sm opacity-75">{t('designedForLandscape')}</div>
-            </div>
-          ) : (
-            <Routes>
-              <Route path="/" element={
+          <Routes>
+            <Route path="/animations" element={<AnimationSandbox />} />
+            <Route path="/vyr_animations" element={<VisualEffectsSandbox />} />
+            <Route path="/sandbox" element={<Sandbox />} />
+            <Route
+              path="/"
+              element={
                 <div className="h-full">
-                  <Game />
+                  {!gameStarted ? (
+                    <WelcomeScreen onStart={startGame} />
+                  ) : isMobile && !isLandscape ? (
+                    // Show landscape orientation prompt for mobile devices
+                    <div className="flex flex-col items-center justify-center h-full w-full bg-gray-900 text-white text-center p-4">
+                      <div className="text-2xl font-bold mb-4">{t('rotateDevice')}</div>
+                      <div className="text-lg mb-6">{t('rotateForBestExperience')}</div>
+                      <div className="text-sm opacity-75">{t('designedForLandscape')}</div>
+                    </div>
+                  ) : (
+                    <Game />
+                  )}
                 </div>
-              } />
-              <Route path="/sandbox" element={
-                <div className="h-full">
-                  <Sandbox />
-                </div>
-              } />
-            </Routes>
-          )}
+              }
+            />
+          </Routes>
         </div>
       </GameStateProvider>
     </Router>

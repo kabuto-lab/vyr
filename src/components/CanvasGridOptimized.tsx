@@ -258,7 +258,7 @@ const CanvasGridOptimized: React.FC = () => {
     // (Storm, tentacles, symbiosis, energy flow, and visual effects rendering omitted for brevity —
     // they remain identical to your original logic but respect the reduced counts above.)
 
-    // === TENTACLES ===
+    // === CHAOTIC TENTACLES ===
     if (gameState.gameState === 'battle') {
       const visibleTentacles = gameState.tentacles.filter(tentacle => {
         const startX = offsetX + tentacle.from.col * cellWidth + cellWidth / 2;
@@ -284,9 +284,65 @@ const CanvasGridOptimized: React.FC = () => {
         const endX = offsetX + tentacle.to.col * cellWidth + cellWidth / 2;
         const endY = offsetY + tentacle.to.row * cellHeight + cellHeight / 2;
 
+        // Calculate direction vector
+        const dx = endX - startX;
+        const dy = endY - startY;
+
+        // Calculate base amplitude based on distance
+        const baseAmplitude = Math.sqrt(dx * dx + dy * dy) * 0.3;
+
+        // Generate random peaks and valleys for chaotic movement
+        const peaks = [];
+        const numPeaks = 8; // Number of peaks/valleys
+        for (let j = 0; j < numPeaks; j++) {
+          peaks.push({
+            position: Math.random(), // Position along the path (0 to 1)
+            amplitude: (Math.random() - 0.5) * 2 * baseAmplitude, // Random amplitude, positive or negative
+            width: 0.05 + Math.random() * 0.1 // Width of the peak
+          });
+        }
+
+        // Draw the tentacle along a chaotic path
         ctx.beginPath();
         ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
+
+        // Draw segments of the tentacle
+        const segments = 50; // Number of segments for smoother chaotic path
+        for (let j = 1; j <= segments; j++) {
+          const t = j / segments;
+
+          // Calculate offset based on all peaks
+          let xOffset = 0;
+          let yOffset = 0;
+
+          for (const peak of peaks) {
+            // Calculate distance from current position to peak
+            const dist = Math.abs(t - peak.position);
+
+            // If within peak's influence zone
+            if (dist < peak.width) {
+              // Apply peak effect using a bell curve
+              const influence = Math.exp(-(dist * dist) / (2 * (peak.width/3) * (peak.width/3)));
+              const offset = peak.amplitude * influence;
+
+              // Calculate perpendicular vector to the direction
+              const perpX = -dy;
+              const perpY = dx;
+              const len = Math.sqrt(perpX * perpX + perpY * perpY);
+              const normPerpX = perpX / len;
+              const normPerpY = perpY / len;
+
+              xOffset += normPerpX * offset;
+              yOffset += normPerpY * offset;
+            }
+          }
+
+          // Calculate the actual position along the path with offset
+          const x = startX + dx * t + xOffset * tentacle.progress;
+          const y = startY + dy * t + yOffset * tentacle.progress;
+
+          ctx.lineTo(x, y);
+        }
 
         const playerColor = gameState.players[tentacle.owner]?.color || '#FFFFFF';
         const rgbColor = hexToRgb(playerColor);
@@ -299,11 +355,41 @@ const CanvasGridOptimized: React.FC = () => {
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
+        // Draw pulsing tip if progress is high enough
         if (tentacle.progress > 0.7) {
+          // Calculate tip position with chaotic offset
+          let tipXOffset = 0;
+          let tipYOffset = 0;
+
+          for (const peak of peaks) {
+            // Calculate distance from current position to peak
+            const dist = Math.abs(1.0 - peak.position);
+
+            // If within peak's influence zone
+            if (dist < peak.width) {
+              // Apply peak effect using a bell curve
+              const influence = Math.exp(-(dist * dist) / (2 * (peak.width/3) * (peak.width/3)));
+              const offset = peak.amplitude * influence;
+
+              // Calculate perpendicular vector to the direction
+              const perpX = -dy;
+              const perpY = dx;
+              const len = Math.sqrt(perpX * perpX + perpY * perpY);
+              const normPerpX = perpX / len;
+              const normPerpY = perpY / len;
+
+              tipXOffset += normPerpX * offset;
+              tipYOffset += normPerpY * offset;
+            }
+          }
+
+          const tipX = startX + dx * 1.0 + tipXOffset * tentacle.progress;
+          const tipY = startY + dy * 1.0 + tipYOffset * tentacle.progress;
+
           const pulseFactor = Math.sin(Date.now() * 0.005) * 0.5 + 0.5;
           const tipRadius = 3 + 4 * pulseFactor;
           ctx.beginPath();
-          ctx.arc(endX, endY, tipRadius, 0, 2 * Math.PI);
+          ctx.arc(tipX, tipY, tipRadius, 0, 2 * Math.PI);
           ctx.fillStyle = playerColor;
           ctx.globalAlpha = 0.7;
           ctx.fill();
@@ -312,8 +398,7 @@ const CanvasGridOptimized: React.FC = () => {
       }
     }
 
-    // (Other effects like storms, symbiosis, energy flow, and visualEffects rendered here
-    // with same logic as your original file, but using the reduced counts above.)
+    // Skip rendering all visual effects
 
   }, [gameState.grid, visualEffects, gameState.players, canvasDimensions, gameState.turn]);
 

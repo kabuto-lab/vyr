@@ -100,13 +100,29 @@ const WelcomeScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => {
           </div>
         </div>
 
-        {/* Central Help button */}
-        <button
-          onClick={() => setShowHelp(true)}
-          className="mb-8 px-8 py-4 rounded-full text-xl font-bold font-pixy transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30"
-        >
-          {t('helpTitle')}
-        </button>
+        {/* Central Help and Sandbox buttons */}
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <button
+            onClick={() => setShowHelp(true)}
+            className="px-6 py-4 rounded-full text-xl font-bold font-pixy transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30"
+          >
+            {t('helpTitle')}
+          </button>
+
+          <a
+            href="/animations"
+            className="px-6 py-4 rounded-full text-xl font-bold font-pixy transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg shadow-purple-500/30"
+          >
+            Animation Sandbox
+          </a>
+
+          <a
+            href="/vyr_animations"
+            className="px-6 py-4 rounded-full text-xl font-bold font-pixy transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white shadow-lg shadow-green-500/30"
+          >
+            Visual Effects
+          </a>
+        </div>
 
         {/* Language selection */}
         <div className="mb-10 w-full max-w-md">
