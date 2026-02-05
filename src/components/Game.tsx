@@ -692,26 +692,6 @@ const Game: React.FC = () => {
               >
                 <span className="font-pixy">{gameState.isPaused ? t('resume') : t('pause')}</span>
               </button>
-              <button
-                onClick={() => actions.setSimulationSpeed(16)}
-                className={`py-2 px-4 font-pixy border-2 rounded-lg ${
-                  gameState.simulationSpeed === 16
-                    ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white'
-                    : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'
-                }`}
-              >
-                <span className="font-pixy">16x</span>
-              </button>
-              <button
-                onClick={() => actions.setSimulationSpeed(64)}
-                className={`py-2 px-4 font-pixy border-2 rounded-lg ${
-                  gameState.simulationSpeed === 64
-                    ? 'bg-blue-600 bg-opacity-70 border-blue-800 text-white'
-                    : 'bg-gray-600 bg-opacity-70 border-gray-800 text-white hover:bg-gray-700'
-                }`}
-              >
-                <span className="font-pixy">64x</span>
-              </button>
             </div>
 
           </div>
