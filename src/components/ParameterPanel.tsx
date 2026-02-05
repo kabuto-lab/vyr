@@ -46,16 +46,6 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
 }) => {
   const { t } = useLanguageStore();
 
-  // Convert player color to background class
-  const getPlayerBackgroundColor = () => {
-    const color = player.color.toLowerCase();
-    if (color.includes('#ef4444') || color.includes('red')) return 'bg-red-900 bg-opacity-30';
-    if (color.includes('#3b82f6') || color.includes('blue')) return 'bg-blue-900 bg-opacity-30';
-    if (color.includes('#10b981') || color.includes('green')) return 'bg-green-900 bg-opacity-30';
-    if (color.includes('#f59e0b') || color.includes('yellow') || color.includes('amber')) return 'bg-amber-900 bg-opacity-30';
-    return 'bg-gray-900 bg-opacity-30'; // default
-  };
-
   const handleTubeClick = (paramIndex: number) => {
     if (gameState !== 'setup' || pointsLeft <= 0) return;
     const paramName = PARAMETER_NAMES[paramIndex] as keyof VirusParameters;
@@ -75,7 +65,7 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
   };
 
   return (
-    <div className={`h-full flex flex-col ${getPlayerBackgroundColor()}`}>
+    <div className="h-full flex flex-col">
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-8 gap-2 mb-4">
           {PARAMETER_NAMES.slice(0, 8).map((_, index) => {
@@ -117,13 +107,7 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({
           })}
         </div>
       </div>
-      
-      {/* Points left display with larger font size */}
-      <div className="text-center mb-4">
-        <div className="text-lg font-bold font-pixy">
-          {t('pointsLeft')}: <span className="text-2xl">{pointsLeft}</span>
-        </div>
-      </div>
+
     </div>
   );
 };
