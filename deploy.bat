@@ -1,17 +1,67 @@
 @echo off
+echo Starting deployment process...
+
+REM Check if git is installed
+where git >nul 2>nul
+if %errorlevel% neq 0 (
+    echo Error: Git is not installed or not in PATH
+    pause
+    exit /b 1
+)
+
+REM Navigate to the project directory
 cd /d "%~dp0"
 
-:: Добавляем все изменения
+echo Updating submodules...
+git submodule update --init --recursive
+
+echo Adding all changes...
 git add .
 
-:: Коммитим с сообщением (можно заменить)
-git commit -m "Auto-deploy: update game"
+echo Checking for changes...
+git diff --cached --quiet
+if %errorlevel% equ 0 (
+    echo No changes to commit
+    pause
+    exit /b 0
+)
 
-:: Пушим в main
+REM Get commit message from user
+set /p commit_msg="Enter commit message: "
+
+if "%commit_msg%"=="" (
+    set commit_msg=Auto-deploy: update game
+)
+
+echo Creating commit...
+git commit -m "%commit_msg%"
+
+echo Pulling latest changes from remote...
+git pull origin main --allow-unrelated-histories
+
+if %errorlevel% neq 0 (
+    echo Warning: Could not pull latest changes, proceeding with push anyway
+)
+
+echo Pushing to GitHub repository...
 git push origin main
 
+if %errorlevel% equ 0 (
+    echo Repository has been successfully pushed to GitHub
+    echo Vercel will auto-deploy in 10-30 seconds
+) else (
+    echo Failed to push to GitHub repository
+    echo Possible causes:
+    echo 1. No internet connection
+    echo 2. Permission denied - check your GitHub credentials
+    echo 3. Remote repository URL is incorrect
+    echo 4. Local changes conflict with remote
+    echo.
+    echo To fix permission issues:
+    echo 1. Generate a new Personal Access Token in GitHub Settings
+    echo 2. Run: git remote set-url origin https://username:token@github.com/username/repo.git
+)
+
 echo.
-echo ✅ Changes pushed to GitHub!
-echo Vercel will auto-deploy in 10-30 seconds.
-echo.
+echo Deployment process completed.
 pause
