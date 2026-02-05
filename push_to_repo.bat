@@ -2,7 +2,7 @@
 echo Initializing git repository and pushing to GitHub...
 
 REM Navigate to the project directory
-cd /d "C:\__Qwen1\vyrus\VYRU5\VYRU6\v1a"
+cd /d "C:\vyrus\VYRU5\VYRU6\v1a"
 
 REM Initialize git repository if not already initialized
 if not exist .git (
