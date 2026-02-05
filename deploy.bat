@@ -36,6 +36,13 @@ if "%commit_msg%"=="" (
 echo Creating commit...
 git commit -m "%commit_msg%"
 
+REM Get GitHub username and token from user
+set /p github_user="Enter your GitHub username: "
+set /p github_token="Enter your GitHub Personal Access Token: "
+
+REM Set the remote URL with credentials
+git remote set-url origin https://^%github_user^%:^%github_token^%@github.com/^%github_user^%/vyrus.git
+
 echo Pulling latest changes from remote...
 git pull origin main --allow-unrelated-histories
 
@@ -59,7 +66,7 @@ if %errorlevel% equ 0 (
     echo.
     echo To fix permission issues:
     echo 1. Generate a new Personal Access Token in GitHub Settings
-    echo 2. Run: git remote set-url origin https://username:token@github.com/username/repo.git
+    echo 2. Make sure you have write access to the repository
 )
 
 echo.
