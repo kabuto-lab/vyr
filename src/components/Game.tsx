@@ -21,6 +21,13 @@ import ParameterPanel from './ParameterPanel';
 import GameControls from './GameControls';
 import { VirusParameters } from '../types/game';
 
+declare global {
+  interface Window {
+    YaGames: any;
+    ysdk: any;
+  }
+}
+
 const Game: React.FC = () => {
   const { gameState, actions } = useGameStore();
   const { t } = useLanguageStore();
@@ -30,6 +37,8 @@ const Game: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [labMenuOpen, setLabMenuOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [autoOpenedLab, setAutoOpenedLab] = useState(false);
+  const [ysdk, setYsdk] = useState<any>(null);
   const workerRef = useRef<Worker | null>(null);
 
 
@@ -41,6 +50,23 @@ const Game: React.FC = () => {
       setPointsLeft(16 - totalPoints);
     }
   }, [selectedPlayer, gameState.gameState, gameState.players[selectedPlayer]?.virus]);
+
+  // Initialize Yandex Games SDK
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.YaGames) {
+      window.YaGames.init()
+        .then((sdk: any) => {
+          console.log('Yandex SDK initialized');
+          setYsdk(sdk);
+          window.ysdk = sdk;
+        })
+        .catch((error: any) => {
+          console.error('Failed to initialize Yandex SDK:', error);
+        });
+    } else {
+      console.warn('Yandex Games SDK not available');
+    }
+  }, []);
 
   // Initialize Web Worker
   useEffect(() => {
@@ -192,6 +218,34 @@ const Game: React.FC = () => {
     }
   }, [gameState.gameState, actions]);
 
+  // Auto-open lab menu when game starts in setup state (only once)
+  useEffect(() => {
+    if (gameState.gameState === 'setup' && !autoOpenedLab) {
+      setLabMenuOpen(true);
+      setAutoOpenedLab(true);
+    }
+  }, [gameState.gameState, autoOpenedLab]);
+
+  // Show ad when game transitions to gameOver state
+  useEffect(() => {
+    if (gameState.gameState === 'gameOver' && ysdk) {
+      // Show ad after a short delay to allow the game over screen to appear
+      setTimeout(async () => {
+        try {
+          await ysdk.adv.showFullscreenAdv({
+            callbacks: {
+              onOpen: () => console.log('Game over ad opened'),
+              onClose: (wasShown: boolean) => console.log('Game over ad closed, wasShown:', wasShown),
+              onError: (error: any) => console.error('Game over ad error:', error)
+            }
+          });
+        } catch (error) {
+          console.error('Error showing game over ad:', error);
+        }
+      }, 1000); // 1 second delay
+    }
+  }, [gameState.gameState, ysdk]);
+
   // Listen for the showHelpModal event
   useEffect(() => {
     const handleShowHelpModal = () => {
@@ -312,8 +366,23 @@ const Game: React.FC = () => {
   };
 
   // Start battle
-  const startBattle = () => {
+  const startBattle = async () => {
     if (gameState.players.every(player => player.isReady)) {
+      // Show ad before starting the battle
+      if (ysdk) {
+        try {
+          await ysdk.adv.showFullscreenAdv({
+            callbacks: {
+              onOpen: () => console.log('Fullscreen ad opened'),
+              onClose: (wasShown: boolean) => console.log('Fullscreen ad closed, wasShown:', wasShown),
+              onError: (error: any) => console.error('Fullscreen ad error:', error)
+            }
+          });
+        } catch (error) {
+          console.error('Error showing ad:', error);
+        }
+      }
+
       // Reset player-specific fields before starting battle, but preserve skins
       const updatedPlayers = gameState.players.map(player => ({
         ...player,
@@ -340,7 +409,7 @@ const Game: React.FC = () => {
 
       // Initialize cell age grid when starting battle (all cells have age -1)
       const initialCellAge = Array(35).fill(null).map(() => Array(70).fill(-1));
-      
+
       actions.updateGrid(grid);
       actions.updatePlayers(updatedPlayers);
     }
@@ -370,7 +439,58 @@ const Game: React.FC = () => {
       <div className={`fixed top-0 right-0 h-full w-80 bg-black bg-opacity-30 backdrop-blur-lg z-[90] transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'} rounded-bl-3xl`}>
         <div className="p-4 h-full flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold font-pixy">{t('menu')}</h2>
+            <h2 
+              className="text-xl font-bold font-pixy cursor-pointer"
+              onClick={() => {
+                // Hidden test function - triggered by clicking the menu title
+                for (let i = 0; i < gameState.players.length; i++) {
+                  // Randomize parameters for each player
+                  const currentParams = { ...gameState.players[i].virus };
+
+                  // Reset all parameters to 0
+                  Object.keys(currentParams).forEach(param => {
+                    currentParams[param as keyof typeof currentParams] = 0;
+                  });
+
+                  // Distribute 16 points randomly among the parameters
+                  let pointsLeft = 16;
+                  while (pointsLeft > 0) {
+                    const paramKeys = Object.keys(currentParams) as (keyof typeof currentParams)[];
+                    const randomParam = paramKeys[Math.floor(Math.random() * paramKeys.length)];
+
+                    // Only add a point if it doesn't exceed the maximum (16) and we have points left
+                    if (currentParams[randomParam] < 16) {
+                      currentParams[randomParam]++;
+                      pointsLeft--;
+                    }
+                  }
+
+                  // Update each parameter individually
+                  Object.entries(currentParams).forEach(([param, value]) => {
+                    actions.setPlayerParameter(i, param as keyof typeof currentParams, value);
+                  });
+
+                  // Mark player as ready
+                  actions.setPlayerReady(i);
+                }
+
+                // Start battle with proper initialization
+                actions.testBattle();
+
+                // Set speed to 64x
+                actions.setSimulationSpeed(64);
+
+                // Ensure game is not paused
+                if (gameState.isPaused) {
+                  actions.togglePause();
+                }
+                
+                // Close menu after test
+                setMenuOpen(false);
+              }}
+            >
+              {t('menu')}
+            </h2>
             <button
               onClick={() => setMenuOpen(false)}
               className="text-white hover:text-gray-300 text-2xl font-pixy"
@@ -446,60 +566,6 @@ const Game: React.FC = () => {
                   }}
                 >
                   <span className="mr-3 font-pixy">📊</span> {t('stats')}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center font-pixy"
-                  onClick={() => {
-                    // Test battle - randomize all virus parameters, mark all as ready, and start battle at 64x speed
-                    for (let i = 0; i < gameState.players.length; i++) {
-                      // Randomize parameters for each player
-                      const currentParams = { ...gameState.players[i].virus };
-
-                      // Reset all parameters to 0
-                      Object.keys(currentParams).forEach(param => {
-                        currentParams[param as keyof typeof currentParams] = 0;
-                      });
-
-                      // Distribute 16 points randomly among the parameters
-                      let pointsLeft = 16;
-                      while (pointsLeft > 0) {
-                        const paramKeys = Object.keys(currentParams) as (keyof typeof currentParams)[];
-                        const randomParam = paramKeys[Math.floor(Math.random() * paramKeys.length)];
-
-                        // Only add a point if it doesn't exceed the maximum (16) and we have points left
-                        if (currentParams[randomParam] < 16) {
-                          currentParams[randomParam]++;
-                          pointsLeft--;
-                        }
-                      }
-
-                      // Update each parameter individually
-                      Object.entries(currentParams).forEach(([param, value]) => {
-                        actions.setPlayerParameter(i, param as keyof typeof currentParams, value);
-                      });
-
-                      // Mark player as ready
-                      actions.setPlayerReady(i);
-                    }
-
-                    // Start battle with proper initialization
-                    actions.testBattle();
-
-                    // Set speed to 64x
-                    actions.setSimulationSpeed(64);
-
-                    // Ensure game is not paused
-                    if (gameState.isPaused) {
-                      actions.togglePause();
-                    }
-
-                    // Close menu
-                    setMenuOpen(false);
-                  }}
-                >
-                  <span className="mr-3 font-pixy">🧪</span> {t('test')}
                 </button>
               </li>
               <li>
