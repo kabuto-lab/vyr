@@ -17,7 +17,7 @@ set /p github_user="Enter your GitHub username: "
 set /p github_token="Enter your GitHub Personal Access Token: "
 
 REM Set the remote URL with credentials
-git remote set-url origin https://%github_user%:%github_token%@github.com/%github_user%/vyrus.git
+git remote set-url origin https://%github_user%:%github_token%@github.com/%github_user%/vyr.git
 
 echo Updating submodules...
 git submodule update --init --recursive
