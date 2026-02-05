@@ -5,8 +5,7 @@ import {
   VirusParameters,
   VisualEffect,
   PerformanceMetrics,
-  GameSettings,
-  Tentacle
+  GameSettings
 } from '../types/game';
 
 // Initialize default game state
@@ -41,20 +40,19 @@ const initialPlayers: Player[] = Array(4).fill(null).map((_, i) => ({
 
 const initialSettings: GameSettings = {
   simulationInterval: 400,
-  maxEffects: 1000,
-  enableVisualEffects: true,
+  maxEffects: 0, // Все визуальные эффекты отключены для улучшения производительности
+  enableVisualEffects: false, // Все визуальные эффекты отключены для улучшения производительности
   enableSound: true,
   gridSize: { rows: 35, cols: 70 },
-  visualEffectQuality: 'medium', // 'low', 'medium', 'high'
+  visualEffectQuality: 'low', // 'low', 'medium', 'high' - все равно не используется
 };
 
 const initialGameState: GameState = {
   gameState: 'setup',
   grid: Array(35).fill(null).map(() => Array(70).fill(null)), // 70x35 grid (35 rows, 70 columns)
   players: initialPlayers,
-  visualEffects: [],
-  tentacles: [],
-  cellAge: Array(35).fill(null).map(() => Array(70).fill(-1)), // Initialize with -1 (empty cells)
+  visualEffects: [], // Визуальные эффекты отключены для улучшения производительности
+  cellAge: [], // Cell age system has been removed for performance optimization
   performance: {
     fps: 0,
     memoryUsage: 0,
@@ -76,7 +74,7 @@ interface GameStore {
     setGameState: (state: 'setup' | 'battle' | 'gameOver') => void;
     setPlayerParameter: (playerId: number, param: keyof VirusParameters, value: number) => void;
     setPlayerReady: (playerId: number) => void;
-    updateGrid: (newGrid: (number | null)[][], newCellAge: number[][]) => void;
+    updateGrid: (newGrid: (number | null)[][]) => void;
     updateTurn: (turn: number) => void;
     addAttackEffect: (from: { row: number; col: number }, to: { row: number; col: number }, attacker: number) => void;
     addExpansionEffect: (from: { row: number; col: number }, to: { row: number; col: number }, player: number) => void;
@@ -90,7 +88,6 @@ interface GameStore {
     resetGame: () => void;
     updatePerformance: (metrics: Partial<PerformanceMetrics>) => void;
     setTerritoryCount: (playerId: number, count: number) => void;
-    updateTentacles: (tentacles: Tentacle[]) => void;
     updatePlayers: (players: Player[]) => void;
     addExpansionSourceEffect: (position: { row: number; col: number }, player: number) => void;
     addExpansionPathEffect: (from: { row: number; col: number }, to: { row: number; col: number }, player: number) => void;
@@ -123,11 +120,10 @@ export const useGameStore = create<GameStore>((set) => ({
       return { gameState: { ...store.gameState, players } };
     }),
 
-    updateGrid: (newGrid: (number | null)[][], newCellAge: number[][]) => set((store) => ({
+    updateGrid: (newGrid: (number | null)[][]) => set((store) => ({
       gameState: {
         ...store.gameState,
-        grid: newGrid,
-        cellAge: newCellAge
+        grid: newGrid
       }
     })),
 
@@ -136,282 +132,82 @@ export const useGameStore = create<GameStore>((set) => ({
     })),
 
     addAttackEffect: (from: { row: number; col: number }, to: { row: number; col: number }, attacker: number) => set((store) => {
-      // Removed attack effect to reduce visual clutter
-      // const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']; // Player colors
-      // const effect = {
-      //   id: `attack-${Date.now()}-${Math.random()}`,
-      //   type: 'attack' as const,
-      //   position: { x: from.col, y: from.row },
-      //   duration: 300,
-      //   intensity: 1,
-      //   color: colors[attacker],
-      //   from: { row: from.row, col: from.col },
-      //   to: { row: to.row, col: to.col },
-      //   player: attacker,
-      //   startTime: Date.now()
-      // };
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
-          ...store.gameState,
-          // visualEffects: [...store.gameState.visualEffects, effect]
+          ...store.gameState
         }
       };
     }),
 
     addExpansionEffect: (from: { row: number; col: number }, to: { row: number; col: number }, player: number) => set((store) => {
-      const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']; // Player colors
-      const playerColor = colors[player];
-      const startTime = Date.now();
-      const duration = 400; // Default duration
-
-      // Get the player's virus parameters to determine effect style
-      const virusParams = store.gameState.players[player].virus;
-
-      // Adjust duration based on stability
-      const adjustedDuration = virusParams.stability > 10 ? 150 : duration;
-
-      // Create three synchronized effects
-      const effects = [];
-
-      // Effect 1: Source pulsation
-      if (!(virusParams.stability > 10)) { // Skip if stability > 10
-        effects.push({
-          id: `expansion-source-${Date.now()}-${Math.random()}`,
-          type: 'expansionSource' as const,
-          position: { x: from.col, y: from.row },
-          duration: adjustedDuration,
-          intensity: 1,
-          color: playerColor,
-          from: { row: from.row, col: from.col },
-          to: { row: to.row, col: to.col },
-          player,
-          startTime
-        });
-      }
-
-      // Effect 2: Expansion path
-      if (!(virusParams.stability > 10)) { // Skip if stability > 10
-        effects.push({
-          id: `expansion-path-${Date.now()}-${Math.random()}`,
-          type: 'expansionPath' as const,
-          position: { x: from.col, y: from.row },
-          duration: adjustedDuration,
-          intensity: 1,
-          color: playerColor,
-          from: { row: from.row, col: from.col },
-          to: { row: to.row, col: to.col },
-          player,
-          startTime
-        });
-      }
-
-      // Effect 3: Target colony formation
-      effects.push({
-        id: `expansion-target-${Date.now()}-${Math.random()}`,
-        type: 'expansionTarget' as const,
-        position: { x: to.col, y: to.row },
-        duration: adjustedDuration,
-        intensity: 1,
-        color: playerColor,
-        from: { row: from.row, col: from.col },
-        to: { row: to.row, col: to.col },
-        player,
-        startTime
-      });
-
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
-          ...store.gameState,
-          visualEffects: [...store.gameState.visualEffects, ...effects]
+          ...store.gameState
         }
       };
     }),
 
     addExpansionSourceEffect: (position: { row: number; col: number }, player: number) => set((store) => {
-      const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']; // Player colors
-      const playerColor = colors[player];
-      const startTime = Date.now();
-      const duration = 400; // Default duration
-
-      // Get the player's virus parameters to determine effect style
-      const virusParams = store.gameState.players[player].virus;
-
-      // Adjust duration based on stability
-      const adjustedDuration = virusParams.stability > 10 ? 150 : duration;
-
-      const effect = {
-        id: `expansion-source-${Date.now()}-${Math.random()}`,
-        type: 'expansionSource' as const,
-        position: { x: position.col, y: position.row },
-        duration: adjustedDuration,
-        intensity: 1,
-        color: playerColor,
-        player,
-        startTime
-      };
-
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
-          ...store.gameState,
-          visualEffects: [...store.gameState.visualEffects, effect]
+          ...store.gameState
         }
       };
     }),
 
     addExpansionPathEffect: (from: { row: number; col: number }, to: { row: number; col: number }, player: number) => set((store) => {
-      const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']; // Player colors
-      const playerColor = colors[player];
-      const startTime = Date.now();
-      const duration = 400; // Default duration
-
-      // Get the player's virus parameters to determine effect style
-      const virusParams = store.gameState.players[player].virus;
-
-      // Adjust duration based on stability
-      const adjustedDuration = virusParams.stability > 10 ? 150 : duration;
-
-      const effect = {
-        id: `expansion-path-${Date.now()}-${Math.random()}`,
-        type: 'expansionPath' as const,
-        position: { x: from.col, y: from.row },
-        duration: adjustedDuration,
-        intensity: 1,
-        color: playerColor,
-        from: { row: from.row, col: from.col },
-        to: { row: to.row, col: to.col },
-        player,
-        startTime
-      };
-
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
-          ...store.gameState,
-          visualEffects: [...store.gameState.visualEffects, effect]
+          ...store.gameState
         }
       };
     }),
 
     addExpansionTargetEffect: (position: { row: number; col: number }, player: number) => set((store) => {
-      const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']; // Player colors
-      const playerColor = colors[player];
-      const startTime = Date.now();
-      const duration = 400; // Default duration
-
-      // Get the player's virus parameters to determine effect style
-      const virusParams = store.gameState.players[player].virus;
-
-      // Adjust duration based on stability
-      const adjustedDuration = virusParams.stability > 10 ? 150 : duration;
-
-      const effect = {
-        id: `expansion-target-${Date.now()}-${Math.random()}`,
-        type: 'expansionTarget' as const,
-        position: { x: position.col, y: position.row },
-        duration: adjustedDuration,
-        intensity: 1,
-        color: playerColor,
-        player,
-        startTime
-      };
-
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
-          ...store.gameState,
-          visualEffects: [...store.gameState.visualEffects, effect]
+          ...store.gameState
         }
       };
     }),
 
     addParameterEffect: (position: { row: number; col: number }, type: string, player: number) => set((store) => {
-      const colors: Record<string, string> = {
-        aggression: '#EF4444',
-        defense: '#60A5FA',
-        speed: '#FBBF24',
-        stealth: '#A78BFA',
-        resistance: '#34D399',
-        virulence: '#F87171'
-      };
-      const effect = {
-        id: `param-${type}-${Date.now()}-${Math.random()}`,
-        type: type as any,
-        position: { x: position.col, y: position.row },
-        duration: 800,
-        intensity: 1,
-        color: colors[type] || '#FFFFFF',
-        player,
-        startTime: Date.now()
-      };
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
-          ...store.gameState,
-          visualEffects: [...store.gameState.visualEffects, effect]
+          ...store.gameState
         }
       };
     }),
 
     addInteractionEffect: (position: { row: number; col: number }, type: 'attack' | 'defense' | 'capture', player: number) => set((store) => {
-      // Get the player's color from the store
-      const playerColor = store.gameState.players[player]?.color || '#FFFFFF';
-
-      // Create the original interaction effect
-      const effect = {
-        id: `interaction-${type}-${Date.now()}-${Math.random()}`,
-        type: type as any,
-        position: { x: position.col, y: position.row },
-        duration: 600, // 600ms duration - not indefinite
-        intensity: 1,
-        color: playerColor, // Use the player's virus color
-        player,
-        startTime: Date.now()
-      };
-
-      // Create a wave effect for capture and attack events
-      let waveEffect = null;
-      if (type === 'capture' || type === 'attack') {
-        waveEffect = {
-          id: `wave-${type}-${Date.now()}-${Math.random()}`,
-          type: 'wave' as const,
-          position: { x: position.col, y: position.row },
-          duration: 1800, // 3x longer duration for the wave effect
-          intensity: 1,
-          color: playerColor, // Use the player's virus color
-          player,
-          startTime: Date.now()
-        };
-      }
-
-      const newEffects = [...store.gameState.visualEffects, effect];
-      if (waveEffect) {
-        newEffects.push(waveEffect);
-      }
-
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
-          ...store.gameState,
-          visualEffects: newEffects
+          ...store.gameState
         }
       };
     }),
 
     removeOldVisualEffects: () => set((store) => {
-      const now = Date.now();
-      const newVisualEffects = store.gameState.visualEffects.filter(effect => {
-        const startTime = (effect as any).startTime || now;
-        return now - startTime < effect.duration;
-      });
-
+      // Все визуальные эффекты отключены для улучшения производительности
       return {
         gameState: {
           ...store.gameState,
-          visualEffects: newVisualEffects
+          visualEffects: [] // Очищаем все визуальные эффекты
         }
       };
     }),
 
     addVisualEffect: (effect) => set((store) => ({
       gameState: {
-        ...store.gameState,
-        visualEffects: [...store.gameState.visualEffects, effect]
+        ...store.gameState
+        // Не добавляем визуальные эффекты для улучшения производительности
       }
     })),
 
@@ -468,7 +264,7 @@ export const useGameStore = create<GameStore>((set) => ({
           isPaused: false, // Explicitly set to not paused
           simulationSpeed: 1, // Explicitly set to 1x speed
           players: freshInitialPlayers,
-          cellAge: Array(35).fill(null).map(() => Array(70).fill(-1)), // Reset cell ages
+          cellAge: [], // Cell age system has been removed for performance optimization
           showHelpOnStart: false, // Explicitly set to false
         }
       }));
@@ -519,9 +315,6 @@ export const useGameStore = create<GameStore>((set) => ({
       return { gameState: { ...store.gameState, players } };
     }),
 
-    updateTentacles: (tentacles: Tentacle[]) => set((store) => ({
-      gameState: { ...store.gameState, tentacles }
-    })),
 
     updatePlayers: (players: Player[]) => set((store) => ({
       gameState: { ...store.gameState, players }
@@ -589,13 +382,9 @@ export const useGameStore = create<GameStore>((set) => ({
       placeStartingColony(2, 2, 32);     // Bottom-left (35-3 for padding)
       placeStartingColony(3, 67, 32);    // Bottom-right (70-3, 35-3 for padding)
 
-      // Initialize cell age grid
-      const initialCellAge = Array(35).fill(null).map(() => Array(70).fill(-1));
-      // Set birth age for starting colonies (age 0, will become 1 after first turn)
-      initialCellAge[2][2] = 0;   // Player 0 starting position
-      initialCellAge[2][67] = 0;  // Player 1 starting position
-      initialCellAge[32][2] = 0;  // Player 2 starting position
-      initialCellAge[32][67] = 0; // Player 3 starting position
+      // Cell age system has been removed for performance optimization
+      // Initialize cell age grid as empty
+      const initialCellAge = [];
 
       return {
         gameState: {

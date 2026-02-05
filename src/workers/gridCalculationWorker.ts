@@ -20,17 +20,6 @@ interface GridCalculationMessage {
   players: Player[];
   turn: number;
   settings: GameSettings;
-  tentacles: Tentacle[];
-  cellAge: number[][];
-}
-
-interface Tentacle {
-  id: string;
-  from: { row: number; col: number };
-  to: { row: number; col: number };
-  owner: number;
-  progress: number;
-  type: 'invasion';
 }
 
 interface GridCalculationResult {
@@ -42,78 +31,71 @@ interface GridCalculationResult {
   expansionEvents: { from: { row: number; col: number }; to: { row: number; col: number }; player: number }[];
   parameterEvents: { position: { row: number; col: number }; type: string; player: number }[];
   interactionEvents: { position: { row: number; col: number }; type: 'attack' | 'defense' | 'capture'; player: number }[];
-  waveEffects: {
-    id: string;
-    type: 'wave';
-    position: { x: number; y: number };
-    duration: number;
-    intensity: number;
-    color: string;
-    player: number;
-    startTime: number;
-  }[];
-  tentacles: Tentacle[];
-  cellAge: number[][];
 }
 
 // Cache for adjacent cells to avoid repeated calculations
 const adjacentCellsCache = new Map<string, { row: number; col: number }[]>();
 
+// Pre-computed adjacent cells for all positions on the grid
+const precomputedAdjacentCells: { row: number; col: number }[][] = [];
+
+// Initialize precomputed adjacent cells
+for (let row = 0; row < 35; row++) {
+  precomputedAdjacentCells[row] = [];
+  for (let col = 0; col < 70; col++) {
+    const adjacent: { row: number; col: number }[] = [];
+    const directions = [
+      [-1, 0], [1, 0], [0, -1], [0, 1],  // up, down, left, right
+      [-1, -1], [-1, 1], [1, -1], [1, 1]  // diagonals
+    ];
+
+    for (const [dr, dc] of directions) {
+      const newRow = row + dr;
+      const newCol = col + dc;
+
+      // Fixed grid dimensions: 35 rows, 70 columns
+      if (newRow >= 0 && newRow < 35 && newCol >= 0 && newCol < 70) {
+        adjacent.push({ row: newRow, col: newCol });
+      }
+    }
+    
+    precomputedAdjacentCells[row][col] = adjacent;
+  }
+}
+
 // Helper function to get adjacent cells
 function getAdjacentCells(grid: (number | null)[][], row: number, col: number): { row: number; col: number }[] {
-  // Fixed grid size: 70x35
-  const gridId = '35x70';
-  const key = `${gridId}-${row}-${col}`;
+  return precomputedAdjacentCells[row][col];
+}
 
-  if (adjacentCellsCache.has(key)) {
-    return adjacentCellsCache.get(key)!;
-  }
-
-  const adjacent: { row: number; col: number }[] = [];
-  const directions = [
-    [-1, 0], [1, 0], [0, -1], [0, 1],  // up, down, left, right
-    [-1, -1], [-1, 1], [1, -1], [1, 1]  // diagonals
-  ];
-
-  for (const [dr, dc] of directions) {
-    const newRow = row + dr;
-    const newCol = col + dc;
-
-    // Fixed grid dimensions: 35 rows, 70 columns
-    if (newRow >= 0 && newRow < 35 && newCol >= 0 && newCol < 70) {
-      adjacent.push({ row: newRow, col: newCol });
-    }
-  }
-
-  adjacentCellsCache.set(key, adjacent);
-  return adjacent;
+// Precompute attack/defense factors for each player to avoid repeated calculations
+function precomputePlayerFactors(players: Player[]): { attack: number; defense: number }[] {
+  return players.map(player => {
+    if (!player) return { attack: 0, defense: 0 };
+    const { mobility, infectivity, aggression, resistance, defense: playerDefense } = player.virus;
+    const attack = (mobility / 16 + infectivity / 16 + aggression / 16) / 3;
+    const defense = (resistance / 16 + playerDefense / 16) / 2;
+    return { attack, defense };
+  });
 }
 
 
 // Main simulation function
 function calculateNextGameState(
-  grid: (number | null)[][],
+  _grid: (number | null)[][],
   players: Player[],
   turn: number,
-  _settings: GameSettings,
-  existingTentacles: Tentacle[] = [],
-  currentCellAge: number[][] = []
+  _settings: GameSettings
 ): GridCalculationResult {
   // Create a copy of the grid for this turn
-  const newGrid = grid.map(row => [...row]);
+  const newGrid = _grid.map(row => [...row]);
   // Fixed grid dimensions: 35 rows, 70 columns
   const rows = 35;
   const cols = 70;
 
-  // Initialize or copy cell age grid
-  let cellAge: number[][] = [];
-  if (currentCellAge.length === 0) {
-    // Initialize age grid with -1 (empty cells) for new game
-    cellAge = Array(rows).fill(null).map(() => Array(cols).fill(-1));
-  } else {
-    // Copy existing age grid
-    cellAge = currentCellAge.map(row => [...row]);
-  }
+  // Cell age system has been removed for performance optimization
+  // Initialize or copy cell age grid as empty (all cells have age -1)
+  let cellAge: number[][] = Array(rows).fill(null).map(() => Array(cols).fill(-1));
 
   // Track events for visual effects
   const attackEvents: { from: { row: number; col: number }; to: { row: number; col: number }; attacker: number }[] = [];
@@ -130,102 +112,90 @@ function calculateNextGameState(
     player: number;
     startTime: number;
   }[] = [];
-  const tentacles: Tentacle[] = [];
 
-  // Phase 0: Update existing tentacles
-  for (const tentacle of existingTentacles) {
-    // Check if the source cell still exists and belongs to the same owner
-    const sourceOwner = newGrid[tentacle.from.row][tentacle.from.col];
-    if (sourceOwner === tentacle.owner) {
-      // Calculate progress based on attacker and defender parameters
-      const attacker = players[tentacle.owner];
-      const defenderOwner = newGrid[tentacle.to.row][tentacle.to.col];
-      const defender = defenderOwner !== null ? players[defenderOwner] : null;
+  // Phase 0: Direct combat - cells battle with adjacent opponent cells
+  // Precompute attack/defense factors to avoid repeated calculations
+  const playerFactors = precomputePlayerFactors(players);
 
-      // Calculate progress based on parameters
-      let progressIncrease = 0;
-      if (attacker) {
-        // Attacker's parameters that help invasion
-        const mobilityFactor = attacker.virus.mobility / 16;
-        const infectivityFactor = attacker.virus.infectivity / 16;
-        const aggressionFactor = attacker.virus.aggression / 16;
+  for (let row = 0; row < 35; row++) {
+    for (let col = 0; col < 70; col++) {
+      const owner = newGrid[row][col];
+      if (owner !== null) {
+        const player = players[owner];
+        if (player) {
+          // Get adjacent opponent cells
+          const adjacentCells = getAdjacentCells(_grid, row, col);
+          
+          // Collect all opponent cells in a single pass
+          const opponentCells: { cell: { row: number; col: number }; defender: number }[] = [];
+          for (const adj of adjacentCells) {
+            const cellOwner = newGrid[adj.row][adj.col];
+            if (cellOwner !== null && cellOwner !== owner) {
+              opponentCells.push({ cell: adj, defender: cellOwner });
+            }
+          }
 
-        progressIncrease = (mobilityFactor + infectivityFactor + aggressionFactor) / 3;
+          // Attempt to attack opponent cells
+          if (opponentCells.length > 0) {
+            // Select a random opponent cell to attack
+            const { cell: targetCell, defender } = opponentCells[Math.floor(Math.random() * opponentCells.length)];
+            
+            // Use precomputed factors
+            const { attack: attackPower } = playerFactors[owner];
+            const { defense: defensePower } = playerFactors[defender];
 
-        // If there's a defender, reduce progress based on their defense
-        if (defender) {
-          const resistanceFactor = defender.virus.resistance / 16;
-          const defenseFactor = defender.virus.defense / 16;
+            // Determine if attack succeeds
+            const attackSuccess = attackPower > defensePower;
 
-          // Reduce progress based on defender's parameters
-          progressIncrease *= (1 - (resistanceFactor + defenseFactor) / 2);
+            if (attackSuccess) {
+              // Capture the cell
+              newGrid[targetCell.row][targetCell.col] = owner;
+
+              // Все визуальные эффекты отключены для улучшения производительности
+              // // Add interaction events for the capture
+              // interactionEvents.push({
+              //   position: targetCell,
+              //   type: 'capture',
+              //   player: owner
+              // });
+
+              // // Add wave effect for capture event
+              // const playerColor = players[owner]?.color || '#FFFFFF';
+              // waveEffects.push({
+              //   id: `wave-capture-${Date.now()}-${Math.random()}`,
+              //   type: 'wave' as const,
+              //   position: { x: targetCell.col, y: targetCell.row },
+              //   duration: 1800, // 3x longer duration (1800ms = 3 * 600ms)
+              //   intensity: 1,
+              //   color: playerColor,
+              //   player: owner,
+              //   startTime: Date.now()
+              // });
+
+              // // Add interaction event for the defender's cell being attacked
+              // interactionEvents.push({
+              //   position: targetCell,
+              //   type: 'attack',
+              //   player: defender
+              // });
+
+              // // Add wave effect for attack event
+              // const defenderColor = players[defender]?.color || '#FFFFFF';
+              // waveEffects.push({
+              //   id: `wave-attack-${Date.now()}-${Math.random()}`,
+              //   type: 'wave' as const,
+              //   position: { x: targetCell.col, y: targetCell.row },
+              //   duration: 1800, // 3x longer duration (1800ms = 3 * 600ms)
+              //   intensity: 1,
+              //   color: defenderColor,
+              //   player: defender,
+              //   startTime: Date.now()
+              // });
+            }
+          }
         }
-      }
-
-      // Ensure progress doesn't go negative
-      progressIncrease = Math.max(0, progressIncrease);
-
-      // Create updated tentacle with new progress
-      const updatedTentacle = {
-        ...tentacle,
-        progress: Math.min(1.0, tentacle.progress + progressIncrease * 0.1) // Slow progress rate
-      };
-
-      // If progress is complete, capture the cell
-      if (updatedTentacle.progress >= 1.0) {
-        newGrid[updatedTentacle.to.row][updatedTentacle.to.col] = updatedTentacle.owner;
-
-        // Update cell age - new cell born this turn (will have age 1 after increment)
-        cellAge[updatedTentacle.to.row][updatedTentacle.to.col] = 0;
-
-        // Add interaction events for the capture
-        interactionEvents.push({
-          position: updatedTentacle.to,
-          type: 'capture',
-          player: updatedTentacle.owner
-        });
-
-        // Add wave effect for capture event
-        const playerColor = players[updatedTentacle.owner]?.color || '#FFFFFF';
-        waveEffects.push({
-          id: `wave-capture-${Date.now()}-${Math.random()}`,
-          type: 'wave' as const,
-          position: { x: updatedTentacle.to.col, y: updatedTentacle.to.row },
-          duration: 1800, // 3x longer duration (1800ms = 3 * 600ms)
-          intensity: 1,
-          color: playerColor,
-          player: updatedTentacle.owner,
-          startTime: Date.now()
-        });
-
-        // Add interaction event for the defender's cell being attacked
-        if (defenderOwner !== null) {
-          interactionEvents.push({
-            position: updatedTentacle.to,
-            type: 'attack',
-            player: defenderOwner
-          });
-
-          // Add wave effect for attack event
-          const defenderColor = players[defenderOwner]?.color || '#FFFFFF';
-          waveEffects.push({
-            id: `wave-attack-${Date.now()}-${Math.random()}`,
-            type: 'wave' as const,
-            position: { x: updatedTentacle.to.col, y: updatedTentacle.to.row },
-            duration: 1800, // 3x longer duration (1800ms = 3 * 600ms)
-            intensity: 1,
-            color: defenderColor,
-            player: defenderOwner,
-            startTime: Date.now()
-          });
-        }
-      } else {
-        // Only keep tentacles that haven't completed their invasion
-        tentacles.push(updatedTentacle);
       }
     }
-    // If the source cell no longer belongs to the tentacle owner, the tentacle disappears
-    // (it's not added to the tents array)
   }
 
   // Phase 1: Growth - existing cells grow stronger based on parameters
@@ -299,10 +269,6 @@ function calculateNextGameState(
     player: number;
   }[] = [];
 
-  // Limit for new tentacles per turn
-  const MAX_NEW_TENTACLES_PER_TURN = 30;
-  let newTentacleCount = 0;
-
   for (let row = 0; row < 35; row++) {
     for (let col = 0; col < 70; col++) {
       const owner = newGrid[row][col];
@@ -310,59 +276,15 @@ function calculateNextGameState(
         const player = players[owner];
         if (player) {
           // Precompute parameter values to avoid repeated access
-          const { stability, mutation, stealth, mobility, aggression, reproduction, infectivity } = player.virus;
+          const { stability, stealth, mobility, aggression, reproduction, infectivity } = player.virus;
 
           // Check if this player has stability > 10, which overrides other behaviors
           const hasHighStability = stability > 10;
 
-          // Removed mutation effects (chaotic borders) to reduce visual clutter and random behavior
-          // if (mutation > 12 && turn % 8 === 0) {
-          //   // Find all boundary cells of this player
-          //   const boundaryCells = [];
-          //   const adjacentCells = getAdjacentCells(grid, row, col);
-          //   for (const adj of adjacentCells) {
-          //     if (newGrid[adj.row][adj.col] === null) {
-          //       boundaryCells.push(adj);
-          //     }
-          //   }
-
-          //   // Randomly capture or lose a boundary cell
-          //   if (boundaryCells.length > 0 && Math.random() < 0.5) { // 50% chance to do something
-          //     const randomBoundary = boundaryCells[Math.floor(Math.random() * boundaryCells.length)];
-
-          //     if (Math.random() < 0.5) {
-          //       // Capture the boundary cell
-          //       if (newGrid[randomBoundary.row][randomBoundary.col] === null) {
-          //         newGrid[randomBoundary.row][randomBoundary.col] = owner;
-          //       }
-          //     } else {
-          //       // Lose a random cell that belongs to this player (to create "bays")
-          //       const ownedCells = [];
-          //       for (let r = Math.max(0, randomBoundary.row - 2); r < Math.min(35, randomBoundary.row + 3); r++) {  // Fixed: use 35 instead of rows
-          //         for (let c = Math.max(0, randomBoundary.col - 2); c < Math.min(70, randomBoundary.col + 3); c++) {  // Fixed: use 70 instead of cols
-          //           if (newGrid[r][c] === owner) {
-          //             ownedCells.push({row: r, col: c});
-          //           }
-          //         }
-          //       }
-
-          //       if (ownedCells.length > 0) {
-          //         const randomOwned = ownedCells[Math.floor(Math.random() * ownedCells.length)];
-          //         // Only lose the cell if it has at least 2 empty neighbors (to create bays)
-          //         const neighbors = getAdjacentCells(grid, randomOwned.row, randomOwned.col);
-          //         const emptyNeighbors = neighbors.filter(adj => newGrid[adj.row][adj.col] === null);
-          //         if (emptyNeighbors.length >= 2) {
-          //           newGrid[randomOwned.row][randomOwned.col] = null;
-          //         }
-          //       }
-          //     }
-          //   }
-          // }
-
           // Combined expansion logic with early returns
           if (hasHighStability) {
             // Only expand to immediate adjacent empty cells
-            const adjacentCells = getAdjacentCells(grid, row, col);
+            const adjacentCells = getAdjacentCells(_grid, row, col);
             const emptyCells = adjacentCells.filter(adj => newGrid[adj.row][adj.col] === null);
 
             if (emptyCells.length > 0) {
@@ -382,7 +304,8 @@ function calculateNextGameState(
                   to: targetCell,
                   player: owner
                 });
-                // Removed expansion event to reduce visual clutter
+                // Все визуальные эффекты отключены для улучшения производительности
+                // // Removed expansion event to reduce visual clutter
                 // expansionEvents.push({
                 //   from: { row, col },
                 //   to: targetCell,
@@ -392,7 +315,7 @@ function calculateNextGameState(
             }
           } else {
             // Handle all expansion types in a single pass with early returns
-            const adjacentCells = getAdjacentCells(grid, row, col);
+            const adjacentCells = getAdjacentCells(_grid, row, col);
             const emptyCells = adjacentCells.filter(adj => newGrid[adj.row][adj.col] === null);
 
             if (emptyCells.length > 0) {
@@ -503,7 +426,8 @@ function calculateNextGameState(
                       to: targetCell,
                       player: owner
                     });
-                    // Removed expansion event to reduce visual clutter
+                    // Все визуальные эффекты отключены для улучшения производительности
+                    // // Removed expansion event to reduce visual clutter
                     // expansionEvents.push({
                     //   from: { row, col },
                     //   to: targetCell,
@@ -542,10 +466,9 @@ function calculateNextGameState(
                       if (newGrid[cell.row][cell.col] === null && Math.random() < 0.7) { // 70% success rate
                         newGrid[cell.row][cell.col] = owner;
 
-                        // Update cell age - new cell born this turn (will have age 1 after increment)
-                        cellAge[cell.row][cell.col] = 0;
 
-                        // Removed expansion event to reduce visual clutter
+                        // Все визуальные эффекты отключены для улучшения производительности
+                        // // Removed expansion event to reduce visual clutter
                         // expansionEvents.push({
                         //   from: { row, col },
                         //   to: cell,
@@ -575,7 +498,8 @@ function calculateNextGameState(
                     to: targetCell,
                     player: owner
                   });
-                  // Removed expansion event to reduce visual clutter
+                  // Все визуальные эффекты отключены для улучшения производительности
+                  // // Removed expansion event to reduce visual clutter
                   // expansionEvents.push({
                   //   from: { row, col },
                   //   to: targetCell,
@@ -595,71 +519,21 @@ function calculateNextGameState(
     // Only expand if the target cell is still empty
     if (newGrid[attempt.to.row][attempt.to.col] === null) {
       newGrid[attempt.to.row][attempt.to.col] = attempt.player;
-      // Update cell age - new cell born this turn
-      cellAge[attempt.to.row][attempt.to.col] = 0; // New cell has age 0
     }
   }
 
-  // Phase 3: Combat - cells battle with adjacent opponent cells using tentacles
-  // Use a Map for faster lookup of existing tentacles
-  const existingTentacleMap = new Map<string, Tentacle>();
-  for (const tentacle of existingTentacles) {
-    const key = `${tentacle.from.row},${tentacle.from.col},${tentacle.to.row},${tentacle.to.col},${tentacle.owner}`;
-    existingTentacleMap.set(key, tentacle);
-  }
-
-  for (let row = 0; row < 35; row++) {
-    for (let col = 0; col < 70; col++) {
-      const owner = newGrid[row][col];
-      if (owner !== null) {
-        const player = players[owner];
-        if (player) {
-          // Get adjacent opponent cells
-          const adjacentCells = getAdjacentCells(grid, row, col);
-          const opponentCells = adjacentCells.filter(adj => {
-            const cellOwner = newGrid[adj.row][adj.col];
-            return cellOwner !== null && cellOwner !== owner;
-          });
-
-          // Attempt to attack opponent cells
-          if (opponentCells.length > 0 && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {
-            // Select a random opponent cell to attack
-            const targetCell = opponentCells[Math.floor(Math.random() * opponentCells.length)];
-            const defender = newGrid[targetCell.row][targetCell.col]!;
-
-            // Create a key for this potential tentacle
-            const tentacleKey = `${row},${col},${targetCell.row},${targetCell.col},${owner}`;
-
-            // Check if a tentacle already exists for this from->to pair
-            if (!existingTentacleMap.has(tentacleKey) && newTentacleCount < MAX_NEW_TENTACLES_PER_TURN) {
-              const newTentacle: Tentacle = {
-                id: `tentacle-${Date.now()}-${Math.random()}`,
-                from: { row, col },
-                to: targetCell,
-                owner: owner,
-                progress: 0.05, // Start with a small progress
-                type: 'invasion'
-              };
-
-              tentacles.push(newTentacle);
-              newTentacleCount++;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Increment age for all existing cells (slower aging - 10x slower)
-  if (turn % 10 === 0) { // Only age cells every 10 turns
-    for (let row = 0; row < 35; row++) {
-      for (let col = 0; col < 70; col++) {
-        if (cellAge[row][col] !== -1) { // If cell exists (not empty)
-          cellAge[row][col]++;
-        }
-      }
-    }
-  }
+  // Cell age system has been removed for performance optimization
+  // The following code has been removed:
+  // // Increment age for all existing cells (aging every 5 turns instead of every 10)
+  // if (turn % 5 === 0) { // Only age cells every 5 turns
+  //   for (let row = 0; row < 35; row++) {
+  //     for (let col = 0; col < 70; col++) {
+  //       if (cellAge[row][col] !== -1) { // If cell exists (not empty)
+  //         cellAge[row][col]++;
+  //       }
+  //     }
+  //   }
+  // }
 
   // Count territories for each player
   const territoryCounts = [0, 0, 0, 0];
@@ -680,18 +554,15 @@ function calculateNextGameState(
     attackEvents,
     expansionEvents,
     parameterEvents,
-    interactionEvents,
-    waveEffects, // Add wave effects to the result
-    tentacles,
-    cellAge
+    interactionEvents
   };
 }
 
 self.onmessage = function(e: MessageEvent<GridCalculationMessage>) {
-  const { type, grid, players, turn, settings, tentacles, cellAge } = e.data;
+  const { type, grid, players, turn, settings } = e.data;
 
   if (type === 'calculateNextState') {
-    const result = calculateNextGameState(grid, players, turn, settings, tentacles, cellAge);
+    const result = calculateNextGameState(grid, players, turn, settings);
     self.postMessage(result);
   }
 };

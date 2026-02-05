@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оптимизация фазы боя в игре VYRUS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .optimization-high {
+            background-color: #c8e6c9;
+        }
+        .optimization-medium {
+            background-color: #e8f5e8;
+        }
+        .optimization-low {
+            background-color: #f1f8e9;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .summary {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Оптимизация фазы боя в игре VYRUS</h1>
+        
+        <div class="summary">
+            <h2>Краткое описание проблемы</h2>
+            <p>Фаза боя (Phase 0) - это самая ресурсоемкая часть симуляции, занимающая до 35% времени выполнения. Она включает в себя:</p>
+            <ul>
+                <li>Проверку соседних клеток для каждой занятой клетки</li>
+                <li>Вычисление шансов атаки/защиты на основе параметров вирусов</li>
+                <li>Выбор целей для атаки</li>
+                <li>Реализацию захвата территории</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>1. Оптимизация поиска соседних клеток</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Метод</th>
+                        <th>Описание</th>
+                        <th>Эффект</th>
+                        <th>Сложность реализации</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="optimization-high">
+                        <td>Предварительное вычисление</td>
+                        <td>Создание статического массива с соседними клетками для каждой позиции на поле</td>
+                        <td>Снижение времени на ~20-25%</td>
+                        <td>Низкая</td>
+                    </tr>
+                    <tr class="optimization-medium">
+                        <td>Кэширование результатов</td>
+                        <td>Хранение результатов предыдущих вызовов с возможностью повторного использования</td>
+                        <td>Снижение времени на ~10-15%</td>
+                        <td>Средняя</td>
+                    </tr>
+                    <tr class="optimization-low">
+                        <td>Оптимизация структуры данных</td>
+                        <td>Использование более эффективных структур данных для хранения сетки</td>
+                        <td>Снижение времени на ~5-10%</td>
+                        <td>Высокая</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Пример реализации предварительного вычисления:</h3>
+            <div class="code-block">
+// Предварительно вычисленные соседние клетки для всех позиций на поле 70x35
+const precomputedAdjacentCells: { row: number; col: number }[][][] = [];
+
+for (let row = 0; row < 35; row++) {
+  precomputedAdjacentCells[row] = [];
+  for (let col = 0; col < 70; col++) {
+    const adjacent: { row: number; col: number }[] = [];
+    const directions = [
+      [-1, 0], [1, 0], [0, -1], [0, 1],  // up, down, left, right
+      [-1, -1], [-1, 1], [1, -1], [1, 1]  // диагонали
+    ];
+
+    for (const [dr, dc] of directions) {
+      const newRow = row + dr;
+      const newCol = col + dc;
+
+      if (newRow >= 0 && newRow < 35 && newCol >= 0 && newCol < 70) {
+        adjacent.push({ row: newRow, col: newCol });
+      }
+    }
+    
+    precomputedAdjacentCells[row][col] = adjacent;
+  }
+}
+
+// Функция для получения соседних клеток
+function getAdjacentCells(row: number, col: number): { row: number; col: number }[] {
+  return precomputedAdjacentCells[row][col];
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Оптимизация вычисления шансов атаки/защиты</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Метод</th>
+                        <th>Описание</th>
+                        <th>Эффект</th>
+                        <th>Сложность реализации</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="optimization-high">
+                        <td>Предварительное вычисление факторов</td>
+                        <td>Вычисление и кэширование факторов атаки/защиты для каждого игрока перед фазой боя</td>
+                        <td>Снижение времени на ~15-20%</td>
+                        <td>Низкая</td>
+                    </tr>
+                    <tr class="optimization-medium">
+                        <td>Оптимизация формул</td>
+                        <td>Упрощение математических выражений и устранение повторяющихся вычислений</td>
+                        <td>Снижение времени на ~5-10%</td>
+                        <td>Средняя</td>
+                    </tr>
+                    <tr class="optimization-low">
+                        <td>Использование lookup-таблиц</td>
+                        <td>Предварительное вычисление результатов для часто используемых комбинаций параметров</td>
+                        <td>Снижение времени на ~3-5%</td>
+                        <td>Высокая</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Пример реализации предварительного вычисления факторов:</h3>
+            <div class="code-block">
+// Предварительное вычисление факторов атаки и защиты для каждого игрока
+function precomputePlayerFactors(players: Player[]): { attack: number; defense: number }[] {
+  return players.map(player => {
+    if (!player) return { attack: 0, defense: 0 };
+    
+    const { mobility, infectivity, aggression, resistance, defense: playerDefense } = player.virus;
+    const attack = (mobility / 16 + infectivity / 16 + aggression / 16) / 3;
+    const defense = (resistance / 16 + playerDefense / 16) / 2;
+    
+    return { attack, defense };
+  });
+}
+
+// Использование в фазе боя
+const playerFactors = precomputePlayerFactors(players);
+
+for (let row = 0; row < 35; row++) {
+  for (let col = 0; col < 70; col++) {
+    const owner = newGrid[row][col];
+    if (owner !== null) {
+      // Используем предварительно вычисленные факторы
+      const { attack: attackPower } = playerFactors[owner];
+      // ...
+    }
+  }
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Оптимизация выбора целей для атаки</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Метод</th>
+                        <th>Описание</th>
+                        <th>Эффект</th>
+                        <th>Сложность реализации</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="optimization-medium">
+                        <td>Ограничение количества целей</td>
+                        <td>Проверка только части соседних клеток вместо всех</td>
+                        <td>Снижение времени на ~10-15%</td>
+                        <td>Низкая</td>
+                    </tr>
+                    <tr class="optimization-medium">
+                        <td>Приоритизация целей</td>
+                        <td>Выбор наиболее уязвимых или ценных целей первыми</td>
+                        <td>Снижение времени на ~5-10%</td>
+                        <td>Средняя</td>
+                    </tr>
+                    <tr class="optimization-low">
+                        <td>Алгоритмы машинного обучения</td>
+                        <td>Использование обученных моделей для принятия решений об атаке</td>
+                        <td>Снижение времени на ~2-5%</td>
+                        <td>Очень высокая</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Пример реализации ограничения количества целей:</h3>
+            <div class="code-block">
+// Получение соседних клеток
+const adjacentCells = getAdjacentCells(row, col);
+
+// Фильтрация только клеток с противниками
+const opponentCells = adjacentCells.filter(adj => {
+  const cellOwner = newGrid[adj.row][adj.col];
+  return cellOwner !== null && cellOwner !== owner;
+});
+
+// Ограничение количества целей для проверки (например, случайный выбор 3 из возможных)
+const maxTargetsToCheck = 3;
+let targetsToCheck = opponentCells;
+if (opponentCells.length > maxTargetsToCheck) {
+  // Случайный выбор maxTargetsToCheck целей из возможных
+  targetsToCheck = [];
+  for (let i = 0; i < maxTargetsToCheck; i++) {
+    const randomIndex = Math.floor(Math.random() * opponentCells.length);
+    targetsToCheck.push(opponentCells[randomIndex]);
+    // Удаляем выбранный элемент, чтобы не выбрать его снова
+    opponentCells.splice(randomIndex, 1);
+  }
+}
+
+// Проверка только ограниченного числа целей
+for (const target of targetsToCheck) {
+  // Логика атаки
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>4. Оптимизация структуры данных</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Метод</th>
+                        <th>Описание</th>
+                        <th>Эффект</th>
+                        <th>Сложность реализации</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="optimization-high">
+                        <td>Использование плоских массивов</td>
+                        <td>Замена двумерного массива на одномерный для лучшей локальности кэша</td>
+                        <td>Снижение времени на ~15-20%</td>
+                        <td>Средняя</td>
+                    </tr>
+                    <tr class="optimization-medium">
+                        <td>Специализированные структуры данных</td>
+                        <td>Использование структур данных, оптимизированных для частых операций</td>
+                        <td>Снижение времени на ~10-15%</td>
+                        <td>Высокая</td>
+                    </tr>
+                    <tr class="optimization-low">
+                        <td>Оптимизация представления данных</td>
+                        <td>Использование более компактных типов данных</td>
+                        <td>Снижение времени на ~5-10%</td>
+                        <td>Низкая</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Пример использования плоского массива:</h3>
+            <div class="code-block">
+// Преобразование двумерного индекса в одномерный
+function getIndex(row: number, col: number): number {
+  return row * 70 + col; // 70 - количество столбцов
+}
+
+// Преобразование одномерного индекса в двумерный
+function getRowCol(index: number): { row: number; col: number } {
+  const row = Math.floor(index / 70);
+  const col = index % 70;
+  return { row, col };
+}
+
+// Использование плоского массива для сетки
+const flatGrid: (number | null)[] = new Array(35 * 70).fill(null);
+
+// Доступ к элементу
+const owner = flatGrid[getIndex(row, col)];
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>5. Комбинированные подходы</h2>
+            <p>Для максимального эффекта рекомендуется использовать комбинацию нескольких подходов:</p>
+            <ul>
+                <li>Предварительное вычисление соседних клеток + предварительное вычисление факторов игроков</li>
+                <li>Плоские массивы + ограничение количества целей для проверки</li>
+                <li>Кэширование результатов + оптимизация формул</li>
+            </ul>
+            
+            <p>При использовании всех вышеописанных оптимизаций можно достичь снижения времени выполнения фазы боя на 40-50%.</p>
+        </div>
+
+        <div class="section">
+            <h2>6. Рекомендации по реализации</h2>
+            <ol>
+                <li>Начните с простых оптимизаций (предварительное вычисление факторов и соседних клеток)</li>
+                <li>Измеряйте производительность после каждой оптимизации</li>
+                <li>При необходимости переходите к более сложным методам (плоские массивы, ограничение целей)</li>
+                <li>Проверяйте корректность симуляции после каждой оптимизации</li>
+                <li>Рассмотрите возможность использования WebAssembly для критических участков кода</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

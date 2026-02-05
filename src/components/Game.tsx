@@ -48,10 +48,10 @@ const Game: React.FC = () => {
       workerRef.current = new Worker(new URL('../workers/gridCalculationWorker.ts', import.meta.url));
 
       workerRef.current.onmessage = (e: MessageEvent) => {
-        const { type, newGrid, turn, territoryCounts, attackEvents, expansionEvents, parameterEvents, tentacles, cellAge } = e.data;
+        const { type, newGrid, turn, territoryCounts, attackEvents, expansionEvents, parameterEvents, interactionEvents, waveEffects } = e.data;
 
         if (type === 'calculationComplete') {
-          actions.updateGrid(newGrid, cellAge);
+          actions.updateGrid(newGrid);
           actions.setTerritoryCount(0, territoryCounts[0]);
           actions.setTerritoryCount(1, territoryCounts[1]);
           actions.setTerritoryCount(2, territoryCounts[2]);
@@ -59,11 +59,6 @@ const Game: React.FC = () => {
 
           // Update turn in the store
           actions.updateTurn(turn);
-
-          // Update tentacles in the store
-          if (tentacles) {
-            actions.updateTentacles(tentacles);
-          }
 
           // Add visual effects based on events
           // Removed attack events to reduce visual clutter
@@ -90,28 +85,29 @@ const Game: React.FC = () => {
           //   });
           // }
 
-          if (e.data.interactionEvents) {
-            e.data.interactionEvents.forEach((event: any) => {
-              actions.addInteractionEffect(event.position, event.type, event.player);
-            });
-          }
+          // Все визуальные эффекты отключены для улучшения производительности
+          // if (e.data.interactionEvents) {
+          //   e.data.interactionEvents.forEach((event: any) => {
+          //     actions.addInteractionEffect(event.position, event.type, event.player);
+          //   });
+          // }
 
           // Handle wave effects from the worker
-          if (e.data.waveEffects) {
-            e.data.waveEffects.forEach((waveEffect: any) => {
-              // Add the wave effect to the store
-              actions.addVisualEffect({
-                id: waveEffect.id,
-                type: waveEffect.type,
-                position: { x: waveEffect.position.x, y: waveEffect.position.y },
-                duration: waveEffect.duration,
-                intensity: waveEffect.intensity,
-                color: waveEffect.color,
-                player: waveEffect.player,
-                startTime: waveEffect.startTime
-              });
-            });
-          }
+          // if (e.data.waveEffects) {
+          //   e.data.waveEffects.forEach((waveEffect: any) => {
+          //     // Add the wave effect to the store
+          //     actions.addVisualEffect({
+          //       id: waveEffect.id,
+          //       type: waveEffect.type,
+          //       position: { x: waveEffect.position.x, y: waveEffect.position.y },
+          //       duration: waveEffect.duration,
+          //       intensity: waveEffect.intensity,
+          //       color: waveEffect.color,
+          //       player: waveEffect.player,
+          //       startTime: waveEffect.startTime
+          //     });
+          //   });
+          // }
         }
       };
     }
@@ -131,10 +127,10 @@ const Game: React.FC = () => {
       workerRef.current = new Worker(new URL('../workers/gridCalculationWorker.ts', import.meta.url));
 
       workerRef.current.onmessage = (e: MessageEvent) => {
-        const { type, newGrid, turn, territoryCounts, attackEvents, expansionEvents, parameterEvents, tentacles, cellAge } = e.data;
+        const { type, newGrid, turn, territoryCounts, attackEvents, expansionEvents, parameterEvents, interactionEvents, waveEffects } = e.data;
 
         if (type === 'calculationComplete') {
-          actions.updateGrid(newGrid, cellAge);
+          actions.updateGrid(newGrid);
           actions.setTerritoryCount(0, territoryCounts[0]);
           actions.setTerritoryCount(1, territoryCounts[1]);
           actions.setTerritoryCount(2, territoryCounts[2]);
@@ -142,11 +138,6 @@ const Game: React.FC = () => {
 
           // Update turn in the store
           actions.updateTurn(turn);
-
-          // Update tentacles in the store
-          if (tentacles) {
-            actions.updateTentacles(tentacles);
-          }
 
           // Add visual effects based on events
           // Removed attack events to reduce visual clutter
@@ -173,28 +164,29 @@ const Game: React.FC = () => {
           //   });
           // }
 
-          if (e.data.interactionEvents) {
-            e.data.interactionEvents.forEach((event: any) => {
-              actions.addInteractionEffect(event.position, event.type, event.player);
-            });
-          }
+          // Все визуальные эффекты отключены для улучшения производительности
+          // if (e.data.interactionEvents) {
+          //   e.data.interactionEvents.forEach((event: any) => {
+          //     actions.addInteractionEffect(event.position, event.type, event.player);
+          //   });
+          // }
 
           // Handle wave effects from the worker
-          if (e.data.waveEffects) {
-            e.data.waveEffects.forEach((waveEffect: any) => {
-              // Add the wave effect to the store
-              actions.addVisualEffect({
-                id: waveEffect.id,
-                type: waveEffect.type,
-                position: { x: waveEffect.position.x, y: waveEffect.position.y },
-                duration: waveEffect.duration,
-                intensity: waveEffect.intensity,
-                color: waveEffect.color,
-                player: waveEffect.player,
-                startTime: waveEffect.startTime
-              });
-            });
-          }
+          // if (e.data.waveEffects) {
+          //   e.data.waveEffects.forEach((waveEffect: any) => {
+          //     // Add the wave effect to the store
+          //     actions.addVisualEffect({
+          //       id: waveEffect.id,
+          //       type: waveEffect.type,
+          //       position: { x: waveEffect.position.x, y: waveEffect.position.y },
+          //       duration: waveEffect.duration,
+          //       intensity: waveEffect.intensity,
+          //       color: waveEffect.color,
+          //       player: waveEffect.player,
+          //       startTime: waveEffect.startTime
+          //     });
+          //   });
+          // }
         }
       };
     }
@@ -243,8 +235,7 @@ const Game: React.FC = () => {
             grid: gameState.grid,
             players: gameState.players,
             turn: gameState.turn,
-            settings: gameState.settings,
-            tentacles: gameState.tentacles
+            settings: gameState.settings
           });
         }
 
@@ -347,15 +338,10 @@ const Game: React.FC = () => {
       placeStartingColony(2, 2, 32);     // Bottom-left (35-3 for padding)
       placeStartingColony(3, 67, 32);    // Bottom-right (70-3, 35-3 for padding)
 
-      // Initialize cell age grid when starting battle
+      // Initialize cell age grid when starting battle (all cells have age -1)
       const initialCellAge = Array(35).fill(null).map(() => Array(70).fill(-1));
-      // Set birth age for starting colonies (age 0, will become 1 after first turn)
-      initialCellAge[2][2] = 0;   // Player 0 starting position
-      initialCellAge[2][67] = 0;  // Player 1 starting position
-      initialCellAge[32][2] = 0;  // Player 2 starting position
-      initialCellAge[32][67] = 0; // Player 3 starting position
-
-      actions.updateGrid(grid, initialCellAge);
+      
+      actions.updateGrid(grid);
       actions.updatePlayers(updatedPlayers);
     }
   };

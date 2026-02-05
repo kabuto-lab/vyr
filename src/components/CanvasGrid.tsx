@@ -399,68 +399,6 @@ const CanvasGrid: React.FC = () => {
       }
     }
 
-    // Draw tentacles if in battle state
-    if (gameState.gameState === 'battle') {
-      // Only draw tentacles that are visible in the current viewport
-      const visibleTentacles = gameState.tentacles.filter(tentacle => {
-        const startX = offsetX + tentacle.from.col * cellWidth + cellWidth / 2;
-        const startY = offsetY + tentacle.from.row * cellHeight + cellHeight / 2;
-        const endX = offsetX + tentacle.to.col * cellWidth + cellWidth / 2;
-        const endY = offsetY + tentacle.to.row * cellHeight + cellHeight / 2;
-        // Check if the tentacle is within the visible area (with some padding)
-        const padding = 50; // pixels of padding around viewport
-        return (
-          (startX >= -padding && startX <= displayWidth + padding &&
-            startY >= -padding && startY <= displayHeight + padding) ||
-          (endX >= -padding && endX <= displayWidth + padding &&
-            endY >= -padding && endY <= displayHeight + padding)
-        );
-      });
-
-      // Limit the number of tentacles drawn based on quality setting
-      const tentaclesToDraw = Math.min(visibleTentacles.length,
-        visualEffectQuality === 'high' ? 100 :
-          visualEffectQuality === 'medium' ? 50 : 20);
-
-      for (let i = 0; i < tentaclesToDraw; i++) {
-        const tentacle = visibleTentacles[i];
-        const startX = offsetX + tentacle.from.col * cellWidth + cellWidth / 2;
-        const startY = offsetY + tentacle.from.row * cellHeight + cellHeight / 2;
-        const endX = offsetX + tentacle.to.col * cellWidth + cellWidth / 2;
-        const endY = offsetY + tentacle.to.row * cellHeight + cellHeight / 2;
-
-        // Draw the tentacle as a straight line
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-
-        // Get the player's color for the tentacle
-        const playerColor = gameState.players[tentacle.owner]?.color || '#FFFFFF';
-        const rgbColor = hexToRgb(playerColor);
-        if (rgbColor) {
-          // Set transparency based on progress
-          const alpha = Math.min(1, 0.3 + tentacle.progress * 0.7);
-          ctx.strokeStyle = `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${alpha})`;
-        } else {
-          ctx.strokeStyle = `rgba(255, 255, 255, 0.5)`;
-        }
-        // Set line width to a constant value (removing the variable thickness)
-        ctx.lineWidth = 1.5; // Constant line width
-        ctx.stroke();
-
-        // Draw animated tip at target cell when progress is high
-        if (tentacle.progress > 0.7) {
-          const pulseFactor = Math.sin(Date.now() * 0.005) * 0.5 + 0.5; // Pulsing effect
-          const tipRadius = 3 + 4 * pulseFactor; // Pulsing radius
-          ctx.beginPath();
-          ctx.arc(endX, endY, tipRadius, 0, 2 * Math.PI);
-          ctx.fillStyle = playerColor;
-          ctx.globalAlpha = 0.7;
-          ctx.fill();
-          ctx.globalAlpha = 1;
-        }
-      }
-    }
 
     // Draw symbiotic relationships - connections between compatible virus types
     const viewStartRow = Math.max(0, Math.floor(-offsetY / cellHeight));

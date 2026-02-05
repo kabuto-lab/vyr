@@ -3,8 +3,6 @@ export interface GameState {
   grid: (number | null)[][]; // 2D grid representation [row][col]
   players: Player[];
   visualEffects: VisualEffect[];
-  tentacles: Tentacle[];
-  cellAge: number[][];
   performance: PerformanceMetrics;
   settings: GameSettings;
   turn: number;
@@ -43,15 +41,6 @@ export interface VirusParameters {
   infectivity: number; // Replacing colonyCoordination
   lethality: number; // Replacing metabolicFlexibility
   stability: number; // Replacing latency
-}
-
-export interface Tentacle {
-  id: string;
-  from: { row: number; col: number };
-  to: { row: number; col: number };
-  owner: number;
-  progress: number;
-  type: 'invasion';
 }
 
 export interface VisualEffect {
